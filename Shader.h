@@ -45,8 +45,8 @@ public:
         }
         const GLchar* vShaderCode = vertexCode.c_str();
         const GLchar * fShaderCode = fragmentCode.c_str();
-        std::cout << "vShader\n" << vShaderCode << std::endl;
-        std::cout << "fShader\n" << fShaderCode << std::endl;
+        // std::cout << "vShader\n" << vShaderCode << std::endl;
+        // std::cout << "fShader\n" << fShaderCode << std::endl;
         // 2. Compile shaders
         GLuint vertex, fragment;
         GLint success;
