@@ -1,4 +1,5 @@
-#pragma once
+#ifdef _MODEL_H_
+#define _MODEL_H_
 // Std. Includes
 #include <string>
 #include <fstream>
@@ -209,3 +210,5 @@ GLint TextureFromFile(const char* path, string directory)
     SOIL_free_image_data(image);
     return textureID;
 }
+
+#endif

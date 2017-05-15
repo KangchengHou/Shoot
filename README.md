@@ -6,7 +6,13 @@ Game implemented with OpenGL
 * [ ] 地形设计
 * [ ] 物理引擎,重力系统
 * [ ] 载入obj 模型
-
+* [ ] 现在有一个人在二维平面上跑了，现在要有他能把一个物体给扔出去，先做这个，要用比较合适的写的方法，以及物体之间碰撞检测的比较好的方法，还有物体的弹跳。
+* [ ] 修改了一下代码 Shader& 原来是引用，我改成直接赋值了，如果性能有问题可以检查一下这个有没有被频繁的调用，现在感觉只有初始化的时候才用了一下。
 
 ## References 
 1. [learnopengl](www.learnopengl.com)
+2. [nehe physcis engine tutorial](http://nehe.gamedev.net/tutorial/introduction_to_physical_simulations/18005/)
+3. [openspades 很好的游戏](https://github.com/yvt/openspades)
+4. [一个简单的物理引擎　可以借鉴一下](https://github.com/rools/engine)
+5. [另外一个游戏引擎](https://github.com/Shervanator/Engine)
+6. [又是另外一个](https://github.com/dimi309/small3d)

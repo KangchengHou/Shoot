@@ -117,7 +117,7 @@ int main()
     return 0;
 }
 
-#pragma region "User input"
+// for user input
 
 // Moves/alters the camera positions based on user input
 void Do_Movement()
@@ -167,5 +167,3 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
-
-#pragma endregion
