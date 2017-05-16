@@ -16,3 +16,9 @@ Game implemented with OpenGL
 4. [一个简单的物理引擎　可以借鉴一下](https://github.com/rools/engine)
 5. [另外一个游戏引擎](https://github.com/Shervanator/Engine)
 6. [又是另外一个](https://github.com/dimi309/small3d)
+
+## Design
+1. program.cpp 是主程序所在位置。其中设置了glfw 和 glEnable 的一些属性。
+2. Game　里就是整个游戏，Init 函数负责初始化
+3. ResouceManager 负责文件加载，Shader, Texture等。
+4. 
