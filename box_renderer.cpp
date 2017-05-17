@@ -20,7 +20,7 @@ BoxRenderer::~BoxRenderer()
     glDeleteVertexArrays(1, &this->quadVAO);
 }
 
-void BoxRenderer::DrawBox(Texture2D texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, glm::vec3 color, Camera& camera)
+void BoxRenderer::DrawBox(Texture2D diffuseTexture, Texture2D specularTexture, glm::vec3 position, glm::vec3 size, glm::vec3 color, Camera& camera)
 {
     // Prepare transformations
     this->shader.Use(); 
@@ -58,9 +58,11 @@ void BoxRenderer::DrawBox(Texture2D texture, glm::vec2 position, glm::vec2 size,
     // this->shader.SetVector3f("BoxColor", color);
 
     glActiveTexture(GL_TEXTURE0);
-    texture.Bind();
-
-    glBindVertexArray(this->quadVAO);
+    diffuseTexture.Bind();
+    glActiveTexture(GL_TEXTURE1);
+    specularTexture.Bind();
+    
+    glBindVertexArray(this->containerVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36); // 36 is the vertex number of the box
     glBindVertexArray(0);
 }

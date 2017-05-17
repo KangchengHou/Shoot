@@ -3,7 +3,7 @@
 #include "box_renderer.h"
 
 
-
+BoxRenderer * Renderer;
 
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height),\
@@ -30,11 +30,12 @@ void Game::Init()
     // ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
     // Load textures
     // no alpha value
+    
     ResourceManager::LoadTexture("textures/container2.png", GL_FALSE, "container2");
     ResourceManager::LoadTexture("textures/container2_specular.png", GL_FALSE, "container2_specular");
     // ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
     // // Set render-specific controls
-    // Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
+    Renderer = new BoxRenderer(ResourceManager::GetShader("lighting"));
 }
 
 void Game::Update(GLfloat dt)
@@ -71,5 +72,5 @@ void Game::Render()
 {
     // TODO: render here
     
-    Renderer->DrawSprite(ResourceManager::GetTexture("face"), glm::vec2(200, 200), glm::vec2(300, 400), 45.0f, glm::vec3(0.0f, 1.0f, 0.0f), this->camera);
+    Renderer->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), this->camera);
 }

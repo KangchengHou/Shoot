@@ -16,7 +16,7 @@ public:
     // Destructor
     ~BoxRenderer();
     // Renders a defined quad textured with given Box
-    void DrawBox(Texture2D texture, glm::vec3 position, glm::vec3 size = glm::vec3(10, 10, 10), GLfloat rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+    void DrawBox(Texture2D texture0, Texture2D texture1, glm::vec3 , glm::vec3 size, glm::vec3 color, Camera& camera);
 private:
     // Render state
     Shader shader; 
