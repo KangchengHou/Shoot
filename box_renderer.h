@@ -5,7 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "texture.h"
-#include "Shader.h"
+#include "shader.h"
+#include "Camera.h"
+#include "game.h"
 
 
 class BoxRenderer
@@ -16,7 +18,7 @@ public:
     // Destructor
     ~BoxRenderer();
     // Renders a defined quad textured with given Box
-    void DrawBox(Texture2D texture0, Texture2D texture1, glm::vec3 , glm::vec3 size, glm::vec3 color, Camera& camera);
+    void DrawBox(Texture2D texture0, Texture2D texture1, glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game);
 private:
     // Render state
     Shader shader; 

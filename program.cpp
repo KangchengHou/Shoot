@@ -11,14 +11,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-Camera  camera(glm::vec3(0.0f, 0.0f, 3.0f));
-GLfloat lastX  =  WIDTH  / 2.0;
-GLfloat lastY  =  HEIGHT / 2.0;
-
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
 const GLuint SCREEN_HEIGHT = 600;
+
+Camera  camera(glm::vec3(0.0f, 0.0f, 3.0f));
+GLfloat lastX  =  SCREEN_WIDTH  / 2.0;
+GLfloat lastY  =  SCREEN_HEIGHT / 2.0;
 
 
 Game Shoot(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     // glfw callback functions 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callBreakoutback);
+    glfwSetScrollCallback(window, scroll_callback);
     // TODO: these functions has some use
     // GLFW Options
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
         Shoot.Update(deltaTime);
 
         // Render
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Shoot.Render();
 
         glfwSwapBuffers(window);
@@ -125,8 +125,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     GLfloat xoffset = xpos - lastX;
     GLfloat yoffset = lastY - ypos;  // Reversed since y-coordinates go from bottom to left
 
-    Shoot->mouse_xoffset = xoffset;
-    Shoot->mouse_yoffset = yoffset;
+    Shoot.mouse_xoffset = xoffset;
+    Shoot.mouse_yoffset = yoffset;
     lastX = xpos;
     lastY = ypos;
 
@@ -135,6 +135,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Shoot->scroll_yoffset = yoffset;
+    Shoot.scroll_yoffset = yoffset;
     camera.ProcessMouseScroll(yoffset);
 }

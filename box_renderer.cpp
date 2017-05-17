@@ -17,12 +17,15 @@ BoxRenderer::BoxRenderer(Shader shader)
 
 BoxRenderer::~BoxRenderer()
 {
-    glDeleteVertexArrays(1, &this->quadVAO);
+    glDeleteVertexArrays(1, &this->containerVAO);
 }
 
-void BoxRenderer::DrawBox(Texture2D diffuseTexture, Texture2D specularTexture, glm::vec3 position, glm::vec3 size, glm::vec3 color, Camera& camera)
+void BoxRenderer::DrawBox(Texture2D diffuseTexture, Texture2D specularTexture, glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game)
 {
     // Prepare transformations
+    
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f); 
+    // TODO: cope with light  append it to the lightPos
     this->shader.Use(); 
     this->shader.SetVector3f("light.position",lightPos.x, lightPos.y, lightPos.z);
     this->shader.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
@@ -33,15 +36,13 @@ void BoxRenderer::DrawBox(Texture2D diffuseTexture, Texture2D specularTexture, g
     // Create camera transformations
     glm::mat4 model;
     glm::mat4 view;
-    view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
+    view = game.camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(game.camera.Zoom, (GLfloat)game.Width / (GLfloat)game.Height, 0.1f, 100.0f);
     // Get the uniform locations
     // Pass the matrices to the shader
     this->shader.SetMatrix4("model", model);
     this->shader.SetMatrix4("view", view);
     this->shader.SetMatrix4("projection", projection);
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     // glm::mat4 model;
     // model = glm::translate(model, glm::vec3(position, 0.0f));  // First translate (transformations are: scale happens first, then rotation and then finall translation happens; reversed order)

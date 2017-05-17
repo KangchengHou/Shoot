@@ -20,7 +20,7 @@ Game::~Game()
 void Game::Init()
 { 
     // Load shaders
-    ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
+    // ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
     ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
     // Configure shaders
@@ -55,14 +55,14 @@ void Game::ProcessInput(GLfloat dt)
     if(this->State == GAME_ACTIVE){
         // now in the game state
         // process input for camera 
-        if (keys[GLFW_KEY_W])
-            camera.ProcessKeyboard(FORWARD, deltaTime);
-        if (keys[GLFW_KEY_S])
-            camera.ProcessKeyboard(BACKWARD, deltaTime);
-        if (keys[GLFW_KEY_A])
-            camera.ProcessKeyboard(LEFT, deltaTime);
-        if (keys[GLFW_KEY_D])
-            camera.ProcessKeyboard(RIGHT, deltaTime);
+        if (this->Keys[GLFW_KEY_W])
+            camera.ProcessKeyboard(FORWARD, dt);
+        if (this->Keys[GLFW_KEY_S])
+            camera.ProcessKeyboard(BACKWARD, dt);
+        if (this->Keys[GLFW_KEY_A])
+            camera.ProcessKeyboard(LEFT, dt);
+        if (this->Keys[GLFW_KEY_D])
+            camera.ProcessKeyboard(RIGHT, dt);
         camera.ProcessMouseMovement(this->mouse_xoffset, this->mouse_yoffset);
         camera.ProcessMouseScroll(this->scroll_yoffset);
     }
@@ -72,5 +72,5 @@ void Game::Render()
 {
     // TODO: render here
     
-    Renderer->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), this->camera);
+    Renderer->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
 }

@@ -30,8 +30,9 @@ public:
     GameState              State;	
     GLboolean              Keys[1024];
     GLuint                 Width, Height;
-    GLfloat xoffset;
-    GLfloat yoffset;
+    GLfloat mouse_xoffset;
+    GLfloat mouse_yoffset;
+    GLfloat scroll_yoffset;
     Camera camera;
     // Constructor/Destructor
     Game(GLuint width, GLuint height);
