@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <iostream>
 
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
@@ -93,7 +93,7 @@ public:
 
         this->Yaw   += xoffset;
         this->Pitch += yoffset;
-
+        std::cout << "Yaw : " << this->Yaw << " Pitch : " << this->Pitch << std::endl;
         // Make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch)
         {

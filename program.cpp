@@ -1,7 +1,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#include <iostream>
 #include "game.h"
 #include "resource_manager.h"
 #include "Camera.h"
@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
 
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Shoot", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-
+    // bind window to the game
+    Shoot.window = window;
     glewExperimental = GL_TRUE;
     glewInit();
     glGetError(); // Call it once to catch glewInit() bug, all other errors are now from our application.
@@ -115,6 +116,9 @@ bool firstMouse = true;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     // TODO: add these to shoot class
+    // quite ugly here
+    // looking for a better solution
+    // to integrate into the Game Class
     if (firstMouse)
     {
         lastX = xpos;
@@ -125,16 +129,15 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     GLfloat xoffset = xpos - lastX;
     GLfloat yoffset = lastY - ypos;  // Reversed since y-coordinates go from bottom to left
 
-    Shoot.mouse_xoffset = xoffset;
-    Shoot.mouse_yoffset = yoffset;
     lastX = xpos;
     lastY = ypos;
+    
+    Shoot.camera.ProcessMouseMovement(xoffset, yoffset);
+    // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl; 
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Shoot.scroll_yoffset = yoffset;
-    camera.ProcessMouseScroll(yoffset);
+    Shoot.camera.ProcessMouseScroll(yoffset);
 }

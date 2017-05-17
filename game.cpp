@@ -6,8 +6,7 @@
 BoxRenderer * Renderer;
 
 Game::Game(GLuint width, GLuint height) 
-	: State(GAME_ACTIVE), Keys(), Width(width), Height(height),\
-    mouse_xoffset(0),mouse_yoffset(0),scroll_yoffset(0),camera(glm::vec3(0.0f, 0.0f, 3.0f))
+	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), camera(glm::vec3(0.0f, 0.0f, 3.0f))
 { 
 
 }
@@ -63,8 +62,6 @@ void Game::ProcessInput(GLfloat dt)
             camera.ProcessKeyboard(LEFT, dt);
         if (this->Keys[GLFW_KEY_D])
             camera.ProcessKeyboard(RIGHT, dt);
-        camera.ProcessMouseMovement(this->mouse_xoffset, this->mouse_yoffset);
-        camera.ProcessMouseScroll(this->scroll_yoffset);
     }
 }
 
