@@ -4,9 +4,16 @@
 
 #include "game.h"
 #include "resource_manager.h"
-#include "camera.h"
+#include "Camera.h"
 // GLFW function declerations
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+
+Camera  camera(glm::vec3(0.0f, 0.0f, 3.0f));
+GLfloat lastX  =  WIDTH  / 2.0;
+GLfloat lastY  =  HEIGHT / 2.0;
 
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 800;
@@ -66,6 +73,8 @@ int main(int argc, char *argv[])
         lastFrame = currentFrame;
         glfwPollEvents();
 
+
+
         //deltaTime = 0.001f;
         // Manage user input
         Shoot.ProcessInput(deltaTime);
@@ -96,15 +105,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            Breakout.Keys[key] = GL_TRUE;
+            Shoot.Keys[key] = GL_TRUE;
         else if (action == GLFW_RELEASE)
-            Breakout.Keys[key] = GL_FALSE;
+            Shoot.Keys[key] = GL_FALSE;
     }
 }
 
 bool firstMouse = true;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+    // TODO: add these to shoot class
     if (firstMouse)
     {
         lastX = xpos;
@@ -115,6 +125,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     GLfloat xoffset = xpos - lastX;
     GLfloat yoffset = lastY - ypos;  // Reversed since y-coordinates go from bottom to left
 
+    Shoot->mouse_xoffset = xoffset;
+    Shoot->mouse_yoffset = yoffset;
     lastX = xpos;
     lastY = ypos;
 
@@ -123,5 +135,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
+    Shoot->scroll_yoffset = yoffset;
     camera.ProcessMouseScroll(yoffset);
 }

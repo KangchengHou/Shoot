@@ -1,11 +1,10 @@
 // This file cope with the obj file, have utility function concerning with OBJ file
 // Our project do not use obj file, so this file can be ommited.
-// 我们不会用到obj file,这个是为了完成project的要求。　所以可以忽略
 // reference
 // http://www.opengl-tutorial.org/cn/beginners-tutorials/tutorial-7-model-loading/
 // https://github.com/ssloy/tinyrenderer            
-#ifndef _OBJ_MODEL_H_
-#define _OBJ_MODEL_H_
+#ifndef OBJ_MODEL_H_
+#define OBJ_MODEL_H_
 
 #include <vector>
 #include <glm/glm.hpp>

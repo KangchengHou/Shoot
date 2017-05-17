@@ -11,7 +11,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#include "Camera.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -30,6 +30,9 @@ public:
     GameState              State;	
     GLboolean              Keys[1024];
     GLuint                 Width, Height;
+    GLfloat xoffset;
+    GLfloat yoffset;
+    Camera camera;
     // Constructor/Destructor
     Game(GLuint width, GLuint height);
     ~Game();
