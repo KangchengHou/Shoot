@@ -1,11 +1,3 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #include "box_renderer.h"
 
 
@@ -23,19 +15,22 @@ BoxRenderer::~BoxRenderer()
 void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game)
 {
     // Prepare transformations
-    
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f); 
+    // glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 3.0f);
+
+    glm::vec3 lightPos = game.lightPos;
     // TODO: cope with light  append it to the lightPos
     this->shader.Use(); 
     this->shader.SetVector3f("light.position",lightPos.x, lightPos.y, lightPos.z);
+    // set view pos 
+    this->shader.SetVector3f("viewPos",game.camera.Position.x, game.camera.Position.y, game.camera.Position.z);
     this->shader.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
     this->shader.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f);
     this->shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
-    this->shader.SetFloat("material.shininess",32.0f);
+
     this->shader.SetVector3f("meterial.ambient",1.0f, 0.5f, 0.31f);
     this->shader.SetVector3f("material.diffuse",1.0f, 0.5f, 0.31f);
     this->shader.SetVector3f("material.specular",0.5f, 0.5f, 0.5f);
-    
+    this->shader.SetFloat("meterial.shininess",32.0f);
     // Create camera transformations
     glm::mat4 model;
     model = glm::translate(model, position);  

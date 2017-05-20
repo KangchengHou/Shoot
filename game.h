@@ -32,6 +32,8 @@ public:
     GLuint                 Width, Height;
     GLFWwindow* window;
     Camera camera;
+    // TODO: modify lightPos need to be refined
+    glm::vec3 lightPos;
     // Constructor/Destructor
     Game(GLuint width, GLuint height);
     ~Game();
