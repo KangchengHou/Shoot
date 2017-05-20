@@ -4,6 +4,7 @@
 
 
 BoxRenderer * Renderer;
+BoxRenderer * Renderer2; // for demo add lighting square
 
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), camera(glm::vec3(0.0f, 0.0f, 3.0f))
@@ -14,6 +15,7 @@ Game::Game(GLuint width, GLuint height)
 Game::~Game()
 {
     delete Renderer;
+    delete Renderer2;
 }
 
 void Game::Init()
@@ -35,6 +37,7 @@ void Game::Init()
     // ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
     // // Set render-specific controls
     Renderer = new BoxRenderer(ResourceManager::GetShader("lighting"));
+    Renderer2 = new BoxRenderer(ResourceManager::GetShader("lamp"));
 }
 
 void Game::Update(GLfloat dt)
@@ -62,12 +65,14 @@ void Game::ProcessInput(GLfloat dt)
             camera.ProcessKeyboard(LEFT, dt);
         if (this->Keys[GLFW_KEY_D])
             camera.ProcessKeyboard(RIGHT, dt);
+        // TODO: add space 
     }
 }
 
 void Game::Render()
 {
     // TODO: render here
-    
+    Renderer2->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(2, 2, 2), glm::vec3(0.5, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
     Renderer->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
+    // Renderer->DrawBox(nullptr, nullptr, glm::vec3(1.2f, 1.0f, 2.0f),glm::vec3(0.2f,0.2f,0.2f),glm::vec3(0.0f, 0.0f, 0.0f), *this);
 }

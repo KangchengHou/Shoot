@@ -22,3 +22,9 @@ Game implemented with OpenGL
 2. Game　里就是整个游戏，Init 函数负责初始化
 3. ResouceManager 负责文件加载，Shader, Texture等。
 4. 每一个object(箱子，灯光)有一个对应的renderer,每个renderer一一对应一个shader。shader中可以设置各种属性，renderer表示一种渲染的方式。每个object中储存一个renderer,渲染每个object的时候讲他的坐标传到对应的renderer里面.
+
+## overall design 
+1. program
+
+## TODO
+1. 物理引擎 改bug 

@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
     // bind window to the game
     Shoot.window = window;
     glewExperimental = GL_TRUE;
+    
     glewInit();
     glGetError(); // Call it once to catch glewInit() bug, all other errors are now from our application.
 
