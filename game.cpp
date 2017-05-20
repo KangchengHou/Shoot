@@ -3,7 +3,7 @@
 #include "box_renderer.h"
 
 
-BoxRenderer * Renderer;
+BoxRenderer * Renderer1;
 BoxRenderer * Renderer2; // for demo add lighting square
 
 Game::Game(GLuint width, GLuint height) 
@@ -14,29 +14,16 @@ Game::Game(GLuint width, GLuint height)
 
 Game::~Game()
 {
-    delete Renderer;
+    delete Renderer1;
     delete Renderer2;
 }
 
 void Game::Init()
 { 
-    // Load shaders
-    // ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
     ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
-    // Configure shaders
-    // TODO: configure shaders : camera etc. 
-    // glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
-    // ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
-    // ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-    // Load textures
-    // no alpha value
-    
-    // ResourceManager::LoadTexture("textures/container2.png", GL_FALSE, "container2");
-    // ResourceManager::LoadTexture("textures/container2_specular.png", GL_FALSE, "container2_specular");
-    // ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
-    // // Set render-specific controls
-    Renderer = new BoxRenderer(ResourceManager::GetShader("lighting"));
+
+    Renderer1 = new BoxRenderer(ResourceManager::GetShader("lighting"));
     Renderer2 = new BoxRenderer(ResourceManager::GetShader("lamp"));
 }
 
@@ -72,7 +59,7 @@ void Game::ProcessInput(GLfloat dt)
 void Game::Render()
 {
     // TODO: render here
-    Renderer2->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(2, 2, 2), glm::vec3(0.5, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
-    Renderer->DrawBox(ResourceManager::GetTexture("container2"), ResourceManager::GetTexture("container2_specular"), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
+    Renderer1->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(0.0f, 1.0f, 1.0f), *this);
+    Renderer2->DrawBox(glm::vec3(2, 2, 2), glm::vec3(0.5, 1, 1), glm::vec3(0.f, 0.5f, 0.5f), *this);
     // Renderer->DrawBox(nullptr, nullptr, glm::vec3(1.2f, 1.0f, 2.0f),glm::vec3(0.2f,0.2f,0.2f),glm::vec3(0.0f, 0.0f, 0.0f), *this);
 }

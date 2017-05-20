@@ -27,4 +27,6 @@ Game implemented with OpenGL
 1. program
 
 ## TODO
-1. 物理引擎 改bug 
+1. 物理引擎
+2. 两个renderer怎么改不来
+3. 

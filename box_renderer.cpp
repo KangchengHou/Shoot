@@ -32,9 +32,14 @@ void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, G
     this->shader.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f);
     this->shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
     this->shader.SetFloat("material.shininess",32.0f);
+    this->shader.SetVector3f("meterial.ambient",1.0f, 0.5f, 0.31f);
+    this->shader.SetVector3f("material.diffuse",1.0f, 0.5f, 0.31f);
+    this->shader.SetVector3f("material.specular",0.5f, 0.5f, 0.5f);
     
     // Create camera transformations
     glm::mat4 model;
+    model = glm::translate(model, position);  
+    model = glm::scale(model, size); 
     glm::mat4 view;
     view = game.camera.GetViewMatrix();
     glm::mat4 projection = glm::perspective(game.camera.Zoom, (GLfloat)game.Width / (GLfloat)game.Height, 0.1f, 100.0f);
@@ -43,26 +48,6 @@ void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, G
     this->shader.SetMatrix4("model", model);
     this->shader.SetMatrix4("view", view);
     this->shader.SetMatrix4("projection", projection);
-
-    // glm::mat4 model;
-    // model = glm::translate(model, glm::vec3(position, 0.0f));  // First translate (transformations are: scale happens first, then rotation and then finall translation happens; reversed order)
-    
-    // model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // Move origin of rotation to center of quad
-    // model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f)); // Then rotate
-    // model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // Move origin back
-
-    // model = glm::scale(model, glm::vec3(size, 1.0f)); // Last scale
-
-    // this->shader.SetMatrix4("model", model);
-
-    // Render textured quad
-    // this->shader.SetVector3f("BoxColor", color);
-    
-    // remove texture
-    // glActiveTexture(GL_TEXTURE0);
-    // diffuseTexture.Bind();
-    // glActiveTexture(GL_TEXTURE1);
-    // specularTexture.Bind();
     
     glBindVertexArray(this->containerVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36); // 36 is the vertex number of the box
@@ -129,8 +114,6 @@ void BoxRenderer::initRenderData()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
