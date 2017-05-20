@@ -32,8 +32,8 @@ void Game::Init()
     // Load textures
     // no alpha value
     
-    ResourceManager::LoadTexture("textures/container2.png", GL_FALSE, "container2");
-    ResourceManager::LoadTexture("textures/container2_specular.png", GL_FALSE, "container2_specular");
+    // ResourceManager::LoadTexture("textures/container2.png", GL_FALSE, "container2");
+    // ResourceManager::LoadTexture("textures/container2_specular.png", GL_FALSE, "container2_specular");
     // ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
     // // Set render-specific controls
     Renderer = new BoxRenderer(ResourceManager::GetShader("lighting"));
@@ -47,7 +47,7 @@ void Game::Update(GLfloat dt)
     // set shader's projection, view, clip matrix 
     // set ResourceManager::GetShader("...").Use() 
     // set each shaders' attribute. 
-    
+
 
 }
 

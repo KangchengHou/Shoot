@@ -20,7 +20,7 @@ BoxRenderer::~BoxRenderer()
     glDeleteVertexArrays(1, &this->containerVAO);
 }
 
-void BoxRenderer::DrawBox(Texture2D diffuseTexture, Texture2D specularTexture, glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game)
+void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game)
 {
     // Prepare transformations
     
@@ -57,11 +57,12 @@ void BoxRenderer::DrawBox(Texture2D diffuseTexture, Texture2D specularTexture, g
 
     // Render textured quad
     // this->shader.SetVector3f("BoxColor", color);
-
-    glActiveTexture(GL_TEXTURE0);
-    diffuseTexture.Bind();
-    glActiveTexture(GL_TEXTURE1);
-    specularTexture.Bind();
+    
+    // remove texture
+    // glActiveTexture(GL_TEXTURE0);
+    // diffuseTexture.Bind();
+    // glActiveTexture(GL_TEXTURE1);
+    // specularTexture.Bind();
     
     glBindVertexArray(this->containerVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36); // 36 is the vertex number of the box

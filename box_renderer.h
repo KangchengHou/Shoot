@@ -18,7 +18,7 @@ public:
     // Destructor
     ~BoxRenderer();
     // Renders a defined quad textured with given Box
-    void DrawBox(Texture2D texture0, Texture2D texture1, glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game);
+    void DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, Game& game);
 private:
     // Render state
     Shader shader; 
