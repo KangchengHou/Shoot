@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/Shoot.dir/program.cpp.o CMakeFiles/Shoot.dir/shader.cpp.o CMakeFiles/Shoot.dir/box_renderer.cpp.o CMakeFiles/Shoot.dir/resource_manager.cpp.o CMakeFiles/Shoot.dir/game.cpp.o  -o Shoot -rdynamic -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl 

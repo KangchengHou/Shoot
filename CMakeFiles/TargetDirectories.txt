@@ -1,0 +1,3 @@
+/home/david/Projects/CG/Project/CMakeFiles/rebuild_cache.dir
+/home/david/Projects/CG/Project/CMakeFiles/edit_cache.dir
+/home/david/Projects/CG/Project/CMakeFiles/Shoot.dir

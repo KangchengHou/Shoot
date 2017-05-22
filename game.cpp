@@ -1,11 +1,9 @@
 #include "game.h"
 #include "resource_manager.h"
 #include "box_renderer.h"
+#include <vector>
 
-
-BoxRenderer * Renderer1;
-BoxRenderer * Renderer2; // for demo add lighting square
-
+std::vector<BoxRenderer*> renderers;
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), camera(glm::vec3(0.0f, 0.0f, 3.0f))
 { 
@@ -14,17 +12,19 @@ Game::Game(GLuint width, GLuint height)
 
 Game::~Game()
 {
-    delete Renderer1;
-    delete Renderer2;
+    int size = renderers.size();
+    for(int i = 0; i < size; i++){
+        delete renderers[i];
+    }
 }
 
 void Game::Init()
 { 
     ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
     ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
-    
-    Renderer1 = new BoxRenderer(ResourceManager::GetShader("lighting"));
-    Renderer2 = new BoxRenderer(ResourceManager::GetShader("lamp"));
+    renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lighting")));
+    renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lamp")));
+
 }
 
 void Game::Update(GLfloat dt)
@@ -53,6 +53,9 @@ void Game::ProcessInput(GLfloat dt)
             camera.ProcessKeyboard(LEFT, dt);
         if (this->Keys[GLFW_KEY_D])
             camera.ProcessKeyboard(RIGHT, dt);
+        if (this->Keys[GLFW_KEY_SPACE]){
+            camera.ProcessKeyboard(SPACE, dt);
+        }
         // TODO: add space 
     }
 }
@@ -60,6 +63,8 @@ void Game::ProcessInput(GLfloat dt)
 void Game::Render()
 {
     // TODO: render here
-    Renderer1->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
-    Renderer2->DrawBox(this->lightPos, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);
+    renderers[0]->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
+    renderers[1]->DrawBox(this->lightPos, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);
+    renderers[0]->DrawBox(glm::vec3(2,2,2),glm::vec3(1,1,1),glm::vec3(1.0f,1.0f,1.0f),*this);
+    renderers[0]->DrawBox(glm::vec3(-2,-2,-2),glm::vec3(1,1,1),glm::vec3(1.0f,1.0f,1.0f),*this);
 }
