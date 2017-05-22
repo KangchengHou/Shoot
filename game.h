@@ -12,7 +12,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Camera.h"
+<<<<<<< HEAD
 #include "gameBodyBase.h"
+=======
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 #include "box.h"
 #include "shader.h"
 
@@ -36,12 +39,20 @@ public:
     GLuint                 Width, Height;
     GLFWwindow* window;
     Camera camera;
+<<<<<<< HEAD
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
 
     std::vector<GameBodyBase*> bullets;
     glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
     Shader bulletShader;
     std::vector<GameBodyBase*> lights;
+=======
+
+    std::vector<Box*> bullets;
+    glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    Shader bulletShader;
+    std::vector<Box*> lights;
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
     glm::vec3 lightColor = glm::vec3(0.f, 0.5f, 0.5f);
     Shader lightShader;
     

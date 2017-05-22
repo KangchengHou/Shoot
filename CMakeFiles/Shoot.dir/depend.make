@@ -22,7 +22,9 @@ CMakeFiles/Shoot.dir/game.cpp.o: game.h
 CMakeFiles/Shoot.dir/game.cpp.o: gameBodyBase.h
 CMakeFiles/Shoot.dir/game.cpp.o: resource_manager.h
 CMakeFiles/Shoot.dir/game.cpp.o: shader.h
-CMakeFiles/Shoot.dir/game.cpp.o: texture.h
+
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: gameBodyBase.cpp
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: gameBodyBase.h
 
 CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: Camera.h
 CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: gameBodyBase.cpp
@@ -36,12 +38,10 @@ CMakeFiles/Shoot.dir/program.cpp.o: gameBodyBase.h
 CMakeFiles/Shoot.dir/program.cpp.o: program.cpp
 CMakeFiles/Shoot.dir/program.cpp.o: resource_manager.h
 CMakeFiles/Shoot.dir/program.cpp.o: shader.h
-CMakeFiles/Shoot.dir/program.cpp.o: texture.h
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: resource_manager.cpp
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: resource_manager.h
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: shader.h
-CMakeFiles/Shoot.dir/resource_manager.cpp.o: texture.h
 
 CMakeFiles/Shoot.dir/shader.cpp.o: shader.cpp
 CMakeFiles/Shoot.dir/shader.cpp.o: shader.h

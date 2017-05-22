@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/CMakeFiles/edit_cache.dir
 /Users/wth/Desktop/Shoot/CMakeFiles/rebuild_cache.dir
 /Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir
+=======
+/home/david/Projects/CG/Project/CMakeFiles/rebuild_cache.dir
+/home/david/Projects/CG/Project/CMakeFiles/edit_cache.dir
+/home/david/Projects/CG/Project/CMakeFiles/Shoot.dir
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208

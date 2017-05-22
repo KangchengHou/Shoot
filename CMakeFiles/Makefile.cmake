@@ -7,6 +7,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
+<<<<<<< HEAD
   "CMakeFiles/3.6.1/CMakeCCompiler.cmake"
   "CMakeFiles/3.6.1/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.6.1/CMakeSystem.cmake"
@@ -96,6 +97,27 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/Cellar/cmake/3.6.1/share/cmake/Modules/Platform/Darwin-Initialize.cmake"
   "/usr/local/Cellar/cmake/3.6.1/share/cmake/Modules/Platform/Darwin.cmake"
   "/usr/local/Cellar/cmake/3.6.1/share/cmake/Modules/Platform/UnixPaths.cmake"
+=======
+  "CMakeFiles/3.5.1/CMakeCCompiler.cmake"
+  "CMakeFiles/3.5.1/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.5.1/CMakeSystem.cmake"
+  "CMakeLists.txt"
+  "/usr/share/cmake-3.5/Modules/CMakeCInformation.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeCXXInformation.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeCommonLanguageInclude.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeGenericSystem.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeLanguageInformation.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake"
+  "/usr/share/cmake-3.5/Modules/Compiler/GNU-C.cmake"
+  "/usr/share/cmake-3.5/Modules/Compiler/GNU-CXX.cmake"
+  "/usr/share/cmake-3.5/Modules/Compiler/GNU.cmake"
+  "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU-C.cmake"
+  "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake"
+  "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake"
+  "/usr/share/cmake-3.5/Modules/Platform/Linux.cmake"
+  "/usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake"
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
   )
 
 # The corresponding makefile is:

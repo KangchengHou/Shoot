@@ -39,23 +39,38 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
+<<<<<<< HEAD
 CMAKE_COMMAND = /usr/local/Cellar/cmake/3.6.1/bin/cmake
 
 # The command to remove a file.
 RM = /usr/local/Cellar/cmake/3.6.1/bin/cmake -E remove -f
+=======
+CMAKE_COMMAND = /usr/bin/cmake
+
+# The command to remove a file.
+RM = /usr/bin/cmake -E remove -f
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
+<<<<<<< HEAD
 CMAKE_SOURCE_DIR = /Users/wth/Desktop/Shoot
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /Users/wth/Desktop/Shoot
+=======
+CMAKE_SOURCE_DIR = /home/david/Projects/CG/Project
+
+# The top-level build directory on which CMake was run.
+CMAKE_BINARY_DIR = /home/david/Projects/CG/Project
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 
 #=============================================================================
 # Targets provided globally by CMake.
 
+<<<<<<< HEAD
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
@@ -71,6 +86,12 @@ edit_cache/fast: edit_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
 	/usr/local/Cellar/cmake/3.6.1/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+=======
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -78,11 +99,28 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
 # The main all target
 all: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/wth/Desktop/Shoot/CMakeFiles /Users/wth/Desktop/Shoot/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/wth/Desktop/Shoot/CMakeFiles 0
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/david/Projects/CG/Project/CMakeFiles /home/david/Projects/CG/Project/CMakeFiles/progress.marks
+	$(MAKE) -f CMakeFiles/Makefile2 all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/david/Projects/CG/Project/CMakeFiles 0
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 .PHONY : all
 
 # The main clean target
@@ -318,8 +356,8 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... edit_cache"
 	@echo "... Shoot"
 	@echo "... box.o"
 	@echo "... box.i"

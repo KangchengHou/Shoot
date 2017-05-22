@@ -29,6 +29,7 @@ void Game::Init()
     // lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
     bulletShader = ResourceManager::GetShader("lighting");
     lightShader = ResourceManager::GetShader("lamp");
+<<<<<<< HEAD
     lights.push_back(new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1)));
 
     Box* bullet = new Box(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -47,6 +48,9 @@ bool Game::aabbTest(GameBodyBase *a, GameBodyBase *b) {
         puts("live");
     }
     return true;
+=======
+    lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 }
 bool Game::obbTest(GameBodyBase *a, GameBodyBase *b) {
     glm::vec3 av[8];
@@ -91,8 +95,14 @@ void Game::Update(GLfloat dt)
     // set ResourceManager::GetShader("...").Use() 
     // set each shaders' attribute. 
     glm::mat4 model;
+<<<<<<< HEAD
     // this->lightPos = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lightPos,1.0f)); 
     // lights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
+=======
+    this->lightPos = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lightPos,1.0f)); 
+    lights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
+    
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
     for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     {
         (*iter)->updateSpeed(dt);
@@ -102,6 +112,7 @@ void Game::Update(GLfloat dt)
             printf("%.0lf %.0lf %.0lf\n", (*iter)->position[0], (*iter)->position[1], (*iter)->position[2]);
         }
     }
+<<<<<<< HEAD
     for (auto a = bullets.cbegin(); a != bullets.cend(); a++)
         for (auto b = a+1; b != bullets.cend(); b++) 
             if(a != b) {
@@ -121,6 +132,8 @@ void Game::Update(GLfloat dt)
                 // exit(0);
             }
         }
+=======
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 
 }
 
@@ -143,7 +156,10 @@ void Game::ProcessInput(GLfloat dt)
             Box* bullet = new Box(camera.Position + camera.Front, glm::vec3(0.5, 0.5, 0.5));
             bullet->setSpeed(glm::vec3(20 * camera.Front.x, 20 * camera.Front.y, 20 * camera.Front.z));
             bullet->acceleration = camera.Front;
+<<<<<<< HEAD
             bullet->addAcceleration(this->Gravity);
+=======
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
             bullets.push_back(bullet);
             
         }
@@ -160,7 +176,11 @@ void Game::Render()
     for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     {
         // renderers[0]->DrawBox((*iter)->position, (*iter)->size, bulletColor, *this);
+<<<<<<< HEAD
         (*iter)->render((*iter)->color, this->lightPos, this->Width, this->Height, this->camera,  bulletShader);
+=======
+        (*iter)->render(bulletColor, this->lightPos, this->Width, this->Height, this->camera,  bulletShader);
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
     }
     for (auto iter = lights.cbegin(); iter != lights.cend(); iter++)
     {

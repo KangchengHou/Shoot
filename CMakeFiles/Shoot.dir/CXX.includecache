@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/Camera.h
+=======
+/home/david/Projects/CG/Project/Camera.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 vector
 -
 GL/glew.h
@@ -18,6 +22,7 @@ glm/gtc/matrix_transform.hpp
 iostream
 -
 
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/box.cpp
 box.h
 /Users/wth/Desktop/Shoot/box.h
@@ -35,6 +40,39 @@ box_renderer.h
 /Users/wth/Desktop/Shoot/box_renderer.h
 
 /Users/wth/Desktop/Shoot/box_renderer.h
+=======
+/home/david/Projects/CG/Project/box.cpp
+box.h
+/home/david/Projects/CG/Project/box.h
+
+<<<<<<< Updated upstream
+/home/david/Projects/CG/Project/box.h
+glm/glm.hpp
+-
+glm/gtx/transform.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+GL/glew.h
+-
+GLFW/glfw3.h
+-
+=======
+/Users/xiaoyanzi/Desktop/Shoot/box.h
+gameBodyBase.h
+/Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.h
+shader.h
+/Users/xiaoyanzi/Desktop/Shoot/shader.h
+Camera.h
+/Users/xiaoyanzi/Desktop/Shoot/Camera.h
+>>>>>>> Stashed changes
+
+/home/david/Projects/CG/Project/box_renderer.cpp
+box_renderer.h
+/home/david/Projects/CG/Project/box_renderer.h
+
+/home/david/Projects/CG/Project/box_renderer.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 GL/glew.h
 -
 glm/glm.hpp
@@ -42,6 +80,7 @@ glm/glm.hpp
 glm/gtc/matrix_transform.hpp
 -
 shader.h
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/shader.h
 Camera.h
 /Users/wth/Desktop/Shoot/Camera.h
@@ -53,6 +92,22 @@ game.h
 /Users/wth/Desktop/Shoot/game.h
 resource_manager.h
 /Users/wth/Desktop/Shoot/resource_manager.h
+=======
+/home/david/Projects/CG/Project/shader.h
+Camera.h
+/home/david/Projects/CG/Project/Camera.h
+game.h
+/home/david/Projects/CG/Project/game.h
+
+/home/david/Projects/CG/Project/game.cpp
+game.h
+/home/david/Projects/CG/Project/game.h
+resource_manager.h
+<<<<<<< Updated upstream
+/home/david/Projects/CG/Project/resource_manager.h
+box_renderer.h
+/home/david/Projects/CG/Project/box_renderer.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 vector
 -
 algorithm
@@ -68,6 +123,7 @@ Camera.h
 gameBodyBase.h
 /Users/wth/Desktop/Shoot/gameBodyBase.h
 box.h
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/box.h
 shader.h
 /Users/wth/Desktop/Shoot/shader.h
@@ -83,6 +139,18 @@ glm/gtx/transform.hpp
 -
 glm/gtc/matrix_transform.hpp
 -
+=======
+/home/david/Projects/CG/Project/box.h
+=======
+/Users/xiaoyanzi/Desktop/Shoot/resource_manager.h
+box.h
+/Users/xiaoyanzi/Desktop/Shoot/box.h
+vector
+-
+>>>>>>> Stashed changes
+
+/home/david/Projects/CG/Project/game.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 GL/glew.h
 -
 GLFW/glfw3.h
@@ -90,9 +158,39 @@ GLFW/glfw3.h
 shader.h
 /Users/wth/Desktop/Shoot/shader.h
 Camera.h
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/Camera.h
 
 /Users/wth/Desktop/Shoot/program.cpp
+=======
+<<<<<<< Updated upstream
+/home/david/Projects/CG/Project/Camera.h
+=======
+/Users/xiaoyanzi/Desktop/Shoot/Camera.h
+box.h
+/Users/xiaoyanzi/Desktop/Shoot/box.h
+shader.h
+/Users/xiaoyanzi/Desktop/Shoot/shader.h
+
+/Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.cpp
+gameBodyBase.h
+/Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.h
+
+/Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.h
+glm/glm.hpp
+-
+glm/gtx/transform.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+GL/glew.h
+-
+GLFW/glfw3.h
+-
+>>>>>>> Stashed changes
+
+/home/david/Projects/CG/Project/program.cpp
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 GL/glew.h
 -
 GLFW/glfw3.h
@@ -100,6 +198,7 @@ GLFW/glfw3.h
 iostream
 -
 game.h
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/game.h
 resource_manager.h
 /Users/wth/Desktop/Shoot/resource_manager.h
@@ -109,6 +208,17 @@ Camera.h
 /Users/wth/Desktop/Shoot/resource_manager.cpp
 resource_manager.h
 /Users/wth/Desktop/Shoot/resource_manager.h
+=======
+/home/david/Projects/CG/Project/game.h
+resource_manager.h
+/home/david/Projects/CG/Project/resource_manager.h
+Camera.h
+/home/david/Projects/CG/Project/Camera.h
+
+/home/david/Projects/CG/Project/resource_manager.cpp
+resource_manager.h
+/home/david/Projects/CG/Project/resource_manager.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 iostream
 -
 sstream
@@ -116,13 +226,18 @@ sstream
 fstream
 -
 
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/resource_manager.h
+=======
+/home/david/Projects/CG/Project/resource_manager.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 map
 -
 string
 -
 GL/glew.h
 -
+<<<<<<< HEAD
 texture.h
 /Users/wth/Desktop/Shoot/texture.h
 shader.h
@@ -135,6 +250,18 @@ iostream
 -
 
 /Users/wth/Desktop/Shoot/shader.h
+=======
+shader.h
+/home/david/Projects/CG/Project/shader.h
+
+/home/david/Projects/CG/Project/shader.cpp
+shader.h
+/home/david/Projects/CG/Project/shader.h
+iostream
+-
+
+/home/david/Projects/CG/Project/shader.h
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 string
 -
 GL/glew.h
@@ -144,7 +271,10 @@ glm/glm.hpp
 glm/gtc/type_ptr.hpp
 -
 
+<<<<<<< HEAD
 /Users/wth/Desktop/Shoot/texture.h
 GL/glew.h
 -
 
+=======
+>>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
