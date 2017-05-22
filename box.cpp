@@ -1,12 +1,7 @@
 #include "box.h"
 
-<<<<<<< HEAD
 Box::Box(glm::vec3 position, glm::vec3 size, glm::vec3 color)
     : GameBodyBase(position, size, color)
-=======
-Box::Box(glm::vec3 position, glm::vec3 size)
-    : GameBodyBase(position, size)
->>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
 {
     initRenderData();
 }
@@ -21,10 +16,7 @@ void Box::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint 
 
     // glm::vec3 lightPos = game.lightPos;
     // TODO: cope with light  append it to the lightPos
-<<<<<<< HEAD
     // std::cout << color[0] << ' ' << color[1] << ' ' << color[2] << std::endl;
-=======
->>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
     shader.Use(); 
     shader.SetVector3f("light.position",lightPos.x, lightPos.y, lightPos.z);
     // set view pos 

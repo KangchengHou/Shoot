@@ -16,7 +16,6 @@ public:
     glm::vec3 speed;
     glm::vec3 position;
     glm::vec3 size;
-<<<<<<< HEAD
     glm::vec3 color;
     glm::vec3 angle;
     glm::vec3 front;
@@ -27,15 +26,6 @@ public:
     glm::vec3 worldUp;
     GameBodyBase(glm::vec3 position, glm::vec3 size, glm::vec3 color = glm::vec3(1, 1, 1));
     ~GameBodyBase();
-=======
-
-    GameBodyBase(glm::vec3 position, glm::vec3 size);
-    ~GameBodyBase();
-    
-    void rotate(GLfloat a, glm::vec3 axis);
-    void updateSpeed(GLfloat dt);
-    void updatePos(GLfloat dt);
->>>>>>> 6b8a28ebb9b34317e5f7904634122836c7b1f208
     
     virtual void rotate(GLfloat a, glm::vec3 axis);
     virtual void setSpeed(glm::vec3 newSpeed);
