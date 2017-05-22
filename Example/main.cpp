@@ -34,7 +34,7 @@ GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
 
 // Light attributes
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(0.0f, 0.0f, 3.0f);
 
 // Deltatime
 GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
@@ -181,6 +181,8 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glm::mat4 rotate;
+        lightPos = glm::vec3(glm::rotate(rotate, deltaTime, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(lightPos,1.0f)); 
 
         // Use cooresponding shader when setting uniforms/drawing objects
         lightingShader.Use();

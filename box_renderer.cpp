@@ -27,10 +27,10 @@ void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, G
     this->shader.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f);
     this->shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
 
-    this->shader.SetVector3f("meterial.ambient",1.0f, 0.5f, 0.31f);
+    this->shader.SetVector3f("material.ambient",1.0f, 0.5f, 0.31f);
     this->shader.SetVector3f("material.diffuse",1.0f, 0.5f, 0.31f);
     this->shader.SetVector3f("material.specular",0.5f, 0.5f, 0.5f);
-    this->shader.SetFloat("meterial.shininess",32.0f);
+    this->shader.SetFloat("material.shininess",32.0f);
     // Create camera transformations
     glm::mat4 model;
     model = glm::translate(model, position);  

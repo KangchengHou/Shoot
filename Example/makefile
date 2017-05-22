@@ -1,11 +1,10 @@
-# the original code
+# Linux
 main: main.cpp Shader.h Camera.h
 	g++ main.cpp -std=c++11 -o a.out -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl -lassimp
 clean:
 	rm main.exec
-
-# # refactored code
-# program: program.cpp shader.cpp box_renderer.cpp game.cpp resource_manager.cpp 
-# 	g++ program.cpp shader.cpp box_renderer.cpp resource_manager.cpp game.cpp -std=c++11 -o program -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl
+# MACOS
+# main: main.cpp Shader.h Camera.h
+# 	g++ main.cpp -std=c++11 -o a.out -lGLEW -lglfw3 
 # clean:
-# 	rm program
+# 	rm main.exec
