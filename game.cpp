@@ -1,15 +1,9 @@
 #include "game.h"
 #include "resource_manager.h"
-#include "box_renderer.h"
+// #include "box_renderer.h"
 #include <vector>
 
-#include "box.h"
-
-std::vector<BoxRenderer*> renderers;
-std::vector<Box*> testBoxes;
-glm::vec3 testBoxesColor = glm::vec3(1.0f, 1.0f, 1.0f);
-std::vector<Box*> testLights;
-glm::vec3 testLightsColor = glm::vec3(0.f, 0.5f, 0.5f);
+// std::vector<BoxRenderer*> renderers;
 
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), camera(glm::vec3(0.0f, 0.0f, 3.0f))
@@ -19,19 +13,22 @@ Game::Game(GLuint width, GLuint height)
 
 Game::~Game()
 {
-    int size = renderers.size();
-    for(int i = 0; i < size; i++){
-        delete renderers[i];
-    }
+    // int size = renderers.size();
+    // for(int i = 0; i < size; i++){
+    //     delete renderers[i];
+    // }
 }
 
 void Game::Init()
 { 
     ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
     ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
-    renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lighting")));
-    renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lamp")));
-    testLights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
+    // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lighting")));
+    // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lamp")));
+    // lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
+    bulletShader = ResourceManager::GetShader("lighting");
+    lightShader = ResourceManager::GetShader("lamp");
+    lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
 }
 
 void Game::Update(GLfloat dt)
@@ -43,14 +40,14 @@ void Game::Update(GLfloat dt)
     // set each shaders' attribute. 
     glm::mat4 model;
     this->lightPos = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lightPos,1.0f)); 
-    testLights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
+    lights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
     
-    for (auto iter = testBoxes.cbegin(); iter != testBoxes.cend(); iter++)
+    for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     {
         (*iter)->updateSpeed(dt);
         (*iter)->updatePos(dt);
     }
-    
+
 }
 
 
@@ -71,7 +68,7 @@ void Game::ProcessInput(GLfloat dt)
             
             Box* bullet = new Box(camera.Position, glm::vec3(0.5, 0.5, 0.5));
             bullet->acceleration = camera.Front;
-            testBoxes.push_back(bullet);
+            bullets.push_back(bullet);
             
         }
         // TODO: add space 
@@ -81,13 +78,15 @@ void Game::ProcessInput(GLfloat dt)
 void Game::Render()
 {
     // TODO: render here
-    for (auto iter = testBoxes.cbegin(); iter != testBoxes.cend(); iter++)
+    for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     {
-        renderers[0]->DrawBox((*iter)->position, (*iter)->size, testBoxesColor, *this);
+        // renderers[0]->DrawBox((*iter)->position, (*iter)->size, bulletColor, *this);
+        (*iter)->render(bulletColor, this->lightPos, this->Width, this->Height, this->camera,  bulletShader);
     }
-    for (auto iter = testLights.cbegin(); iter != testLights.cend(); iter++)
+    for (auto iter = lights.cbegin(); iter != lights.cend(); iter++)
     {
-        renderers[1]->DrawBox((*iter)->position, (*iter)->size, testLightsColor, *this);
+        (*iter)->render(lightColor, this->lightPos, this->Width, this->Height, this->camera, lightShader);
+        // renderers[1]->DrawBox((*iter)->position, (*iter)->size, lightColor, *this);
     }
     // renderers[0]->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
     // renderers[1]->DrawBox(this->lightPos, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);

@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 /usr/bin/c++      CMakeFiles/Shoot.dir/program.cpp.o CMakeFiles/Shoot.dir/shader.cpp.o CMakeFiles/Shoot.dir/box.cpp.o CMakeFiles/Shoot.dir/box_renderer.cpp.o CMakeFiles/Shoot.dir/resource_manager.cpp.o CMakeFiles/Shoot.dir/game.cpp.o  -o Shoot -rdynamic -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl 
+=======
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++    -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/Shoot.dir/program.cpp.o CMakeFiles/Shoot.dir/shader.cpp.o CMakeFiles/Shoot.dir/box.cpp.o CMakeFiles/Shoot.dir/gameBodyBase.cpp.o CMakeFiles/Shoot.dir/box_renderer.cpp.o CMakeFiles/Shoot.dir/resource_manager.cpp.o CMakeFiles/Shoot.dir/game.cpp.o  -o Shoot  -lGLEW -L /usr/local/lib -I/usr/local/include -lGLEW -lglfw3 -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo 
+>>>>>>> Stashed changes

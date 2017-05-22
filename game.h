@@ -12,6 +12,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Camera.h"
+#include "box.h"
+#include "shader.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -32,6 +34,14 @@ public:
     GLuint                 Width, Height;
     GLFWwindow* window;
     Camera camera;
+
+    std::vector<Box*> bullets;
+    glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    Shader bulletShader;
+    std::vector<Box*> lights;
+    glm::vec3 lightColor = glm::vec3(0.f, 0.5f, 0.5f);
+    Shader lightShader;
+    
     // TODO: modify lightPos need to be refined
     glm::vec3 lightPos;
     // Constructor/Destructor

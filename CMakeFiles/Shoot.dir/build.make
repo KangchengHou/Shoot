@@ -129,10 +129,39 @@ CMakeFiles/Shoot.dir/box.cpp.o.provides: CMakeFiles/Shoot.dir/box.cpp.o.requires
 CMakeFiles/Shoot.dir/box.cpp.o.provides.build: CMakeFiles/Shoot.dir/box.cpp.o
 
 
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: CMakeFiles/Shoot.dir/flags.make
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: gameBodyBase.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Shoot.dir/gameBodyBase.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/gameBodyBase.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.cpp
+
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/gameBodyBase.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.cpp > CMakeFiles/Shoot.dir/gameBodyBase.cpp.i
+
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/gameBodyBase.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/gameBodyBase.cpp -o CMakeFiles/Shoot.dir/gameBodyBase.cpp.s
+
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires:
+
+.PHONY : CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires
+
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides.build
+.PHONY : CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides
+
+CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides.build: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o
+
+
 CMakeFiles/Shoot.dir/box_renderer.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/box_renderer.cpp.o: box_renderer.cpp
+<<<<<<< Updated upstream
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Shoot.dir/box_renderer.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/box_renderer.cpp.o -c /home/david/Projects/CG/Project/box_renderer.cpp
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Shoot.dir/box_renderer.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/box_renderer.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/box_renderer.cpp
+>>>>>>> Stashed changes
 
 CMakeFiles/Shoot.dir/box_renderer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/box_renderer.cpp.i"
@@ -155,8 +184,13 @@ CMakeFiles/Shoot.dir/box_renderer.cpp.o.provides.build: CMakeFiles/Shoot.dir/box
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: resource_manager.cpp
+<<<<<<< Updated upstream
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Shoot.dir/resource_manager.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/resource_manager.cpp.o -c /home/david/Projects/CG/Project/resource_manager.cpp
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Shoot.dir/resource_manager.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/resource_manager.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/resource_manager.cpp
+>>>>>>> Stashed changes
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/resource_manager.cpp.i"
@@ -179,8 +213,13 @@ CMakeFiles/Shoot.dir/resource_manager.cpp.o.provides.build: CMakeFiles/Shoot.dir
 
 CMakeFiles/Shoot.dir/game.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/game.cpp.o: game.cpp
+<<<<<<< Updated upstream
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Shoot.dir/game.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/game.cpp.o -c /home/david/Projects/CG/Project/game.cpp
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Shoot.dir/game.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/game.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/game.cpp
+>>>>>>> Stashed changes
 
 CMakeFiles/Shoot.dir/game.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/game.cpp.i"
@@ -206,6 +245,7 @@ Shoot_OBJECTS = \
 "CMakeFiles/Shoot.dir/program.cpp.o" \
 "CMakeFiles/Shoot.dir/shader.cpp.o" \
 "CMakeFiles/Shoot.dir/box.cpp.o" \
+"CMakeFiles/Shoot.dir/gameBodyBase.cpp.o" \
 "CMakeFiles/Shoot.dir/box_renderer.cpp.o" \
 "CMakeFiles/Shoot.dir/resource_manager.cpp.o" \
 "CMakeFiles/Shoot.dir/game.cpp.o"
@@ -216,12 +256,17 @@ Shoot_EXTERNAL_OBJECTS =
 Shoot: CMakeFiles/Shoot.dir/program.cpp.o
 Shoot: CMakeFiles/Shoot.dir/shader.cpp.o
 Shoot: CMakeFiles/Shoot.dir/box.cpp.o
+Shoot: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o
 Shoot: CMakeFiles/Shoot.dir/box_renderer.cpp.o
 Shoot: CMakeFiles/Shoot.dir/resource_manager.cpp.o
 Shoot: CMakeFiles/Shoot.dir/game.cpp.o
 Shoot: CMakeFiles/Shoot.dir/build.make
 Shoot: CMakeFiles/Shoot.dir/link.txt
+<<<<<<< Updated upstream
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable Shoot"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable Shoot"
+>>>>>>> Stashed changes
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Shoot.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -232,6 +277,7 @@ CMakeFiles/Shoot.dir/build: Shoot
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/program.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/shader.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/box.cpp.o.requires
+CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/box_renderer.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/resource_manager.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/game.cpp.o.requires

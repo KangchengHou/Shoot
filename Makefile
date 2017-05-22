@@ -204,6 +204,33 @@ game.cpp.s:
 	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/game.cpp.s
 .PHONY : game.cpp.s
 
+gameBodyBase.o: gameBodyBase.cpp.o
+
+.PHONY : gameBodyBase.o
+
+# target to build an object file
+gameBodyBase.cpp.o:
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.o
+.PHONY : gameBodyBase.cpp.o
+
+gameBodyBase.i: gameBodyBase.cpp.i
+
+.PHONY : gameBodyBase.i
+
+# target to preprocess a source file
+gameBodyBase.cpp.i:
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.i
+.PHONY : gameBodyBase.cpp.i
+
+gameBodyBase.s: gameBodyBase.cpp.s
+
+.PHONY : gameBodyBase.s
+
+# target to generate assembly for a file
+gameBodyBase.cpp.s:
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.s
+.PHONY : gameBodyBase.cpp.s
+
 program.o: program.cpp.o
 
 .PHONY : program.o
@@ -303,6 +330,9 @@ help:
 	@echo "... game.o"
 	@echo "... game.i"
 	@echo "... game.s"
+	@echo "... gameBodyBase.o"
+	@echo "... gameBodyBase.i"
+	@echo "... gameBodyBase.s"
 	@echo "... program.o"
 	@echo "... program.i"
 	@echo "... program.s"

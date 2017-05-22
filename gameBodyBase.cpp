@@ -1,41 +1,29 @@
 #include "gameBodyBase.h"
-#include "iostream"
 
-GameBodyBase::GameBodyBase(GeometryBase* geometry) 
-    : geometry(geometry)
+GameBodyBase::GameBodyBase(glm::vec3 position, glm::vec3 size)
+    : position(position), size(size), acceleration(glm::vec3(0., 0., 0.)), speed(glm::vec3(0., 0., 0.))
 {
-    std::cout << "succeed in constructing gamebodybase" << std::endl;
+    
 }
-GameBodyBase::~GameBodyBase() 
+GameBodyBase::~GameBodyBase()
 {
-    std::cout << "succeed in deconstructing gamebodybase" << std::endl;
-}
 
-void GameBodyBase::setAcceleration(glm::vec3 a)
-{
-    acceleration = a;
 }
-glm::vec3 GameBodyBase::getAcceleration() 
+void GameBodyBase::rotate(GLfloat a, glm::vec3 axis)
 {
-    return acceleration;
+    glm::mat4 model;
+    position = glm::vec3(glm::rotate(model, a, axis) 
+                * glm::vec4(position,1.0f)); 
 }
-void GameBodyBase::setSpeed(GLfloat dt)
-{
-    speed[0] += acceleration[0] * dt;
-    speed[1] += acceleration[1] * dt;
-    speed[2] += acceleration[2] * dt;
+void GameBodyBase::updateSpeed(GLfloat dt)
+{   
+    glm::mat4 model;
+    speed = glm::vec3(glm::translate(glm::vec3(glm::scale(model, glm::vec3(dt, dt, dt)) * glm::vec4(acceleration, 1.0f))) 
+                * glm::vec4(speed, 1.0f));
 }
-glm::vec3 GameBodyBase::getSpeed() 
+void GameBodyBase::updatePos(GLfloat dt)
 {
-    return speed;
-}
-void GameBodyBase::setPos(GLfloat dt)
-{
-    position[0] += speed[0] * dt;
-    position[1] += speed[1] * dt;
-    position[2] += speed[2] * dt;
-}
-glm::vec3 GameBodyBase::getPos() 
-{
-    return position;
+    glm::mat4 model;
+    position = glm::vec3(glm::translate(glm::vec3(glm::scale(model, glm::vec3(dt, dt, dt)) * glm::vec4(speed, 1.0f))) 
+                * glm::vec4(position, 1.0f));
 }
