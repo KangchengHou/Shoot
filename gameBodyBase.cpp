@@ -1,41 +1,48 @@
 #include "gameBodyBase.h"
-#include "iostream"
-
-GameBodyBase::GameBodyBase(GeometryBase* geometry) 
-    : geometry(geometry)
+GameBodyBase::GameBodyBase(glm::vec3 position, glm::vec3 size, glm::vec3 color)
+    : position(position), size(size), acceleration(glm::vec3(0., 0., 0.)), speed(glm::vec3(0., 0., 0.)), color(color)
+{}
+GameBodyBase::~GameBodyBase()
 {
-    std::cout << "succeed in constructing gamebodybase" << std::endl;
 }
-GameBodyBase::~GameBodyBase() 
+void GameBodyBase::updateVectors()
 {
-    std::cout << "succeed in deconstructing gamebodybase" << std::endl;
+    // Calculate the new Front vector
+    glm::vec3 tmp;
+    tmp.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+    tmp.y = sin(glm::radians(this->pitch));
+    tmp.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+    this->front = glm::normalize(front);
+    // Also re-calculate the Right and Up vector
+    this->right = glm::normalize(glm::cross(this->front, this->worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    this->up    = glm::normalize(glm::cross(this->right, this->front));
 }
-
-void GameBodyBase::setAcceleration(glm::vec3 a)
+void GameBodyBase::rotate(GLfloat a, glm::vec3 axis)
 {
-    acceleration = a;
+    glm::mat4 model;
+    position = glm::vec3(glm::rotate(model, a, axis) 
+                * glm::vec4(position,1.0f)); 
 }
-glm::vec3 GameBodyBase::getAcceleration() 
+void GameBodyBase::setSpeed(glm::vec3 newSpeed) {
+    speed = newSpeed;
+}
+void GameBodyBase::setAcceleration(glm::vec3 newAcceleration) {
+    acceleration = newAcceleration;
+}
+void GameBodyBase::addAcceleration(glm::vec3 dltAcceleration) {
+    acceleration += dltAcceleration;
+}
+void GameBodyBase::updateSpeed(GLfloat dt)
+{   
+    glm::mat4 model;
+    speed = glm::vec3(glm::translate(glm::vec3(glm::scale(model, glm::vec3(dt, dt, dt)) * glm::vec4(acceleration, 1.0f))) 
+                * glm::vec4(speed, 1.0f));
+}
+void GameBodyBase::updatePos(GLfloat dt)
 {
-    return acceleration;
+    glm::mat4 model;
+    position = glm::vec3(glm::translate(glm::vec3(glm::scale(model, glm::vec3(dt, dt, dt)) * glm::vec4(speed, 1.0f))) 
+                * glm::vec4(position, 1.0f));
 }
-void GameBodyBase::setSpeed(GLfloat dt)
-{
-    speed[0] += acceleration[0] * dt;
-    speed[1] += acceleration[1] * dt;
-    speed[2] += acceleration[2] * dt;
-}
-glm::vec3 GameBodyBase::getSpeed() 
-{
-    return speed;
-}
-void GameBodyBase::setPos(GLfloat dt)
-{
-    position[0] += speed[0] * dt;
-    position[1] += speed[1] * dt;
-    position[2] += speed[2] * dt;
-}
-glm::vec3 GameBodyBase::getPos() 
-{
-    return position;
-}
+void GameBodyBase::initRenderData() {}
+void GameBodyBase::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, Camera& camera, Shader shader) {}

@@ -4,12 +4,13 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/xiaoyanzi/Desktop/Shoot/box.cpp" "/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/box.cpp.o"
-  "/Users/xiaoyanzi/Desktop/Shoot/box_renderer.cpp" "/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/box_renderer.cpp.o"
-  "/Users/xiaoyanzi/Desktop/Shoot/game.cpp" "/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/game.cpp.o"
-  "/Users/xiaoyanzi/Desktop/Shoot/program.cpp" "/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/program.cpp.o"
-  "/Users/xiaoyanzi/Desktop/Shoot/resource_manager.cpp" "/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/resource_manager.cpp.o"
-  "/Users/xiaoyanzi/Desktop/Shoot/shader.cpp" "/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/shader.cpp.o"
+  "/Users/wth/Desktop/Shoot/box.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/box.cpp.o"
+  "/Users/wth/Desktop/Shoot/box_renderer.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/box_renderer.cpp.o"
+  "/Users/wth/Desktop/Shoot/game.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/game.cpp.o"
+  "/Users/wth/Desktop/Shoot/gameBodyBase.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/gameBodyBase.cpp.o"
+  "/Users/wth/Desktop/Shoot/program.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/program.cpp.o"
+  "/Users/wth/Desktop/Shoot/resource_manager.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/resource_manager.cpp.o"
+  "/Users/wth/Desktop/Shoot/shader.cpp" "/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir/shader.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")
 

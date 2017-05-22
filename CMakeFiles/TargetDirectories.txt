@@ -1,3 +1,3 @@
-/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/edit_cache.dir
-/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/rebuild_cache.dir
-/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir
+/Users/wth/Desktop/Shoot/CMakeFiles/edit_cache.dir
+/Users/wth/Desktop/Shoot/CMakeFiles/rebuild_cache.dir
+/Users/wth/Desktop/Shoot/CMakeFiles/Shoot.dir

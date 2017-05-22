@@ -1,24 +1,19 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "gameBodyBase.h"
+#include "shader.h"
+#include "Camera.h"
+// #include "game.h"
 
-class Box {
+class Box : public GameBodyBase{
 public:
-    glm::vec3 acceleration;
-    glm::vec3 speed;
-    glm::vec3 position;
-    glm::vec3 size;
+    GLuint containerVAO;
     
-    Box(glm::vec3 position, glm::vec3 size);
+    Box(glm::vec3 position, glm::vec3 size, glm::vec3 color = glm::vec3(1, 1, 1));
     ~Box();
-    void rotate(GLfloat a, glm::vec3 axis);
-    void updateSpeed(GLfloat dt);
-    void updatePos(GLfloat dt);
+    virtual void initRenderData();
+    virtual void render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, Camera& camera, Shader shader);
 };
 
 #endif

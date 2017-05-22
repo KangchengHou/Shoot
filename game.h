@@ -12,6 +12,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Camera.h"
+#include "gameBodyBase.h"
+#include "box.h"
+#include "shader.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -29,9 +32,19 @@ public:
     // Game state
     GameState              State;	
     GLboolean              Keys[1024];
+    GLboolean              LastKeys[1024];
     GLuint                 Width, Height;
     GLFWwindow* window;
     Camera camera;
+    glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
+
+    std::vector<GameBodyBase*> bullets;
+    glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    Shader bulletShader;
+    std::vector<GameBodyBase*> lights;
+    glm::vec3 lightColor = glm::vec3(0.f, 0.5f, 0.5f);
+    Shader lightShader;
+    
     // TODO: modify lightPos need to be refined
     glm::vec3 lightPos;
     // Constructor/Destructor
@@ -40,6 +53,8 @@ public:
     // Initialize game state (load all shaders/textures/levels)
     void Init();
     // GameLoop
+    bool aabbTest(GameBodyBase *a, GameBodyBase *b);
+    bool obbTest(GameBodyBase *a, GameBodyBase *b);
     void ProcessInput(GLfloat dt);
     void Update(GLfloat dt);
     void Render();
