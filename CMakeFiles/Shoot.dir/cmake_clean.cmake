@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Shoot.dir/program.cpp.o"
   "CMakeFiles/Shoot.dir/shader.cpp.o"
+  "CMakeFiles/Shoot.dir/box.cpp.o"
   "CMakeFiles/Shoot.dir/box_renderer.cpp.o"
   "CMakeFiles/Shoot.dir/resource_manager.cpp.o"
   "CMakeFiles/Shoot.dir/game.cpp.o"

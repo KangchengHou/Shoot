@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = /usr/local/Cellar/cmake/3.5.2/bin/cmake
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E remove -f
+RM = /usr/local/Cellar/cmake/3.5.2/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/david/Projects/CG/Project
+CMAKE_SOURCE_DIR = /Users/xiaoyanzi/Desktop/Shoot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/david/Projects/CG/Project
+CMAKE_BINARY_DIR = /Users/xiaoyanzi/Desktop/Shoot
 
 # Include any dependencies generated for this target.
 include CMakeFiles/Shoot.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/Shoot.dir/flags.make
 
 CMakeFiles/Shoot.dir/program.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/program.cpp.o: program.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Shoot.dir/program.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/program.cpp.o -c /home/david/Projects/CG/Project/program.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Shoot.dir/program.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/program.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/program.cpp
 
 CMakeFiles/Shoot.dir/program.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/program.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/david/Projects/CG/Project/program.cpp > CMakeFiles/Shoot.dir/program.cpp.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/program.cpp > CMakeFiles/Shoot.dir/program.cpp.i
 
 CMakeFiles/Shoot.dir/program.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/program.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/david/Projects/CG/Project/program.cpp -o CMakeFiles/Shoot.dir/program.cpp.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/program.cpp -o CMakeFiles/Shoot.dir/program.cpp.s
 
 CMakeFiles/Shoot.dir/program.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/Shoot.dir/program.cpp.o.provides.build: CMakeFiles/Shoot.dir/program.
 
 CMakeFiles/Shoot.dir/shader.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/shader.cpp.o: shader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Shoot.dir/shader.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/shader.cpp.o -c /home/david/Projects/CG/Project/shader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Shoot.dir/shader.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/shader.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/shader.cpp
 
 CMakeFiles/Shoot.dir/shader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/shader.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/david/Projects/CG/Project/shader.cpp > CMakeFiles/Shoot.dir/shader.cpp.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/shader.cpp > CMakeFiles/Shoot.dir/shader.cpp.i
 
 CMakeFiles/Shoot.dir/shader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/shader.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/david/Projects/CG/Project/shader.cpp -o CMakeFiles/Shoot.dir/shader.cpp.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/shader.cpp -o CMakeFiles/Shoot.dir/shader.cpp.s
 
 CMakeFiles/Shoot.dir/shader.cpp.o.requires:
 
@@ -105,18 +105,42 @@ CMakeFiles/Shoot.dir/shader.cpp.o.provides: CMakeFiles/Shoot.dir/shader.cpp.o.re
 CMakeFiles/Shoot.dir/shader.cpp.o.provides.build: CMakeFiles/Shoot.dir/shader.cpp.o
 
 
+CMakeFiles/Shoot.dir/box.cpp.o: CMakeFiles/Shoot.dir/flags.make
+CMakeFiles/Shoot.dir/box.cpp.o: box.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Shoot.dir/box.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/box.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/box.cpp
+
+CMakeFiles/Shoot.dir/box.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/box.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/box.cpp > CMakeFiles/Shoot.dir/box.cpp.i
+
+CMakeFiles/Shoot.dir/box.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/box.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/box.cpp -o CMakeFiles/Shoot.dir/box.cpp.s
+
+CMakeFiles/Shoot.dir/box.cpp.o.requires:
+
+.PHONY : CMakeFiles/Shoot.dir/box.cpp.o.requires
+
+CMakeFiles/Shoot.dir/box.cpp.o.provides: CMakeFiles/Shoot.dir/box.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/box.cpp.o.provides.build
+.PHONY : CMakeFiles/Shoot.dir/box.cpp.o.provides
+
+CMakeFiles/Shoot.dir/box.cpp.o.provides.build: CMakeFiles/Shoot.dir/box.cpp.o
+
+
 CMakeFiles/Shoot.dir/box_renderer.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/box_renderer.cpp.o: box_renderer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Shoot.dir/box_renderer.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/box_renderer.cpp.o -c /home/david/Projects/CG/Project/box_renderer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Shoot.dir/box_renderer.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/box_renderer.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/box_renderer.cpp
 
 CMakeFiles/Shoot.dir/box_renderer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/box_renderer.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/david/Projects/CG/Project/box_renderer.cpp > CMakeFiles/Shoot.dir/box_renderer.cpp.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/box_renderer.cpp > CMakeFiles/Shoot.dir/box_renderer.cpp.i
 
 CMakeFiles/Shoot.dir/box_renderer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/box_renderer.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/david/Projects/CG/Project/box_renderer.cpp -o CMakeFiles/Shoot.dir/box_renderer.cpp.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/box_renderer.cpp -o CMakeFiles/Shoot.dir/box_renderer.cpp.s
 
 CMakeFiles/Shoot.dir/box_renderer.cpp.o.requires:
 
@@ -131,16 +155,16 @@ CMakeFiles/Shoot.dir/box_renderer.cpp.o.provides.build: CMakeFiles/Shoot.dir/box
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/resource_manager.cpp.o: resource_manager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Shoot.dir/resource_manager.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/resource_manager.cpp.o -c /home/david/Projects/CG/Project/resource_manager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Shoot.dir/resource_manager.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/resource_manager.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/resource_manager.cpp
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/resource_manager.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/david/Projects/CG/Project/resource_manager.cpp > CMakeFiles/Shoot.dir/resource_manager.cpp.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/resource_manager.cpp > CMakeFiles/Shoot.dir/resource_manager.cpp.i
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/resource_manager.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/david/Projects/CG/Project/resource_manager.cpp -o CMakeFiles/Shoot.dir/resource_manager.cpp.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/resource_manager.cpp -o CMakeFiles/Shoot.dir/resource_manager.cpp.s
 
 CMakeFiles/Shoot.dir/resource_manager.cpp.o.requires:
 
@@ -155,16 +179,16 @@ CMakeFiles/Shoot.dir/resource_manager.cpp.o.provides.build: CMakeFiles/Shoot.dir
 
 CMakeFiles/Shoot.dir/game.cpp.o: CMakeFiles/Shoot.dir/flags.make
 CMakeFiles/Shoot.dir/game.cpp.o: game.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Shoot.dir/game.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/game.cpp.o -c /home/david/Projects/CG/Project/game.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Shoot.dir/game.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/game.cpp.o -c /Users/xiaoyanzi/Desktop/Shoot/game.cpp
 
 CMakeFiles/Shoot.dir/game.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/game.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/david/Projects/CG/Project/game.cpp > CMakeFiles/Shoot.dir/game.cpp.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/xiaoyanzi/Desktop/Shoot/game.cpp > CMakeFiles/Shoot.dir/game.cpp.i
 
 CMakeFiles/Shoot.dir/game.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/game.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/david/Projects/CG/Project/game.cpp -o CMakeFiles/Shoot.dir/game.cpp.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/xiaoyanzi/Desktop/Shoot/game.cpp -o CMakeFiles/Shoot.dir/game.cpp.s
 
 CMakeFiles/Shoot.dir/game.cpp.o.requires:
 
@@ -181,6 +205,7 @@ CMakeFiles/Shoot.dir/game.cpp.o.provides.build: CMakeFiles/Shoot.dir/game.cpp.o
 Shoot_OBJECTS = \
 "CMakeFiles/Shoot.dir/program.cpp.o" \
 "CMakeFiles/Shoot.dir/shader.cpp.o" \
+"CMakeFiles/Shoot.dir/box.cpp.o" \
 "CMakeFiles/Shoot.dir/box_renderer.cpp.o" \
 "CMakeFiles/Shoot.dir/resource_manager.cpp.o" \
 "CMakeFiles/Shoot.dir/game.cpp.o"
@@ -190,12 +215,13 @@ Shoot_EXTERNAL_OBJECTS =
 
 Shoot: CMakeFiles/Shoot.dir/program.cpp.o
 Shoot: CMakeFiles/Shoot.dir/shader.cpp.o
+Shoot: CMakeFiles/Shoot.dir/box.cpp.o
 Shoot: CMakeFiles/Shoot.dir/box_renderer.cpp.o
 Shoot: CMakeFiles/Shoot.dir/resource_manager.cpp.o
 Shoot: CMakeFiles/Shoot.dir/game.cpp.o
 Shoot: CMakeFiles/Shoot.dir/build.make
 Shoot: CMakeFiles/Shoot.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/david/Projects/CG/Project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable Shoot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/xiaoyanzi/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable Shoot"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Shoot.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -205,6 +231,7 @@ CMakeFiles/Shoot.dir/build: Shoot
 
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/program.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/shader.cpp.o.requires
+CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/box.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/box_renderer.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/resource_manager.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/game.cpp.o.requires
@@ -216,6 +243,6 @@ CMakeFiles/Shoot.dir/clean:
 .PHONY : CMakeFiles/Shoot.dir/clean
 
 CMakeFiles/Shoot.dir/depend:
-	cd /home/david/Projects/CG/Project && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/david/Projects/CG/Project /home/david/Projects/CG/Project /home/david/Projects/CG/Project /home/david/Projects/CG/Project /home/david/Projects/CG/Project/CMakeFiles/Shoot.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/xiaoyanzi/Desktop/Shoot && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/xiaoyanzi/Desktop/Shoot /Users/xiaoyanzi/Desktop/Shoot /Users/xiaoyanzi/Desktop/Shoot /Users/xiaoyanzi/Desktop/Shoot /Users/xiaoyanzi/Desktop/Shoot/CMakeFiles/Shoot.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/Shoot.dir/depend
 

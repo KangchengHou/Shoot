@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/david/Projects/CG/Project/Camera.h
+/Users/xiaoyanzi/Desktop/Shoot/Camera.h
 vector
 -
 GL/glew.h
@@ -18,11 +18,27 @@ glm/gtc/matrix_transform.hpp
 iostream
 -
 
-/home/david/Projects/CG/Project/box_renderer.cpp
-box_renderer.h
-/home/david/Projects/CG/Project/box_renderer.h
+/Users/xiaoyanzi/Desktop/Shoot/box.cpp
+box.h
+/Users/xiaoyanzi/Desktop/Shoot/box.h
 
-/home/david/Projects/CG/Project/box_renderer.h
+/Users/xiaoyanzi/Desktop/Shoot/box.h
+glm/glm.hpp
+-
+glm/gtx/transform.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+GL/glew.h
+-
+GLFW/glfw3.h
+-
+
+/Users/xiaoyanzi/Desktop/Shoot/box_renderer.cpp
+box_renderer.h
+/Users/xiaoyanzi/Desktop/Shoot/box_renderer.h
+
+/Users/xiaoyanzi/Desktop/Shoot/box_renderer.h
 GL/glew.h
 -
 glm/glm.hpp
@@ -30,31 +46,33 @@ glm/glm.hpp
 glm/gtc/matrix_transform.hpp
 -
 shader.h
-/home/david/Projects/CG/Project/shader.h
+/Users/xiaoyanzi/Desktop/Shoot/shader.h
 Camera.h
-/home/david/Projects/CG/Project/Camera.h
+/Users/xiaoyanzi/Desktop/Shoot/Camera.h
 game.h
-/home/david/Projects/CG/Project/game.h
+/Users/xiaoyanzi/Desktop/Shoot/game.h
 
-/home/david/Projects/CG/Project/game.cpp
+/Users/xiaoyanzi/Desktop/Shoot/game.cpp
 game.h
-/home/david/Projects/CG/Project/game.h
+/Users/xiaoyanzi/Desktop/Shoot/game.h
 resource_manager.h
-/home/david/Projects/CG/Project/resource_manager.h
+/Users/xiaoyanzi/Desktop/Shoot/resource_manager.h
 box_renderer.h
-/home/david/Projects/CG/Project/box_renderer.h
+/Users/xiaoyanzi/Desktop/Shoot/box_renderer.h
 vector
 -
+box.h
+/Users/xiaoyanzi/Desktop/Shoot/box.h
 
-/home/david/Projects/CG/Project/game.h
+/Users/xiaoyanzi/Desktop/Shoot/game.h
 GL/glew.h
 -
 GLFW/glfw3.h
 -
 Camera.h
-/home/david/Projects/CG/Project/Camera.h
+/Users/xiaoyanzi/Desktop/Shoot/Camera.h
 
-/home/david/Projects/CG/Project/program.cpp
+/Users/xiaoyanzi/Desktop/Shoot/program.cpp
 GL/glew.h
 -
 GLFW/glfw3.h
@@ -62,15 +80,15 @@ GLFW/glfw3.h
 iostream
 -
 game.h
-/home/david/Projects/CG/Project/game.h
+/Users/xiaoyanzi/Desktop/Shoot/game.h
 resource_manager.h
-/home/david/Projects/CG/Project/resource_manager.h
+/Users/xiaoyanzi/Desktop/Shoot/resource_manager.h
 Camera.h
-/home/david/Projects/CG/Project/Camera.h
+/Users/xiaoyanzi/Desktop/Shoot/Camera.h
 
-/home/david/Projects/CG/Project/resource_manager.cpp
+/Users/xiaoyanzi/Desktop/Shoot/resource_manager.cpp
 resource_manager.h
-/home/david/Projects/CG/Project/resource_manager.h
+/Users/xiaoyanzi/Desktop/Shoot/resource_manager.h
 iostream
 -
 sstream
@@ -78,7 +96,7 @@ sstream
 fstream
 -
 
-/home/david/Projects/CG/Project/resource_manager.h
+/Users/xiaoyanzi/Desktop/Shoot/resource_manager.h
 map
 -
 string
@@ -86,17 +104,17 @@ string
 GL/glew.h
 -
 texture.h
-/home/david/Projects/CG/Project/texture.h
+/Users/xiaoyanzi/Desktop/Shoot/texture.h
 shader.h
-/home/david/Projects/CG/Project/shader.h
+/Users/xiaoyanzi/Desktop/Shoot/shader.h
 
-/home/david/Projects/CG/Project/shader.cpp
+/Users/xiaoyanzi/Desktop/Shoot/shader.cpp
 shader.h
-/home/david/Projects/CG/Project/shader.h
+/Users/xiaoyanzi/Desktop/Shoot/shader.h
 iostream
 -
 
-/home/david/Projects/CG/Project/shader.h
+/Users/xiaoyanzi/Desktop/Shoot/shader.h
 string
 -
 GL/glew.h
@@ -106,7 +124,7 @@ glm/glm.hpp
 glm/gtc/type_ptr.hpp
 -
 
-/home/david/Projects/CG/Project/texture.h
+/Users/xiaoyanzi/Desktop/Shoot/texture.h
 GL/glew.h
 -
 
