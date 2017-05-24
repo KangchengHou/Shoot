@@ -1,7 +1,7 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "GameBodyBase.h"
+#include "game_body_base.h"
 #include "shader.h"
 // #include "game.h"
 

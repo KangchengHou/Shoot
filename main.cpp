@@ -15,7 +15,7 @@
 
 // Other includes
 #include "Shader.h"
-#include "GameBodyBase.h"
+#include "game_body_base.h"
 
 
 // Function prototypes

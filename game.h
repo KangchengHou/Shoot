@@ -11,7 +11,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "GameBodyBase.h"
+#include "game_body_base.h"
 #include "box.h"
 #include "shader.h"
 

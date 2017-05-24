@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "shader.h"
-#include "GameBodyBase.h"
+#include "game_body_base.h"
 #include "game.h"
 
 

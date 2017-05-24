@@ -10,7 +10,7 @@
 
 // GL includes
 #include "Shader.h"
-#include "GameBodyBase.h"
+#include "game_body_base.h"
 #include "Model.h"
 
 // GLM Mathemtics

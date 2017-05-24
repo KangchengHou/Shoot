@@ -4,7 +4,7 @@
 #include <iostream>
 #include "game.h"
 #include "resource_manager.h"
-#include "GameBodyBase.h"
+#include "game_body_base.h"
 // GLFW function declerations
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     // OpenGL configuration
-    glViewport(0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2) ;
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) ;
     // glEnable(GL_CULL_FACE);
     // glEnable(GL_BLEND); 
     glEnable(GL_DEPTH_TEST);
