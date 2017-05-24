@@ -12,7 +12,7 @@ public:
     Box(glm::vec3 position, glm::vec3 size, glm::vec3 color = glm::vec3(1, 1, 1));
     ~Box();
     virtual void initRenderData();
-    virtual void render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, GameBodyBase& player, Shader shader);
+    virtual void render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight,const GameBodyBase& player, Shader shader);
 };
 
 #endif

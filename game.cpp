@@ -7,7 +7,7 @@
 // std::vector<BoxRenderer*> renderers;
 
 Game::Game(GLuint width, GLuint height) 
-	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), player(glm::vec3(0.0f, 1.0f, 10.0f), glm::vec3(1.0f, 2.0f, 1.0f))
+	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), player(glm::vec3(0.0f, 1.0f, 10.0f), glm::vec3(0.3f, 0.5f, 0.3f))
 { 
     lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 }
@@ -22,6 +22,7 @@ Game::~Game()
 
 void Game::Init()
 { 
+    player.init();
     ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
     ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
     // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lighting")));
@@ -29,10 +30,13 @@ void Game::Init()
     // lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
     bulletShader = ResourceManager::GetShader("lighting");
     lightShader = ResourceManager::GetShader("lamp");
-    lights.push_back(new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1)));
+    Box* light = new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1));
+    light->init();
+    lights.push_back(light);
 
     Box* bullet = new Box(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
     // bullets[0] is the ground
+    bullet->init();
     bullets.push_back(bullet); 
 
     // bullets[1] is the player
@@ -197,7 +201,8 @@ void Game::ProcessInput(GLfloat dt)
         }
         if (this->mouse[0] == 1){
             Box* bullet = new Box(player.position + player.front, glm::vec3(0.5, 0.5, 0.5));
-            bullet->setSpeed(glm::vec3(20.0f * player.camera.front));
+            bullet->init();
+            bullet->setSpeed(glm::vec3(5.0f * player.camera.front + 5.0f * player.camera.up));
             // bullet->acceleration = player.camera.front;
             bullet->addAcceleration(this->Gravity);
             bullets.push_back(bullet);
@@ -214,6 +219,7 @@ void Game::Render()
     for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     {
         // renderers[0]->DrawBox((*iter)->position, (*iter)->size, bulletColor, *this);
+        // puts("fuck");
         (*iter)->render((*iter)->color, this->lightPos, this->Width, this->Height, this->player,  bulletShader);
     }
     for (auto iter = lights.cbegin(); iter != lights.cend(); iter++)

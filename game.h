@@ -34,7 +34,7 @@ public:
     GLbyte              mouse[5];
     GLuint                 Width, Height;
     GLFWwindow* window;
-    GameBodyBase player;
+    Box player;
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
 
     std::vector<GameBodyBase*> bullets;

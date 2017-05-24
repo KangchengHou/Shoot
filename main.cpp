@@ -28,7 +28,7 @@ void do_movement();
 const GLuint WIDTH = 800, HEIGHT = 600;
 
 // GameBodyBase
-GameBodyBase  player(glm::vec3(0.0f, 0.0f, 3.0f));
+GameBodyBase  player.camera(glm::vec3(0.0f, 0.0f, 3.0f));
 GLfloat lastX  =  WIDTH  / 2.0;
 GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
@@ -186,7 +186,7 @@ int main()
         GLint lightPosLoc    = glGetUniformLocation(lightingShader.Program, "light.position");
         GLint viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
         glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
-        glUniform3f(viewPosLoc,     player.position.x, player.position.y, player.position.z);
+        glUniform3f(viewPosLoc,     player.camera.position.x, player.camera.position.y, player.camera.position.z);
         // Set lights properties
         glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),  0.2f, 0.2f, 0.2f);
         glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),  0.5f, 0.5f, 0.5f);
@@ -198,10 +198,10 @@ int main()
         glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"),  0.5f, 0.5f, 0.5f); // Specular doesn't have full effect on this object's material
         glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 32.0f);
         
-        // Create player transformations
+        // Create player.camera transformations
         glm::mat4 view;
-        view = player.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(player.zoom, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
+        view = player.camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(player.camera.zoom, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
         // Get the uniform locations
         GLint modelLoc = glGetUniformLocation(lightingShader.Program, "model");
         GLint viewLoc  = glGetUniformLocation(lightingShader.Program,  "view");
