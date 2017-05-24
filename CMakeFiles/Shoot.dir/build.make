@@ -129,28 +129,28 @@ CMakeFiles/Shoot.dir/box.cpp.o.provides: CMakeFiles/Shoot.dir/box.cpp.o.requires
 CMakeFiles/Shoot.dir/box.cpp.o.provides.build: CMakeFiles/Shoot.dir/box.cpp.o
 
 
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: CMakeFiles/Shoot.dir/flags.make
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.o: gameBodyBase.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/wth/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Shoot.dir/gameBodyBase.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/gameBodyBase.cpp.o -c /Users/wth/Desktop/Shoot/gameBodyBase.cpp
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.o: CMakeFiles/Shoot.dir/flags.make
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.o: GameBodyBase.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/wth/Desktop/Shoot/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Shoot.dir/GameBodyBase.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shoot.dir/GameBodyBase.cpp.o -c /Users/wth/Desktop/Shoot/GameBodyBase.cpp
 
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/gameBodyBase.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/wth/Desktop/Shoot/gameBodyBase.cpp > CMakeFiles/Shoot.dir/gameBodyBase.cpp.i
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shoot.dir/GameBodyBase.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/wth/Desktop/Shoot/GameBodyBase.cpp > CMakeFiles/Shoot.dir/GameBodyBase.cpp.i
 
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/gameBodyBase.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/wth/Desktop/Shoot/gameBodyBase.cpp -o CMakeFiles/Shoot.dir/gameBodyBase.cpp.s
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shoot.dir/GameBodyBase.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/wth/Desktop/Shoot/GameBodyBase.cpp -o CMakeFiles/Shoot.dir/GameBodyBase.cpp.s
 
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires:
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.requires:
 
-.PHONY : CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires
+.PHONY : CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.requires
 
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires
-	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides.build
-.PHONY : CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.provides: CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.provides.build
+.PHONY : CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.provides
 
-CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.provides.build: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o
+CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.provides.build: CMakeFiles/Shoot.dir/GameBodyBase.cpp.o
 
 
 CMakeFiles/Shoot.dir/box_renderer.cpp.o: CMakeFiles/Shoot.dir/flags.make
@@ -230,7 +230,7 @@ Shoot_OBJECTS = \
 "CMakeFiles/Shoot.dir/program.cpp.o" \
 "CMakeFiles/Shoot.dir/shader.cpp.o" \
 "CMakeFiles/Shoot.dir/box.cpp.o" \
-"CMakeFiles/Shoot.dir/gameBodyBase.cpp.o" \
+"CMakeFiles/Shoot.dir/GameBodyBase.cpp.o" \
 "CMakeFiles/Shoot.dir/box_renderer.cpp.o" \
 "CMakeFiles/Shoot.dir/resource_manager.cpp.o" \
 "CMakeFiles/Shoot.dir/game.cpp.o"
@@ -241,7 +241,7 @@ Shoot_EXTERNAL_OBJECTS =
 Shoot: CMakeFiles/Shoot.dir/program.cpp.o
 Shoot: CMakeFiles/Shoot.dir/shader.cpp.o
 Shoot: CMakeFiles/Shoot.dir/box.cpp.o
-Shoot: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o
+Shoot: CMakeFiles/Shoot.dir/GameBodyBase.cpp.o
 Shoot: CMakeFiles/Shoot.dir/box_renderer.cpp.o
 Shoot: CMakeFiles/Shoot.dir/resource_manager.cpp.o
 Shoot: CMakeFiles/Shoot.dir/game.cpp.o
@@ -258,7 +258,7 @@ CMakeFiles/Shoot.dir/build: Shoot
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/program.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/shader.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/box.cpp.o.requires
-CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/gameBodyBase.cpp.o.requires
+CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/GameBodyBase.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/box_renderer.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/resource_manager.cpp.o.requires
 CMakeFiles/Shoot.dir/requires: CMakeFiles/Shoot.dir/game.cpp.o.requires

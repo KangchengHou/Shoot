@@ -15,7 +15,7 @@
 
 // Other includes
 #include "Shader.h"
-#include "Camera.h"
+#include "GameBodyBase.h"
 
 
 // Function prototypes
@@ -27,8 +27,8 @@ void do_movement();
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-// Camera
-Camera  camera(glm::vec3(0.0f, 0.0f, 3.0f));
+// GameBodyBase
+GameBodyBase  player(glm::vec3(0.0f, 0.0f, 3.0f));
 GLfloat lastX  =  WIDTH  / 2.0;
 GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
@@ -186,7 +186,7 @@ int main()
         GLint lightPosLoc    = glGetUniformLocation(lightingShader.Program, "light.position");
         GLint viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
         glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
-        glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
+        glUniform3f(viewPosLoc,     player.position.x, player.position.y, player.position.z);
         // Set lights properties
         glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),  0.2f, 0.2f, 0.2f);
         glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),  0.5f, 0.5f, 0.5f);
@@ -198,10 +198,10 @@ int main()
         glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"),  0.5f, 0.5f, 0.5f); // Specular doesn't have full effect on this object's material
         glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 32.0f);
         
-        // Create camera transformations
+        // Create player transformations
         glm::mat4 view;
-        view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
+        view = player.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(player.zoom, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
         // Get the uniform locations
         GLint modelLoc = glGetUniformLocation(lightingShader.Program, "model");
         GLint viewLoc  = glGetUniformLocation(lightingShader.Program,  "view");
@@ -260,15 +260,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void do_movement()
 {
-    // Camera controls
+    // GameBodyBase controls
     if (keys[GLFW_KEY_W])
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        player.ProcessKeyboard(FORWARD, deltaTime);
     if (keys[GLFW_KEY_S])
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        player.ProcessKeyboard(BACKWARD, deltaTime);
     if (keys[GLFW_KEY_A])
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        player.ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        player.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 bool firstMouse = true;
@@ -288,10 +288,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastY = ypos;
     
     
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    player.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(yoffset);
+    player.ProcessMouseScroll(yoffset);
 }

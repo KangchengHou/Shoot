@@ -9,7 +9,7 @@ Box::~Box()
 {
     glDeleteVertexArrays(1, &this->containerVAO);
 }
-void Box::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, Camera& camera, Shader shader)
+void Box::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, GameBodyBase& player, Shader shader)
 {
     // Prepare transformations
     // glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -20,7 +20,7 @@ void Box::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint 
     shader.Use(); 
     shader.SetVector3f("light.position",lightPos.x, lightPos.y, lightPos.z);
     // set view pos 
-    shader.SetVector3f("viewPos",camera.Position.x, camera.Position.y, camera.Position.z);
+    shader.SetVector3f("viewPos",player.position.x, player.position.y, player.position.z);
     shader.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
     shader.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f);
     shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
@@ -29,13 +29,13 @@ void Box::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint 
     shader.SetVector3f("material.diffuse",1.0f, 0.5f, 0.31f);
     shader.SetVector3f("material.specular",0.5f, 0.5f, 0.5f);
     shader.SetFloat("material.shininess",32.0f);
-    // Create camera transformations
+    // Create player transformations
     glm::mat4 model;
     model = glm::translate(model, position);  
     model = glm::scale(model, size); 
     glm::mat4 view;
-    view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)gameWidth / (GLfloat)gameHeight, 0.1f, 100.0f);
+    view = player.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(player.zoom, (GLfloat)gameWidth / (GLfloat)gameHeight, 0.1f, 100.0f);
     // Get the uniform locations
     // Pass the matrices to the shader
     shader.SetMatrix4("model", model);

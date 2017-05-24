@@ -4,19 +4,19 @@
 #include <iostream>
 #include "game.h"
 #include "resource_manager.h"
-#include "Camera.h"
+#include "GameBodyBase.h"
 // GLFW function declerations
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
 const GLuint SCREEN_HEIGHT = 600;
 
-Camera  camera(glm::vec3(0.0f, 0.0f, 3.0f));
+GameBodyBase  player(glm::vec3(0.0f, 1.0f, 10.0f), glm::vec3(1.0f, 2.0f, 1.0f));
 GLfloat lastX  =  SCREEN_WIDTH  / 2.0;
 GLfloat lastY  =  SCREEN_HEIGHT / 2.0;
 
@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
     // glfw callback functions 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     // TODO: these functions has some use
@@ -105,10 +106,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetWindowShouldClose(window, GL_TRUE);
     if (key >= 0 && key < 1024)
     {
-        if (action == GLFW_PRESS)
-            Shoot.Keys[key] = GL_TRUE;
-        else if (action == GLFW_RELEASE)
-            Shoot.Keys[key] = GL_FALSE;
+        if (action == GLFW_PRESS && Shoot.Keys[key] > 2)
+            Shoot.Keys[key] = 1;
+        else if (action == GLFW_RELEASE && Shoot.Keys[key] < 3)
+            Shoot.Keys[key] = 3;
     }
 }
 
@@ -132,12 +133,21 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
     
-    Shoot.camera.ProcessMouseMovement(xoffset, yoffset);
+    Shoot.player.ProcessMouseMovement(xoffset, yoffset);
     // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl; 
 
 }
-
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT){
+        if (action == GLFW_PRESS && Shoot.mouse[0] == 0)
+            Shoot.mouse[0] = 1;
+        else if(action == GLFW_RELEASE)
+            Shoot.mouse[0] = 0;
+        // puts("fuck");
+    }
+}
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Shoot.camera.ProcessMouseScroll(yoffset);
+    Shoot.player.ProcessMouseScroll(yoffset);
 }

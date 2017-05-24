@@ -123,6 +123,33 @@ Shoot/fast:
 	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/build
 .PHONY : Shoot/fast
 
+GameBodyBase.o: GameBodyBase.cpp.o
+
+.PHONY : GameBodyBase.o
+
+# target to build an object file
+GameBodyBase.cpp.o:
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/GameBodyBase.cpp.o
+.PHONY : GameBodyBase.cpp.o
+
+GameBodyBase.i: GameBodyBase.cpp.i
+
+.PHONY : GameBodyBase.i
+
+# target to preprocess a source file
+GameBodyBase.cpp.i:
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/GameBodyBase.cpp.i
+.PHONY : GameBodyBase.cpp.i
+
+GameBodyBase.s: GameBodyBase.cpp.s
+
+.PHONY : GameBodyBase.s
+
+# target to generate assembly for a file
+GameBodyBase.cpp.s:
+	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/GameBodyBase.cpp.s
+.PHONY : GameBodyBase.cpp.s
+
 box.o: box.cpp.o
 
 .PHONY : box.o
@@ -203,33 +230,6 @@ game.s: game.cpp.s
 game.cpp.s:
 	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/game.cpp.s
 .PHONY : game.cpp.s
-
-gameBodyBase.o: gameBodyBase.cpp.o
-
-.PHONY : gameBodyBase.o
-
-# target to build an object file
-gameBodyBase.cpp.o:
-	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.o
-.PHONY : gameBodyBase.cpp.o
-
-gameBodyBase.i: gameBodyBase.cpp.i
-
-.PHONY : gameBodyBase.i
-
-# target to preprocess a source file
-gameBodyBase.cpp.i:
-	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.i
-.PHONY : gameBodyBase.cpp.i
-
-gameBodyBase.s: gameBodyBase.cpp.s
-
-.PHONY : gameBodyBase.s
-
-# target to generate assembly for a file
-gameBodyBase.cpp.s:
-	$(MAKE) -f CMakeFiles/Shoot.dir/build.make CMakeFiles/Shoot.dir/gameBodyBase.cpp.s
-.PHONY : gameBodyBase.cpp.s
 
 program.o: program.cpp.o
 
@@ -321,6 +321,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Shoot"
+	@echo "... GameBodyBase.o"
+	@echo "... GameBodyBase.i"
+	@echo "... GameBodyBase.s"
 	@echo "... box.o"
 	@echo "... box.i"
 	@echo "... box.s"
@@ -330,9 +333,6 @@ help:
 	@echo "... game.o"
 	@echo "... game.i"
 	@echo "... game.s"
-	@echo "... gameBodyBase.o"
-	@echo "... gameBodyBase.i"
-	@echo "... gameBodyBase.s"
 	@echo "... program.o"
 	@echo "... program.i"
 	@echo "... program.s"
