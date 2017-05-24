@@ -24,7 +24,6 @@ CMakeFiles/Shoot.dir/game.cpp.o
  /Users/wth/Desktop/Shoot/game.h
  /Users/wth/Desktop/Shoot/resource_manager.h
  /Users/wth/Desktop/Shoot/shader.h
- /Users/wth/Desktop/Shoot/texture.h
 CMakeFiles/Shoot.dir/program.cpp.o
  /Users/wth/Desktop/Shoot/GameBodyBase.h
  /Users/wth/Desktop/Shoot/box.h
@@ -32,12 +31,10 @@ CMakeFiles/Shoot.dir/program.cpp.o
  /Users/wth/Desktop/Shoot/program.cpp
  /Users/wth/Desktop/Shoot/resource_manager.h
  /Users/wth/Desktop/Shoot/shader.h
- /Users/wth/Desktop/Shoot/texture.h
 CMakeFiles/Shoot.dir/resource_manager.cpp.o
  /Users/wth/Desktop/Shoot/resource_manager.cpp
  /Users/wth/Desktop/Shoot/resource_manager.h
  /Users/wth/Desktop/Shoot/shader.h
- /Users/wth/Desktop/Shoot/texture.h
 CMakeFiles/Shoot.dir/shader.cpp.o
  /Users/wth/Desktop/Shoot/shader.cpp
  /Users/wth/Desktop/Shoot/shader.h

@@ -109,8 +109,6 @@ string
 -
 GL/glew.h
 -
-texture.h
-/Users/wth/Desktop/Shoot/texture.h
 shader.h
 /Users/wth/Desktop/Shoot/shader.h
 
@@ -128,9 +126,5 @@ GL/glew.h
 glm/glm.hpp
 -
 glm/gtc/type_ptr.hpp
--
-
-/Users/wth/Desktop/Shoot/texture.h
-GL/glew.h
 -
 
