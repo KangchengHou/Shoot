@@ -22,7 +22,7 @@ void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, G
     this->shader.Use(); 
     this->shader.SetVector3f("light.position",lightPos.x, lightPos.y, lightPos.z);
     // set view pos 
-    this->shader.SetVector3f("viewPos",game.camera.Position.x, game.camera.Position.y, game.camera.Position.z);
+    this->shader.SetVector3f("viewPos",game.player.position.x, game.player.position.y, game.player.position.z);
     this->shader.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
     this->shader.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f);
     this->shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
@@ -31,13 +31,13 @@ void BoxRenderer::DrawBox(glm::vec3 position, glm::vec3 size, glm::vec3 color, G
     this->shader.SetVector3f("material.diffuse",1.0f, 0.5f, 0.31f);
     this->shader.SetVector3f("material.specular",0.5f, 0.5f, 0.5f);
     this->shader.SetFloat("material.shininess",32.0f);
-    // Create camera transformations
+    // Create player transformations
     glm::mat4 model;
     model = glm::translate(model, position);  
     model = glm::scale(model, size); 
     glm::mat4 view;
-    view = game.camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(game.camera.Zoom, (GLfloat)game.Width / (GLfloat)game.Height, 0.1f, 100.0f);
+    view = game.player.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(game.player.zoom, (GLfloat)game.Width / (GLfloat)game.Height, 0.1f, 100.0f);
     // Get the uniform locations
     // Pass the matrices to the shader
     this->shader.SetMatrix4("model", model);

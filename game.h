@@ -11,8 +11,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Camera.h"
-#include "gameBodyBase.h"
+#include "GameBodyBase.h"
 #include "box.h"
 #include "shader.h"
 
@@ -31,11 +30,11 @@ class Game
 public:
     // Game state
     GameState              State;	
-    GLboolean              Keys[1024];
-    GLboolean              LastKeys[1024];
+    GLbyte              Keys[1024];
+    GLbyte              mouse[5];
     GLuint                 Width, Height;
     GLFWwindow* window;
-    Camera camera;
+    GameBodyBase player;
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
 
     std::vector<GameBodyBase*> bullets;

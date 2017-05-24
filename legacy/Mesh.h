@@ -13,8 +13,8 @@ using namespace std;
 
 
 struct Vertex {
-    // Position
-    glm::vec3 Position;
+    // position
+    glm::vec3 position;
     // Normal
     glm::vec3 Normal;
     // TexCoords

@@ -10,7 +10,7 @@
 
 // GL includes
 #include "Shader.h"
-#include "Camera.h"
+#include "GameBodyBase.h"
 #include "Model.h"
 
 // GLM Mathemtics
@@ -30,8 +30,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void Do_Movement();
 
-// Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+// GameBodyBase
+GameBodyBase player(glm::vec3(0.0f, 0.0f, 3.0f));
 bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -97,8 +97,8 @@ int main()
 
         shader.Use();   // <-- Don't forget this one!
         // Transformation matrices
-        glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(player.zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+        glm::mat4 view = player.GetViewMatrix();
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
@@ -119,18 +119,18 @@ int main()
 
 // for user input
 
-// Moves/alters the camera positions based on user input
+// Moves/alters the player positions based on user input
 void Do_Movement()
 {
-    // Camera controls
+    // GameBodyBase controls
     if(keys[GLFW_KEY_W])
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        player.ProcessKeyboard(FORWARD, deltaTime);
     if(keys[GLFW_KEY_S])
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        player.ProcessKeyboard(BACKWARD, deltaTime);
     if(keys[GLFW_KEY_A])
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        player.ProcessKeyboard(LEFT, deltaTime);
     if(keys[GLFW_KEY_D])
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        player.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
@@ -160,10 +160,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    player.ProcessMouseMovement(xoffset, yoffset);
 }	
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(yoffset);
+    player.ProcessMouseScroll(yoffset);
 }
