@@ -81,10 +81,11 @@ void GameBodyBase::updatePos(GLfloat dt)
     // printf("uppos  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
     position = glm::vec3(glm::translate(glm::vec3(glm::scale(model, glm::vec3(dt, dt, dt)) * glm::vec4(speed, 1.0f))) 
                 * glm::vec4(position, 1.0f));
+    this->camera.updatePos(this->position, this->front, this->up);
 }
 void GameBodyBase::addPos(glm::vec3 dltPos)
 {
     position += dltPos;
 }
 void GameBodyBase::initRenderData() {}
-void GameBodyBase::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, GameBodyBase& player, Shader shader) {}
+void GameBodyBase::render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, const GameBodyBase& player, Shader shader) {}

@@ -28,9 +28,14 @@ const GLfloat ZOOM       =  45.0f;
 
 class Camera {
 public:
+    glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
+    GLfloat zoom;
+    void updatePos(glm::vec3 position, glm::vec3 front, glm::vec3 up) {
+        this->position = position - front*2.0f + up*1.0f;
+    }
     void updateCameraVectors(GLfloat yaw, GLfloat pitch, glm::vec3 worldUp)
     {
         // Calculate the new front vector
@@ -42,6 +47,19 @@ public:
         // Also re-calculate the right and up vector
         this->right = glm::normalize(glm::cross(this->front, worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         this->up    = glm::normalize(glm::cross(this->right, this->front));
+    }
+    void ProcessMouseScroll(GLfloat yoffset)
+    {
+        if (this->zoom >= 1.0f && this->zoom <= 45.0f)
+            this->zoom -= yoffset;
+        if (this->zoom <= 1.0f)
+            this->zoom = 1.0f;
+        if (this->zoom >= 45.0f)
+            this->zoom = 45.0f;
+    }
+    glm::mat4 GetViewMatrix () const 
+    {
+        return glm::lookAt(this->position, this->position + this->front, this->up);
     }
 };
 // An abstract player class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
@@ -88,10 +106,12 @@ public:
         this->worldUp = up;
         this->yaw = yaw;
         this->pitch = pitch;
+        this->camera.updatePos(position , this->front, this->up);
+        this->camera.zoom = ZOOM;
         this->updateGameBodyBaseVectors();
     }
     ~GameBodyBase();
-    
+    virtual void init();
     virtual void rotate(GLfloat a, glm::vec3 axis);
     virtual void setSpeed(glm::vec3 newSpeed);
     virtual void setSpeed(int d, GLfloat v);
@@ -103,7 +123,7 @@ public:
     virtual void updatePos(GLfloat dt);
     virtual void addPos(glm::vec3 dltPos);
     virtual void initRenderData();
-    virtual void render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, GameBodyBase& player, Shader shader);
+    virtual void render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, const GameBodyBase& player, Shader shader);
     virtual void updateVectors();
     // Constructor with vectors
     
@@ -119,10 +139,7 @@ public:
     }
 
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-    glm::mat4 GetViewMatrix()
-    {
-        return glm::lookAt(this->position, this->position + this->camera.front, this->camera.up);
-    }
+    
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of player defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(GameBodyBase_Movement direction, GLfloat deltaTime, GLbyte mode)
@@ -191,15 +208,6 @@ public:
     }
 
     // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-    void ProcessMouseScroll(GLfloat yoffset)
-    {
-        if (this->zoom >= 1.0f && this->zoom <= 45.0f)
-            this->zoom -= yoffset;
-        if (this->zoom <= 1.0f)
-            this->zoom = 1.0f;
-        if (this->zoom >= 45.0f)
-            this->zoom = 45.0f;
-    }
 
 private:
     // Calculates the front vector from the GameBodyBase's (updated) Eular Angles

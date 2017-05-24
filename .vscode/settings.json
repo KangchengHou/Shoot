@@ -5,6 +5,8 @@
         "vector": "cpp",
         "cmath": "cpp",
         "complex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "iostream": "cpp",
+        "*.ipp": "cpp"
     }
 }

@@ -16,7 +16,7 @@ const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
 const GLuint SCREEN_HEIGHT = 600;
 
-GameBodyBase  player(glm::vec3(0.0f, 1.0f, 10.0f), glm::vec3(1.0f, 2.0f, 1.0f));
+
 GLfloat lastX  =  SCREEN_WIDTH  / 2.0;
 GLfloat lastY  =  SCREEN_HEIGHT / 2.0;
 
@@ -149,5 +149,5 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Shoot.player.ProcessMouseScroll(yoffset);
+    Shoot.player.camera.ProcessMouseScroll(yoffset);
 }
