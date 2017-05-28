@@ -8,6 +8,7 @@ Game implemented with OpenGL
 * [ ] 载入obj 模型
 * [ ] 现在有一个人在二维平面上跑了，现在要有他能把一个物体给扔出去，先做这个，要用比较合适的写的方法，以及物体之间碰撞检测的比较好的方法，还有物体的弹跳。
 * [ ] 修改了一下代码 Shader& 原来是引用，我改成直接赋值了，如果性能有问题可以检查一下这个有没有被频繁的调用，现在感觉只有初始化的时候才用了一下。
+* [ ] 多光源、多阴影 
 
 ## References 
 1. [learnopengl](www.learnopengl.com)
@@ -22,6 +23,9 @@ Game implemented with OpenGL
 2. Game　里就是整个游戏，Init 函数负责初始化
 3. ResouceManager 负责文件加载，Shader, Texture等。
 4. 每一个object(箱子，灯光)有一个对应的renderer,每个renderer一一对应一个shader。shader中可以设置各种属性，renderer表示一种渲染的方式。每个object中储存一个renderer,渲染每个object的时候讲他的坐标传到对应的renderer里面.
+5. 环境贴图 environment maps 当一个火箭射过来了，可以从那边看到我们的脸。
+6.  
+
 
 ## overall design 
 1. program

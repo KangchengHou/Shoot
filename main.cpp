@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Other includes
-#include "Shader.h"
+#include "shader.h"
 #include "game_body_base.h"
 
 
