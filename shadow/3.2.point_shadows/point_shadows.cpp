@@ -8,7 +8,7 @@
 // GL includes
 #include "shader.h"
 #include "camera.h"
-
+#include <cmath>
 // GLM Mathemtics
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -78,7 +78,7 @@ int main()
     glEnable(GL_CULL_FACE);
 
     // Setup and compile our shaders
-    Shader shader("point_shadows.vs", "point_shadows.frag");
+    Shader shader("point_shadows.vs", "point_shadows.frag"); // 
     Shader simpleDepthShader("point_shadows_depth.vs", "point_shadows_depth.frag", "point_shadows_depth.gs");
 
     // Set texture samples
@@ -90,7 +90,7 @@ int main()
     glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 
     // Load textures
-    woodTexture = loadTexture("./wood.png");
+    woodTexture = loadTexture("./wood.png"); // 因为我们没有texture这里要注意一下
 
     // Configure depth map FBO
     const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
@@ -125,7 +125,7 @@ int main()
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-
+        lightPos = glm::vec3(0.0f, 1.5 * sin(2 * currentFrame),1.5 * cos(2 *currentFrame));
         // Check and call events
         glfwPollEvents();
         Do_Movement();
@@ -136,7 +136,7 @@ int main()
         // 0. Create depth cubemap transformation matrices
         GLfloat aspect = (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT;
         GLfloat near = 1.0f;
-        GLfloat far = 25.0f;
+        GLfloat far = 100.0f;
         glm::mat4 shadowProj = glm::perspective(90.0f, aspect, near, far);
         std::vector<glm::mat4> shadowTransforms;
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
@@ -190,7 +190,7 @@ void RenderScene(Shader &shader)
 {
     // Room cube
     glm::mat4 model;
-    model = glm::scale(model, glm::vec3(10.0));
+    model = glm::scale(model, glm::vec3(50.0));
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
     glUniform1i(glGetUniformLocation(shader.Program, "reverse_normals"), 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.

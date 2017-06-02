@@ -1,11 +1,3 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #ifndef GAME_H
 #define GAME_H
 
@@ -33,8 +25,15 @@ public:
     GLbyte              Keys[1024];
     GLbyte              mouse[5];
     GLuint                 Width, Height;
+    GLuint shadowWidth;
+    GLuint shadowHeight;
     GLFWwindow* window;
     Box player;
+    GLuint woodTexture; // FIXME: 暂时加入，待会儿删掉
+    GLuint depthMapFBO; // FIXME: 
+    GLuint depthCubemap; // FIXME: 同上
+    GLuint cubeVAO; // 同上
+    GLuint cubeVBO; // 同上
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
 
     std::vector<GameBodyBase*> bullets;
@@ -42,8 +41,11 @@ public:
     Shader bulletShader;
     std::vector<GameBodyBase*> lights;
     glm::vec3 lightColor = glm::vec3(0.f, 0.5f, 0.5f);
+    glm::mat4 lightSpaceMatrix;
     Shader lightShader;
-    
+    // 新加的两个shader
+    Shader depthShader;
+    Shader shader;
     // TODO: modify lightPos need to be refined
     glm::vec3 lightPos;
     // Constructor/Destructor
@@ -57,6 +59,10 @@ public:
     void ProcessInput(GLfloat dt);
     void Update(GLfloat dt);
     void Render();
+    GLuint loadTexture(const char * path);
+    void initDepthMap();
+    void RenderCube(); // FIXME: 这个函数不应该放在Game类当中
+    void RenderScene(Shader& shader); // FIXME: 这个函数不应该放在Game类当中
 };
 
 #endif

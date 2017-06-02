@@ -16,7 +16,6 @@ const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
 const GLuint SCREEN_HEIGHT = 600;
 
-
 GLfloat lastX  =  SCREEN_WIDTH  / 2.0;
 GLfloat lastY  =  SCREEN_HEIGHT / 2.0;
 
@@ -53,9 +52,12 @@ int main(int argc, char *argv[])
     
     // OpenGL configuration
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) ;
-    // glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     // glEnable(GL_BLEND); 
     glEnable(GL_DEPTH_TEST);
+
+
+
 
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -87,7 +89,10 @@ int main(int argc, char *argv[])
         // Render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         Shoot.Render();
+        
+        
 
         glfwSwapBuffers(window);
     }
@@ -151,3 +156,5 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     Shoot.player.camera.ProcessMouseScroll(yoffset);
 }
+
+
