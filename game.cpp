@@ -7,7 +7,7 @@
 // std::vector<BoxRenderer*> renderers;
 
 Game::Game(GLuint width, GLuint height) 
-	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), player(glm::vec3(0.0f, 1.0f, 10.0f), glm::vec3(0.3f, 0.5f, 0.3f))
+	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), player(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f))
 { 
     lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 }
@@ -28,25 +28,25 @@ void Game::Init()
     // FIXME: 暂时加入texture到时候删掉
     this->woodTexture = this->loadTexture("./wood.png");
     // FIXME: add appropriate position
-    this->initDepthMap();
-    ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
-    ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
+    // ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
+    // ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
     ResourceManager::LoadShader("shaders/point_shadows.vs", "shaders/point_shadows.frag", nullptr, "point_shadows");
     ResourceManager::LoadShader("shaders/point_shadows_depth.vs", "shaders/point_shadows_depth.frag", "shaders/point_shadows_depth.gs","point_shadows_depth");
     // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lighting")));
     // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lamp")));
     // lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
-    bulletShader = ResourceManager::GetShader("lighting");
-    lightShader = ResourceManager::GetShader("lamp");
+    // bulletShader = ResourceManager::GetShader("lighting");
+    // lightShader = ResourceManager::GetShader("lamp");
     // TODO: new added shader
     shader = ResourceManager::GetShader("point_shadows");
     depthShader = ResourceManager::GetShader("point_shadows_depth");
     
+    this->initDepthMap();
     // TODO: light的方块和光源应该是统一的
     Box* light = new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1));
     light->init();
     // FIXME: 实际的光源和显示的光源应该统一
-    this->lightPos = glm::vec3(0.0f, 1.0f, 0.0f);
+    this->lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
     lights.push_back(light);
 
     Box* bullet = new Box(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -179,14 +179,13 @@ void Game::Update(GLfloat dt)
 }
 
 void Game::initDepthMap(){
+    this->lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
     shader.Use();
     shader.SetInteger("diffuseTexture",0);
     shader.SetInteger("depthMap", 1);
     this->shadowWidth = 1024;
     this->shadowHeight = 1024;
     glGenFramebuffers(1, &this->depthMapFBO);
-    
-    GLuint depthCubemap; // 要做六个方向全部是阴影
     glGenTextures(1, &this->depthCubemap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
     for (GLuint i = 0; i < 6; i++){
@@ -206,6 +205,7 @@ void Game::initDepthMap(){
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
 }
 void Game::ProcessInput(GLfloat dt)
 {
@@ -252,10 +252,11 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render()
 {
+    // std::cout << "here" << std::endl;
     // 首先创建 depth cubemap 的转换的代码
     GLfloat aspect = (GLfloat)this->shadowWidth / (GLfloat)this->shadowHeight;
     GLfloat near = 1.0f;
-    GLfloat far = 25.0f;
+    GLfloat far = 100.0f;
     glm::mat4 shadowProj = glm::perspective(90.0f,aspect, near, far); // 太远的东西也会被剪裁掉
     std::vector<glm::mat4> shadowTransforms;
     // 现在先创建一个光源的，这个貌似就比较复杂了。。
@@ -292,15 +293,16 @@ void Game::Render()
     shader.SetVector3f("lightPos",this->lightPos.x, this->lightPos.y, this->lightPos.z);
     shader.SetVector3f("viewPos", this->player.camera.position.x, this->player.camera.position.y, this->player.camera.position.z);
     // Enable/Disable shadows by pressing 'SPACE'
-    shader.SetInteger("shadows", true); // 始终是有阴影的
+    shader.SetInteger("shadows", 1); // 始终是有阴影的
     shader.SetInteger("far_plane",far);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->woodTexture);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
     RenderScene(shader);
-
-
+    std::cout << "camera: " << this->player.camera.position.x <<" " <<  this->player.camera.position.y <<" "<< this->player.camera.position.z << std::endl;
+    std::cout << "light: " << this->lightPos.x <<" " <<  this->lightPos.y <<" "<< this->lightPos.z << std::endl;
+    
     // {
     //     //这些是原来的代码
     // for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
@@ -319,39 +321,39 @@ void Game::Render()
 
 }
 
-void Game::RenderScene(Shader &shader){
+void Game::RenderScene(Shader &sh){
     // 房间的cube
     glm::mat4 model;
-    model = glm::scale(model, glm::vec3(50.0));
-    shader.SetMatrix4("model", model);
+    model = glm::scale(model, glm::vec3(10.0));
+    sh.SetMatrix4("model", model);
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-    shader.SetInteger("reverse_normals",1);
+    sh.SetInteger("reverse_normals",1);
     RenderCube();
-    shader.SetInteger("reverse_normals",0);
+    sh.SetInteger("reverse_normals",0);
     glEnable(GL_CULL_FACE);
     // 具体的小cube
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
-    shader.SetMatrix4("model", model);
+    sh.SetMatrix4("model", model);
     RenderCube();
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
     model = glm::scale(model, glm::vec3(1.5));
-    shader.SetMatrix4("model", model);
+    sh.SetMatrix4("model", model);
     RenderCube();
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
-    shader.SetMatrix4("model", model);
+    sh.SetMatrix4("model", model);
     RenderCube();
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
-    shader.SetMatrix4("model", model);
+    sh.SetMatrix4("model", model);
     RenderCube();
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
     model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
     model = glm::scale(model, glm::vec3(1.5));
-    shader.SetMatrix4("model", model);
+    sh.SetMatrix4("model", model);
     RenderCube();
 }
 
@@ -435,6 +437,9 @@ GLuint Game::loadTexture(GLchar const * path)
     int width, height;
     unsigned char* image = SOIL_load_image(path, &width, &height, 0, SOIL_LOAD_RGB);
     // Assign texture to ID
+    if(image == NULL){
+        std::cout << "reading image error" << std::endl;
+    }
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);

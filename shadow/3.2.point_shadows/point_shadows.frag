@@ -75,7 +75,8 @@ float ShadowCalculation(vec3 fragPos)
         
     // Display closestDepth as debug (to visualize depth cubemap)
     // FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
-        
+    // FragColor = vec4(1.0,1.0,1.0,1.0);
+    // FragColor = vec4(0.0, 0.0, 0.0, 0.0);
     // return shadow;
     return shadow;
 }

@@ -125,7 +125,7 @@ int main()
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        lightPos = glm::vec3(0.0f, 1.5 * sin(2 * currentFrame),1.5 * cos(2 *currentFrame));
+        // lightPos = glm::vec3(0.0f, 1.5 * sin(2 * currentFrame),1.5 * cos(2 *currentFrame));
         // Check and call events
         glfwPollEvents();
         Do_Movement();
@@ -177,7 +177,7 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
         RenderScene(shader);
-
+        std::cout << "camera: " << camera.Position.x <<" " << camera.Position.y <<" "<< camera.Position.z << std::endl;
         // Swap the buffers
         glfwSwapBuffers(window);
     }
@@ -190,7 +190,7 @@ void RenderScene(Shader &shader)
 {
     // Room cube
     glm::mat4 model;
-    model = glm::scale(model, glm::vec3(50.0));
+    model = glm::scale(model, glm::vec3(10.0));
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
     glUniform1i(glGetUniformLocation(shader.Program, "reverse_normals"), 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
