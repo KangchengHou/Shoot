@@ -46,14 +46,14 @@ void Game::Init()
     // bullets[0] is the ground
     bullet->init();
     bullets.push_back(bullet); 
-
+    
     // bullets[1] is the player
     // player.addAcceleration(this->Gravity);
     bullets.push_back(&player);
-    // for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
-    // {
-    //     std::cout << (*iter)->color[0] << (*iter)->color[1] << (*iter)->color[2] << std::endl;
-    // }
+    Box * newBullet = new Box(glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(10, 10, 10), glm::vec3(1.0f, 0.0f, 0.0f));
+    newBullet->init();
+    bullets.push_back(newBullet);
+    addObjectType("cube");
 }
 bool Game::aabbTest(GameBodyBase *a, GameBodyBase *b) {
     for(int i = 0; i < 3; i++) {
@@ -242,9 +242,7 @@ void Game::ProcessInput(GLfloat dt)
         }
     }
 }
-
-void Game::Render()
-{
+void Game::depthRender(){
     GLfloat aspect = (GLfloat)this->shadowWidth / (GLfloat)this->shadowHeight;
     GLfloat near = 1.0f;
     GLfloat far = 100.0f;
@@ -274,6 +272,12 @@ void Game::Render()
         RenderScene(depthShader);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
+}
+void Game::Render()
+{
+    GLfloat near = 1.0f; //FIXME: 这两个其实重复了，改了一个别忘记该另外一个，在depthRender里面
+    GLfloat far = 100.0f;
+    depthRender();
     // 渲染普通的场景
     glViewport(0, 0, this->Width, this->Height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -297,21 +301,18 @@ void Game::Render()
     //     //这些是原来的代码
     // for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     // {
-    //     // renderers[0]->DrawBox((*iter)->position, (*iter)->size, bulletColor, *this);
     //     (*iter)->render((*iter)->color, this->lights[0].position, this->Width, this->Height, this->player,  bulletShader);
     // }
     
-    
-    // // renderers[0]->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
-    // // renderers[1]->DrawBox(this->lights[0].position, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);
-    // }
+
 
 }
 
 void Game::RenderScene(Shader &sh){
     // 房间的cube
+    
     glm::mat4 model;
-    model = glm::scale(model, glm::vec3(10.0));
+    model = glm::scale(model, glm::vec3(100.0));
     sh.SetMatrix4("model", model);
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
     sh.SetInteger("reverse_normals",1);
@@ -319,29 +320,29 @@ void Game::RenderScene(Shader &sh){
     sh.SetInteger("reverse_normals",0);
     glEnable(GL_CULL_FACE);
     // 具体的小cube
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
-    sh.SetMatrix4("model", model);
-    RenderCube();
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
-    model = glm::scale(model, glm::vec3(1.5));
-    sh.SetMatrix4("model", model);
-    RenderCube();
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
-    sh.SetMatrix4("model", model);
-    RenderCube();
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
-    sh.SetMatrix4("model", model);
-    RenderCube();
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
-    model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    model = glm::scale(model, glm::vec3(1.5));
-    sh.SetMatrix4("model", model);
-    RenderCube();
+    for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
+    {
+        // (*iter)->render((*iter)->color, this->lights[0].position, this->Width, this->Height, this->player,  shader);
+        renderObject("cube", sh, (*iter)->position);
+    }
+
+    renderObject("cube", sh, glm::vec3(4.0f, -3.5f, 0.0) );
+    renderObject("cube", sh, glm::vec3(2.0f, 3.0f, 1.0),glm::vec3(1.5));
+    // model = glm::mat4();
+    // model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
+    // sh.SetMatrix4("model", model);
+    // RenderCube();
+    // model = glm::mat4();
+    // model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
+    // sh.SetMatrix4("model", model);
+    // RenderCube();
+    // model = glm::mat4();
+    // model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
+    // model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    // model = glm::scale(model, glm::vec3(1.5));
+    // sh.SetMatrix4("model", model);
+    // RenderCube();
+    
 }
 
 
