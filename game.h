@@ -6,7 +6,7 @@
 #include "game_body_base.h"
 #include "box.h"
 #include "shader.h"
-
+#include "light.h"
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -39,7 +39,8 @@ public:
     std::vector<GameBodyBase*> bullets;
     glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
     Shader bulletShader;
-    std::vector<GameBodyBase*> lights;
+    // std::vector<GameBodyBase*> lights;
+    std::vector<Light> lights;
     glm::vec3 lightColor = glm::vec3(0.f, 0.5f, 0.5f);
     glm::mat4 lightSpaceMatrix;
     Shader lightShader;

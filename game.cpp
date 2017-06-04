@@ -9,7 +9,7 @@
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), player(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f))
 { 
-    lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
+
 }
 
 Game::~Game()
@@ -39,15 +39,8 @@ void Game::Init()
     // TODO: new added shader
     shader = ResourceManager::GetShader("point_shadows");
     depthShader = ResourceManager::GetShader("point_shadows_depth");
-    // std::cout << "point_shader : " << shader.ID << std::endl; 
-    // std::cout << "depthShader : " << depthShader.ID << std::endl;
     this->initDepthMap();
-    // TODO: light的方块和光源应该是统一的
-    // Box* light = new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1));
-    // light->init();
-    // FIXME: 实际的光源和显示的光源应该统一
-    this->lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
-    // lights.push_back(light);
+    this->lights.push_back(Light(glm::vec3(0.0f)));
 
     Box* bullet = new Box(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
     // bullets[0] is the ground
@@ -134,12 +127,13 @@ void Game::Update(GLfloat dt)
     // set ResourceManager::GetShader("...").Use() 
     // set each shaders' attribute. 
     glm::mat4 model;
-    // this->lightPos = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lightPos,1.0f)); 
+    // this->lights[0].position = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lights[0].position,1.0f)); 
     // lights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
     for (auto a: bullets) {
         for(int j = 0; j < 6; j++)
             a->stuck[j] = false;
     }
+    lights[0].position = this->player.position;
     bool flag = false;
     for (auto a = bullets.cbegin(); a != bullets.cend(); a++)
         for (auto b = bullets.cbegin(); b != bullets.cend(); b++)  if(a != b) {
@@ -179,7 +173,6 @@ void Game::Update(GLfloat dt)
 }
 
 void Game::initDepthMap(){
-    this->lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
     shader.Use();
     shader.SetInteger("diffuseTexture",0);
     shader.SetInteger("depthMap", 1);
@@ -259,12 +252,12 @@ void Game::Render()
     std::vector<glm::mat4> shadowTransforms;
     // 现在先创建一个光源的，这个貌似就比较复杂了。。
     // TODO: 增加多光源
-    shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0,  1.0,  0.0), glm::vec3(0.0,  0.0,  1.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0, -1.0,  0.0), glm::vec3(0.0,  0.0, -1.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0,  0.0,  1.0), glm::vec3(0.0, -1.0,  0.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0,  0.0, -1.0), glm::vec3(0.0, -1.0,  0.0)));
+    shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3( 1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
+    shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3(-1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
+    shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3( 0.0,  1.0,  0.0), glm::vec3(0.0,  0.0,  1.0)));
+    shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3( 0.0, -1.0,  0.0), glm::vec3(0.0,  0.0, -1.0)));
+    shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3( 0.0,  0.0,  1.0), glm::vec3(0.0, -1.0,  0.0)));
+    shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3( 0.0,  0.0, -1.0), glm::vec3(0.0, -1.0,  0.0)));
     // 这里是先把场景搞到depth cubemap上面
     glViewport(0,0,this->shadowWidth, this->shadowHeight);
     glBindFramebuffer(GL_FRAMEBUFFER, this->depthMapFBO);
@@ -276,7 +269,7 @@ void Game::Render()
         }
         // far 是用来控制裁剪空间远近的
         depthShader.SetFloat("far_plane", far);
-        depthShader.SetVector3f("lightPos", this->lightPos.x, this->lightPos.y, this->lightPos.z);
+        depthShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
         // 然后用这个shader渲染所有东西 
         RenderScene(depthShader);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -289,7 +282,7 @@ void Game::Render()
     glm::mat4 view = player.camera.GetViewMatrix();
     shader.SetMatrix4("projection", projection);
     shader.SetMatrix4("view", view);
-    shader.SetVector3f("lightPos",this->lightPos.x, this->lightPos.y, this->lightPos.z);
+    shader.SetVector3f("lightPos",this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     shader.SetVector3f("viewPos", this->player.camera.position.x, this->player.camera.position.y, this->player.camera.position.z);
 
     shader.SetInteger("shadows", 1); 
@@ -305,16 +298,12 @@ void Game::Render()
     // for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
     // {
     //     // renderers[0]->DrawBox((*iter)->position, (*iter)->size, bulletColor, *this);
-    //     (*iter)->render((*iter)->color, this->lightPos, this->Width, this->Height, this->player,  bulletShader);
+    //     (*iter)->render((*iter)->color, this->lights[0].position, this->Width, this->Height, this->player,  bulletShader);
     // }
-    for (auto iter = lights.cbegin(); iter != lights.cend(); iter++)
-    {
-        (*iter)->render(lightColor, this->lightPos, this->Width, this->Height, this->player, lightShader);
-        // renderers[1]->DrawBox((*iter)->position, (*iter)->size, lightColor, *this);
-    }
+    
     
     // // renderers[0]->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
-    // // renderers[1]->DrawBox(this->lightPos, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);
+    // // renderers[1]->DrawBox(this->lights[0].position, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);
     // }
 
 }
