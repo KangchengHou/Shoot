@@ -29,7 +29,7 @@ public:
     GLuint shadowHeight;
     GLFWwindow* window;
     Box player;
-    GLuint woodTexture; // FIXME: 暂时加入，待会儿删掉
+
     GLuint depthMapFBO; // FIXME: 
     GLuint depthCubemap; // FIXME: 同上
     GLuint cubeVAO; // 同上
@@ -59,7 +59,6 @@ public:
     void ProcessInput(GLfloat dt);
     void Update(GLfloat dt);
     void Render();
-    GLuint loadTexture(const char * path);
     void initDepthMap();
     void RenderCube(); // FIXME: 这个函数不应该放在Game类当中
     void RenderScene(Shader& shader); // FIXME: 这个函数不应该放在Game类当中

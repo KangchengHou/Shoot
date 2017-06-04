@@ -25,18 +25,17 @@ void Game::Init()
     player.init();
     this->cubeVAO = 0;
     this->cubeVBO = 0;
-    // FIXME: 暂时加入texture到时候删掉
-    this->woodTexture = this->loadTexture("./wood.png");
+    ResourceManager::LoadTexture("./wood.png", false, "woodTexture");
     // FIXME: add appropriate position
     // ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
-    // ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
+    ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
     ResourceManager::LoadShader("shaders/point_shadows.vs", "shaders/point_shadows.frag", nullptr, "point_shadows");
     ResourceManager::LoadShader("shaders/point_shadows_depth.vs", "shaders/point_shadows_depth.frag", "shaders/point_shadows_depth.gs","point_shadows_depth");
     // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lighting")));
     // renderers.push_back(new BoxRenderer(ResourceManager::GetShader("lamp")));
     // lights.push_back(new Box(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.5, 0.5, 0.5)));
     // bulletShader = ResourceManager::GetShader("lighting");
-    // lightShader = ResourceManager::GetShader("lamp");
+    lightShader = ResourceManager::GetShader("lamp");
     // TODO: new added shader
     shader = ResourceManager::GetShader("point_shadows");
     depthShader = ResourceManager::GetShader("point_shadows_depth");
@@ -44,11 +43,11 @@ void Game::Init()
     // std::cout << "depthShader : " << depthShader.ID << std::endl;
     this->initDepthMap();
     // TODO: light的方块和光源应该是统一的
-    Box* light = new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1));
-    light->init();
+    // Box* light = new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1));
+    // light->init();
     // FIXME: 实际的光源和显示的光源应该统一
     this->lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
-    lights.push_back(light);
+    // lights.push_back(light);
 
     Box* bullet = new Box(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
     // bullets[0] is the ground
@@ -253,13 +252,10 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render()
 {
-    // std::cout << "here" << std::endl;
-    // 首先创建 depth cubemap 的转换的代码
-    std::cout << "shadow width : " << this->shadowWidth << "shadow height : " << this->shadowHeight << std::endl; 
     GLfloat aspect = (GLfloat)this->shadowWidth / (GLfloat)this->shadowHeight;
     GLfloat near = 1.0f;
     GLfloat far = 100.0f;
-    glm::mat4 shadowProj = glm::perspective(90.0f,aspect, near, far); // 太远的东西也会被剪裁掉
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f),aspect, near, far); // 太远的东西也会被剪裁掉
     std::vector<glm::mat4> shadowTransforms;
     // 现在先创建一个光源的，这个貌似就比较复杂了。。
     // TODO: 增加多光源
@@ -296,16 +292,14 @@ void Game::Render()
     shader.SetVector3f("lightPos",this->lightPos.x, this->lightPos.y, this->lightPos.z);
     shader.SetVector3f("viewPos", this->player.camera.position.x, this->player.camera.position.y, this->player.camera.position.z);
 
-    shader.SetInteger("shadows", 1); // 始终是有阴影的
-    shader.SetFloat("far_plane",far);
+    shader.SetInteger("shadows", 1); 
+    shader.SetFloat("far_plane",far);// FIXME: 这个float非常重要
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->woodTexture);
+    ResourceManager::GetTexture("woodTexture").Bind();
+    // glBindTexture(GL_TEXTURE_2D, this->woodTexture);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
     RenderScene(shader);
-    std::cout << "camera: " << this->player.camera.position.x <<" " <<  this->player.camera.position.y <<" "<< this->player.camera.position.z << std::endl;
-    std::cout << "light: " << this->lightPos.x <<" " <<  this->lightPos.y <<" "<< this->lightPos.z << std::endl;
-    
     // {
     //     //这些是原来的代码
     // for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
@@ -313,11 +307,12 @@ void Game::Render()
     //     // renderers[0]->DrawBox((*iter)->position, (*iter)->size, bulletColor, *this);
     //     (*iter)->render((*iter)->color, this->lightPos, this->Width, this->Height, this->player,  bulletShader);
     // }
-    // for (auto iter = lights.cbegin(); iter != lights.cend(); iter++)
-    // {
-    //     (*iter)->render(lightColor, this->lightPos, this->Width, this->Height, this->player, lightShader);
-    //     // renderers[1]->DrawBox((*iter)->position, (*iter)->size, lightColor, *this);
-    // }
+    for (auto iter = lights.cbegin(); iter != lights.cend(); iter++)
+    {
+        (*iter)->render(lightColor, this->lightPos, this->Width, this->Height, this->player, lightShader);
+        // renderers[1]->DrawBox((*iter)->position, (*iter)->size, lightColor, *this);
+    }
+    
     // // renderers[0]->DrawBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1.0f, 1.0f, 1.0f), *this);
     // // renderers[1]->DrawBox(this->lightPos, glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.f, 0.5f, 0.5f), *this);
     // }
@@ -431,29 +426,4 @@ void Game::RenderCube()
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-}
-GLuint Game::loadTexture(GLchar const * path)
-{
-    // Generate texture ID and load texture data 
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    int width, height;
-    unsigned char* image = SOIL_load_image(path, &width, &height, 0, SOIL_LOAD_RGB);
-    // Assign texture to ID
-    if(image == NULL){
-        std::cout << "reading image error" << std::endl;
-    }
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    SOIL_free_image_data(image);
-    return textureID;
-
 }
