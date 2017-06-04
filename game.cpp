@@ -54,6 +54,7 @@ void Game::Init()
     newBullet->init();
     bullets.push_back(newBullet);
     addObjectType("cube");
+    addObjectType("rocket");
 }
 bool Game::aabbTest(GameBodyBase *a, GameBodyBase *b) {
     for(int i = 0; i < 3; i++) {
@@ -310,48 +311,27 @@ void Game::Render()
 
 void Game::RenderScene(Shader &sh){
     // 房间的cube
-    
-    glm::mat4 model;
-    model = glm::scale(model, glm::vec3(100.0));
-    sh.SetMatrix4("model", model);
+    GLfloat size = 100.0f;
+
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
     sh.SetInteger("reverse_normals",1);
-    RenderCube();
+    // 这是一种特殊的cube，最大的那个cube，特殊处理
+    renderObject("cube", sh, glm::vec3(0.0f, size / 2, 0.0f), glm::vec3(100.0f));
     sh.SetInteger("reverse_normals",0);
     glEnable(GL_CULL_FACE);
     // 具体的小cube
     for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
     {
         // (*iter)->render((*iter)->color, this->lights[0].position, this->Width, this->Height, this->player,  shader);
-        renderObject("cube", sh, (*iter)->position);
+        renderObject("rocket", sh, (*iter)->position, glm::vec3(1.5f));
     }
-
-    renderObject("cube", sh, glm::vec3(4.0f, -3.5f, 0.0) );
-    renderObject("cube", sh, glm::vec3(2.0f, 3.0f, 1.0),glm::vec3(1.5));
-    // model = glm::mat4();
-    // model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
-    // sh.SetMatrix4("model", model);
-    // RenderCube();
-    // model = glm::mat4();
-    // model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
-    // sh.SetMatrix4("model", model);
-    // RenderCube();
-    // model = glm::mat4();
-    // model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
-    // model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    // model = glm::scale(model, glm::vec3(1.5));
-    // sh.SetMatrix4("model", model);
-    // RenderCube();
     
 }
 
-
-
-void Game::RenderCube()
-{
-    // Initialize (if necessary)
-    if (cubeVAO == 0)
-    {
+void Game::addObjectType(std::string name){
+    GLuint VAO = 0;
+    GLuint VBO = 0;
+    if(name == "cube"){
         GLfloat vertices[] = {
             // Back face
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
@@ -396,13 +376,13 @@ void Game::RenderCube()
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,// top-left
             -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f // bottom-left        
         };
-        glGenVertexArrays(1, &cubeVAO);
-        glGenBuffers(1, &cubeVBO);
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
         // Fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
         // Link vertex attributes
-        glBindVertexArray(cubeVAO);
+        glBindVertexArray(VAO);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(1);
@@ -411,9 +391,63 @@ void Game::RenderCube()
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+        VAOmap[name] = VAO;
+        modelSizeMap[name] = 36;
     }
-    // Render Cube
-    glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
+    if(name == "rocket"){
+        std::vector<glm::vec3> verts;
+        std::vector<glm::vec3> normals;
+        std::vector<glm::vec2> uvs;
+        loadOBJ("./face.obj",verts,uvs, normals);
+        int modelSize = verts.size();
+        // std::cout << "vert : " << verts.size() << "normals : " << normals.size() << "uvs: " <<uvs.size()<<std::endl;
+        GLfloat* vertices = new GLfloat[modelSize * 8];
+        for(int i = 0; i < modelSize; i++){
+            vertices[i * 8 + 0] = verts[i].x;
+            vertices[i * 8 + 1] = verts[i].y;
+            vertices[i * 8 + 2] = verts[i].z;
+            vertices[i * 8 + 3] = normals[i].x;
+            vertices[i * 8 + 4] = normals[i].y;
+            vertices[i * 8 + 5] = normals[i].z;
+            vertices[i * 8 + 6] = uvs[i].x;
+            vertices[i * 8 + 7] = uvs[i].y;
+        }
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        // Fill buffer
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * modelSize * 8, vertices, GL_STATIC_DRAW);
+        // Link vertex attributes
+        glBindVertexArray(VAO);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        VAOmap[name] = VAO;
+        modelSizeMap[name] = modelSize;
+    }
+    
+
+}
+void Game::renderObject(const std::string& name, Shader& sh, const glm::vec3& position, glm::vec3 scale,  glm::vec3 color){
+    // TODO: add ambient light etc.
+    glm::mat4 model = glm::mat4();
+    model = glm::translate(model, position);
+    model = glm::scale(model, scale);
+    sh.SetMatrix4("model", model);
+    GLuint VAO = VAOmap[name];
+    if(name == "cube"){
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, modelSizeMap["cube"]);
+        glBindVertexArray(0);
+    }
+    if(name == "rocket"){
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, modelSizeMap["rocket"]);
+        glBindVertexArray(0);
+    }
 }
