@@ -1,6 +1,6 @@
 #version 330 core
 out vec4 FragColor;
-
+// 所有的frag都处于shadow当中了，应该是depth算的不对
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
@@ -70,6 +70,7 @@ float ShadowCalculation(vec3 fragPos)
         closestDepth *= far_plane;   // Undo mapping [0;1]
         if(currentDepth - bias > closestDepth)
             shadow += 1.0;
+        // shadow = 1.0;
     }
     shadow /= float(samples);
         

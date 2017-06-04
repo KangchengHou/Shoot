@@ -40,7 +40,8 @@ void Game::Init()
     // TODO: new added shader
     shader = ResourceManager::GetShader("point_shadows");
     depthShader = ResourceManager::GetShader("point_shadows_depth");
-    
+    // std::cout << "point_shader : " << shader.ID << std::endl; 
+    // std::cout << "depthShader : " << depthShader.ID << std::endl;
     this->initDepthMap();
     // TODO: light的方块和光源应该是统一的
     Box* light = new Box(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1, 1, 1));
@@ -254,6 +255,7 @@ void Game::Render()
 {
     // std::cout << "here" << std::endl;
     // 首先创建 depth cubemap 的转换的代码
+    std::cout << "shadow width : " << this->shadowWidth << "shadow height : " << this->shadowHeight << std::endl; 
     GLfloat aspect = (GLfloat)this->shadowWidth / (GLfloat)this->shadowHeight;
     GLfloat near = 1.0f;
     GLfloat far = 100.0f;
@@ -272,11 +274,12 @@ void Game::Render()
     glBindFramebuffer(GL_FRAMEBUFFER, this->depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         depthShader.Use();
+        std::cout << "far : " << far << std::endl;
         for(GLuint i = 0; i < 6; i++){
             depthShader.SetMatrix4(("shadowTransforms[" + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
         }
         // far 是用来控制裁剪空间远近的
-        depthShader.SetInteger("far_plane", far);
+        depthShader.SetFloat("far_plane", far);
         depthShader.SetVector3f("lightPos", this->lightPos.x, this->lightPos.y, this->lightPos.z);
         // 然后用这个shader渲染所有东西 
         RenderScene(depthShader);
@@ -292,9 +295,9 @@ void Game::Render()
     shader.SetMatrix4("view", view);
     shader.SetVector3f("lightPos",this->lightPos.x, this->lightPos.y, this->lightPos.z);
     shader.SetVector3f("viewPos", this->player.camera.position.x, this->player.camera.position.y, this->player.camera.position.z);
-    // Enable/Disable shadows by pressing 'SPACE'
+
     shader.SetInteger("shadows", 1); // 始终是有阴影的
-    shader.SetInteger("far_plane",far);
+    shader.SetFloat("far_plane",far);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->woodTexture);
     glActiveTexture(GL_TEXTURE1);
