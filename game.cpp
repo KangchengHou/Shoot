@@ -277,7 +277,7 @@ void Game::depthRender(){
 void Game::Render()
 {
     GLfloat near = 1.0f; //FIXME: 这两个其实重复了，改了一个别忘记该另外一个，在depthRender里面
-    GLfloat far = 100.0f;
+    GLfloat far = 200.0f;
     depthRender();
     // 渲染普通的场景
     glViewport(0, 0, this->Width, this->Height);
@@ -298,13 +298,6 @@ void Game::Render()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
     RenderScene(shader);
-    // {
-    //     //这些是原来的代码
-    // for (auto iter = bullets.cbegin(); iter != bullets.cend(); iter++)
-    // {
-    //     (*iter)->render((*iter)->color, this->lights[0].position, this->Width, this->Height, this->player,  bulletShader);
-    // }
-    
 
 
 }
@@ -322,7 +315,6 @@ void Game::RenderScene(Shader &sh){
     // 具体的小cube
     for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
     {
-        // (*iter)->render((*iter)->color, this->lights[0].position, this->Width, this->Height, this->player,  shader);
         renderObject("rocket", sh, (*iter)->position, glm::vec3(1.5f));
     }
     

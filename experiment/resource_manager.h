@@ -5,7 +5,7 @@
 #include <string>
 
 #include <GL/glew.h>
-
+#include <SOIL.h>
 #include "texture.h"
 #include "shader.h"
 
@@ -20,6 +20,7 @@ class ResourceManager
 public:
     // Resource storage
     static std::map<std::string, Shader>    Shaders;
+    static std::map<std::string, Texture2D> Textures;
     // Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
     static Shader   LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name);
     // Retrieves a stored sader

@@ -16,6 +16,7 @@
 // Instantiate static variables
 std::map<std::string, Shader>       ResourceManager::Shaders;
 
+std::map<std::string, Texture2D>    ResourceManager::Textures;
 
 Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
 {

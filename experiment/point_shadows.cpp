@@ -27,6 +27,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void Do_Movement();
 GLuint loadTexture(GLchar const * path);
 void RenderScene(Shader &shader);
+
 void RenderCube();
 void RenderQuad();
 
@@ -78,15 +79,17 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     // Setup and compile our shaders
+    // 这里应该需要加上和粒子有关的shader
     ResourceManager::LoadShader("../shaders/point_shadows.vs", "../shaders/point_shadows.frag", nullptr, "point_shadows");
     ResourceManager::LoadShader("../shaders/point_shadows_depth.vs", "../shaders/point_shadows_depth.frag", "../shaders/point_shadows_depth.gs","point_shadows_depth");
     Shader shader = ResourceManager::GetShader("point_shadows");
     Shader simpleDepthShader = ResourceManager::GetShader("point_shadows_depth");
     // Load textures
-    woodTexture = loadTexture("./wood.png"); // 因为我们没有texture这里要注意一下
+    woodTexture = loadTexture("./wood.png"); 
     // Set texture samples
     shader.Use();
     // Light source
+    // 灯的位置可以调整
     glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
     shader.SetInteger("diffuseTexture",0);
     shader.SetInteger("depthMap", 1);
@@ -137,7 +140,7 @@ int main()
         GLfloat aspect = (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT;
         GLfloat near = 1.0f;
         GLfloat far = 100.0f;
-        glm::mat4 shadowProj = glm::perspective(90.0f, aspect, near, far);
+        glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
         std::vector<glm::mat4> shadowTransforms;
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0,  0.0,  0.0), glm::vec3(0.0, -1.0,  0.0)));
@@ -146,17 +149,6 @@ int main()
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0,  0.0,  1.0), glm::vec3(0.0, -1.0,  0.0)));
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0,  0.0, -1.0), glm::vec3(0.0, -1.0,  0.0)));
 
-        // 1. Render scene to depth cubemap
-        // glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-        // glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-        //     glClear(GL_DEPTH_BUFFER_BIT);
-        //     simpleDepthShader.Use();
-        //     for (GLuint i = 0; i < 6; ++i)
-        //         glUniformMatrix4fv(glGetUniformLocation(simpleDepthShader.ID, ("shadowTransforms[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(shadowTransforms[i]));
-        //     glUniform1f(glGetUniformLocation(simpleDepthShader.ID, "far_plane"), far);
-        //     glUniform3fv(glGetUniformLocation(simpleDepthShader.ID, "lightPos"), 1, &lightPos[0]);
-        //     RenderScene(simpleDepthShader);
-        //  glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
             glClear(GL_DEPTH_BUFFER_BIT);
@@ -210,6 +202,7 @@ void RenderScene(Shader &shader)
     RenderCube();
     glUniform1i(glGetUniformLocation(shader.ID, "reverse_normals"), 0); // And of course disable it
     glEnable(GL_CULL_FACE);
+    
     // Cubes
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
@@ -224,16 +217,16 @@ void RenderScene(Shader &shader)
     model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
     RenderCube();
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    RenderCube();
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
-    model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    model = glm::scale(model, glm::vec3(1.5));
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    RenderCube();
+    // model = glm::mat4();
+    // model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
+    // glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    // RenderCube();
+    // model = glm::mat4();
+    // model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
+    // model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    // model = glm::scale(model, glm::vec3(1.5));
+    // glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    // RenderCube();
 }
 
 
