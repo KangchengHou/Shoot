@@ -12,5 +12,5 @@ target_link_libraries(Shoot -lGLEW -lSOIL -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf
 endif()
 
 if(APPLE)
-target_link_libraries(Shoot -lGLEW "-L /usr/local/lib" "-I/usr/local/include" -lGLEW -lglfw3 "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
+target_link_libraries(Shoot -lGLEW "-L /usr/local/lib" "-I/usr/local/include" -lSOIL -lGLEW -lglfw3 "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
 endif()

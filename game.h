@@ -24,7 +24,7 @@ class Game
 {
 public:
     // Game state
-    GameState              State;	
+    GameState              State;
     GLbyte              Keys[1024];
     GLbyte              mouse[5];
     GLuint                 Width, Height;
@@ -32,20 +32,24 @@ public:
     GLuint shadowHeight;
     GLFWwindow* window;
     // FIXME: 删除rocket
-    GameBodyBase* rocket;
+    // GameBodyBase* rocket;
     // FIXME: delete paticles
-    ParticleGenerator* particles;
-    Box player;
+    // Box player;
     std::map<std::string, GLuint> VAOmap;
     std::map<std::string, int> modelSizeMap;
-    GLuint depthMapFBO; // FIXME: 
+    GLuint depthMapFBO; // FIXME:
     GLuint depthCubemap; // FIXME: 同上
     GLuint cubeVAO; // 同上
     GLuint cubeVBO; // 同上
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
 
+    GameBodyBase* player;
+    GameBodyBase* rocket;
+    std::vector<GameBodyBase*> objects;
     std::vector<GameBodyBase*> bullets;
-    std::vector<GameBodyBase*> obstacles;
+    std::vector<GameBodyBase*> players;
+    std::vector<GameBodyBase*> rockets;
+    ParticleGenerator* particles;
     glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
     Shader bulletShader;
     // std::vector<GameBodyBase*> lights;
@@ -73,8 +77,8 @@ public:
     void initDepthMap();
     void RenderScene(Shader& shader); // FIXME: 这个函数不应该放在Game类当中
     void addObjectType(std::string name);
-    void renderObject(const std::string& name, Shader& sh, const glm::vec3& position, glm::vec3 scale=glm::vec3(1.0f),  glm::vec3 color=glm::vec3(1.0f));
-    
+    void renderObject(const std::string& name, Shader& sh, const glm::vec3& position, glm::vec3 scale = glm::vec3(1.0f),  glm::vec3 color = glm::vec3(1.0f));
+
 };
 
 #endif

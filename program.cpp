@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
     // bind window to the game
     Shoot.window = window;
     glewExperimental = GL_TRUE;
-    
+
     glewInit();
     glGetError(); // Call it once to catch glewInit() bug, all other errors are now from our application.
 
-    // glfw callback functions 
+    // glfw callback functions
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -49,11 +49,11 @@ int main(int argc, char *argv[])
     // TODO: these functions has some use
     // GLFW Options
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
     // OpenGL configuration
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) ;
     glEnable(GL_CULL_FACE);
-    // glEnable(GL_BLEND); 
+    // glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
 
@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
         // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Shoot.Render();
-        
-        
+
+
 
         glfwSwapBuffers(window);
     }
@@ -137,24 +137,24 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
     lastX = xpos;
     lastY = ypos;
-    
-    Shoot.player.ProcessMouseMovement(xoffset, yoffset);
-    // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl; 
+
+    Shoot.player->ProcessMouseMovement(xoffset, yoffset);
+    // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
 
 }
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT){
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
         if (action == GLFW_PRESS && Shoot.mouse[0] == 0)
             Shoot.mouse[0] = 1;
-        else if(action == GLFW_RELEASE)
+        else if (action == GLFW_RELEASE)
             Shoot.mouse[0] = 0;
         // puts("fuck");
     }
 }
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Shoot.player.camera.ProcessMouseScroll(yoffset);
+    Shoot.player->camera.ProcessMouseScroll(yoffset);
 }
 
 

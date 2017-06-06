@@ -15,7 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Other Libs
-#include <SOIL.h>
+#include <SOIL/SOIL.h>
 
 // Properties
 const GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
@@ -88,12 +88,12 @@ int main()
 
     GLfloat planeVertices[] = {
         // Positions            // Normals           // Texture Coords
-         25.0f, -0.5f,  25.0f,  0.0f,  1.0f,  0.0f,  25.0f, 0.0f,
+        25.0f, -0.5f,  25.0f,  0.0f,  1.0f,  0.0f,  25.0f, 0.0f,
         -25.0f, -0.5f, -25.0f,  0.0f,  1.0f,  0.0f,  0.0f,  25.0f,
         -25.0f, -0.5f,  25.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
 
-         25.0f, -0.5f,  25.0f,  0.0f,  1.0f,  0.0f,  25.0f, 0.0f,
-         25.0f, -0.5f, -25.0f,  0.0f,  1.0f,  0.0f,  25.0f, 25.0f,
+        25.0f, -0.5f,  25.0f,  0.0f,  1.0f,  0.0f,  25.0f, 0.0f,
+        25.0f, -0.5f, -25.0f,  0.0f,  1.0f,  0.0f,  25.0f, 25.0f,
         -25.0f, -0.5f, -25.0f,  0.0f,  1.0f,  0.0f,  0.0f,  25.0f
     };
     // Setup plane VAO
@@ -171,8 +171,8 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(simpleDepthShader.Program, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            RenderScene(simpleDepthShader);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        RenderScene(simpleDepthShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // 2. Render scene as normal
@@ -250,8 +250,8 @@ void RenderQuad()
             // Positions        // Texture Coords
             -1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+            1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
         };
         // Setup plane VAO
         glGenVertexArrays(1, &quadVAO);

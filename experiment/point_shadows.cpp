@@ -15,7 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Other Libs
-#include <SOIL.h>
+#include <SOIL/SOIL.h>
 
 // Properties
 const GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
@@ -81,17 +81,17 @@ int main()
     // Setup and compile our shaders
     // 这里应该需要加上和粒子有关的shader
     ResourceManager::LoadShader("./point_shadows.vs", "./point_shadows.frag", nullptr, "point_shadows");
-    ResourceManager::LoadShader("../shaders/point_shadows_depth.vs", "../shaders/point_shadows_depth.frag", "../shaders/point_shadows_depth.gs","point_shadows_depth");
+    ResourceManager::LoadShader("../shaders/point_shadows_depth.vs", "../shaders/point_shadows_depth.frag", "../shaders/point_shadows_depth.gs", "point_shadows_depth");
     Shader shader = ResourceManager::GetShader("point_shadows");
     Shader simpleDepthShader = ResourceManager::GetShader("point_shadows_depth");
     // Load textures
-    woodTexture = loadTexture("./wood.png"); 
+    woodTexture = loadTexture("./wood.png");
     // Set texture samples
     shader.Use();
     // Light source
     // 灯的位置可以调整
     glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-    shader.SetInteger("diffuseTexture",0);
+    shader.SetInteger("diffuseTexture", 0);
     shader.SetInteger("depthMap", 1);
 
 
@@ -104,7 +104,7 @@ int main()
     GLuint depthCubemap;
     glGenTextures(1, &depthCubemap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-    for (GLuint i = 0; i < 6; i++){
+    for (GLuint i = 0; i < 6; i++) {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -151,19 +151,19 @@ int main()
 
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            simpleDepthShader.Use();
-            for (GLuint i = 0; i < 6; ++i)
-                glUniformMatrix4fv(glGetUniformLocation(simpleDepthShader.ID, ("shadowTransforms[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(shadowTransforms[i]));
+        glClear(GL_DEPTH_BUFFER_BIT);
+        simpleDepthShader.Use();
+        for (GLuint i = 0; i < 6; ++i)
+            glUniformMatrix4fv(glGetUniformLocation(simpleDepthShader.ID, ("shadowTransforms[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(shadowTransforms[i]));
 
-            simpleDepthShader.SetFloat("far_plane", far);
-            // glUniform1f(glGetUniformLocation(simpleDepthShader.ID, "far_plane"), far);
-            simpleDepthShader.SetVector3f("light.position", lightPos.x, lightPos.y, lightPos.z);
-            // 然后用这个shader渲染所有东西 
-            RenderScene(simpleDepthShader);
+        simpleDepthShader.SetFloat("far_plane", far);
+        // glUniform1f(glGetUniformLocation(simpleDepthShader.ID, "far_plane"), far);
+        simpleDepthShader.SetVector3f("light.position", lightPos.x, lightPos.y, lightPos.z);
+        // 然后用这个shader渲染所有东西
+        RenderScene(simpleDepthShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
-        // 2. Render scene as normal 
+
+        // 2. Render scene as normal
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.Use();
@@ -187,10 +187,10 @@ int main()
         lightColor.z = sin(glfwGetTime() * 1.3f);
         glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // Decrease the influence
         glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // Low influence
-        
-        shader.SetVector3f("light.ambient",ambientColor.x, ambientColor.y, ambientColor.z);
-        shader.SetVector3f("light.diffuse",diffuseColor.x, diffuseColor.y, diffuseColor.z);
-        shader.SetVector3f("light.specular",1.0f, 1.0f, 1.0f);
+
+        shader.SetVector3f("light.ambient", ambientColor.x, ambientColor.y, ambientColor.z);
+        shader.SetVector3f("light.diffuse", diffuseColor.x, diffuseColor.y, diffuseColor.z);
+        shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, woodTexture);
@@ -215,7 +215,7 @@ void RenderScene(Shader &shader)
     RenderCube();
     glUniform1i(glGetUniformLocation(shader.ID, "reverse_normals"), 0); // And of course disable it
     glEnable(GL_CULL_FACE);
-    
+
     // Cubes
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
@@ -255,7 +255,7 @@ void RenderCube()
             // Back face
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
             0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
             0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,  // top-right
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,  // bottom-left
             -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,// top-left
@@ -276,10 +276,10 @@ void RenderCube()
             // Right face
             0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-left
             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
-            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top-right         
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top-right
             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,  // bottom-right
             0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,  // top-left
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom-left     
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom-left
             // Bottom face
             -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
             0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, // top-left
@@ -290,10 +290,10 @@ void RenderCube()
             // Top face
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,// top-left
             0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
-            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top-right     
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top-right
             0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,// top-left
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f // bottom-left        
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f // bottom-left
         };
         glGenVertexArrays(1, &cubeVAO);
         glGenBuffers(1, &cubeVBO);
@@ -317,12 +317,12 @@ void RenderCube()
     glBindVertexArray(0);
 }
 
-// This function loads a texture from file. Note: texture loading functions like these are usually 
-// managed by a 'Resource Manager' that manages all resources (like textures, models, audio). 
+// This function loads a texture from file. Note: texture loading functions like these are usually
+// managed by a 'Resource Manager' that manages all resources (like textures, models, audio).
 // For learning purposes we'll just define it as a utility function.
 GLuint loadTexture(GLchar const * path)
 {
-    // Generate texture ID and load texture data 
+    // Generate texture ID and load texture data
     GLuint textureID;
     glGenTextures(1, &textureID);
     int width, height;

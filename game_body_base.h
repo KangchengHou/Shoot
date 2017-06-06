@@ -19,6 +19,12 @@ enum GameBodyBase_Movement {
     RIGHT
 };
 
+enum OBJECTTYPE {
+    PLAYER,
+    ROCKET,
+    GOD
+};
+
 // Default player values
 const GLfloat YAW        = -90.0f;
 const GLfloat PITCH      =  0.0f;
@@ -34,7 +40,7 @@ public:
     glm::vec3 right;
     GLfloat zoom;
     void updatePos(glm::vec3 position, glm::vec3 front, glm::vec3 up) {
-        this->position = position - front*2.0f + up*1.0f;
+        this->position = position - front * 2.0f + up * 1.0f;
     }
     void updateCameraVectors(GLfloat yaw, GLfloat pitch, glm::vec3 worldUp)
     {
@@ -57,7 +63,7 @@ public:
         if (this->zoom >= 45.0f)
             this->zoom = 45.0f;
     }
-    glm::mat4 GetViewMatrix () const 
+    glm::mat4 GetViewMatrix () const
     {
         return glm::lookAt(this->position, this->position + this->front, this->up);
     }
@@ -67,6 +73,7 @@ class GameBodyBase
 {
 public:
     // GameBodyBase Attributes
+    OBJECTTYPE type;
     glm::vec3 acceleration;
     glm::vec3 speed;
     glm::vec3 position;
@@ -85,22 +92,24 @@ public:
     GLfloat MovementSpeed;
     GLfloat MouseSensitivity;
     GLfloat zoom;
-    GameBodyBase(glm::vec3 position, 
-                glm::vec3 size, 
-                glm::vec3 color = glm::vec3(1, 1, 1),
-                glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), 
-                GLfloat yaw = YAW, 
-                GLfloat pitch = PITCH) 
-                : 
-                position(position), 
-                size(size), 
-                acceleration(glm::vec3(0., 0., 0.)), 
-                speed(glm::vec3(0., 0., 0.)),
-                color(color),
-                front(glm::vec3(0.0f, 0.0f, -1.0f)), 
-                MovementSpeed(SPEED), 
-                MouseSensitivity(SENSITIVTY), 
-                zoom(ZOOM)
+    GameBodyBase(OBJECTTYPE type
+                 glm::vec3 position,
+                 glm::vec3 size,
+                 glm::vec3 color = glm::vec3(1, 1, 1),
+                 glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+                 GLfloat yaw = YAW,
+                 GLfloat pitch = PITCH)
+        :
+        type(type),
+        position(position),
+        size(size),
+        acceleration(glm::vec3(0., 0., 0.)),
+        speed(glm::vec3(0., 0., 0.)),
+        color(color),
+        front(glm::vec3(0.0f, 0.0f, -1.0f)),
+        MovementSpeed(SPEED),
+        MouseSensitivity(SENSITIVTY),
+        zoom(ZOOM)
     {
         this->position = position;
         this->worldUp = up;
@@ -126,7 +135,7 @@ public:
     virtual void render( glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, const GameBodyBase& player, Shader shader);
     virtual void updateVectors();
     // Constructor with vectors
-    
+
     // Constructor with scalar values
     GameBodyBase(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) : front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), zoom(ZOOM)
     {
@@ -135,18 +144,18 @@ public:
         this->yaw = yaw;
         this->pitch = pitch;
         this->updateGameBodyBaseVectors();
-        for(int i = 0; i < 6; i++) this->stuck[i] = GL_FALSE;
+        for (int i = 0; i < 6; i++) this->stuck[i] = GL_FALSE;
     }
 
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-    
+
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of player defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(GameBodyBase_Movement direction, GLfloat deltaTime, GLbyte mode)
     {
         // printf("mode %d\n", mode);
         GLfloat velocity = this->MovementSpeed * deltaTime;
-        if(mode == 1) {
+        if (mode == 1) {
             // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
             // this->speed[0] = this->speed[2] = 0.f;
             GLfloat y = glm::dot(this->speed, this->up);
@@ -159,12 +168,12 @@ public:
                 this->speed -= this->right * this->MovementSpeed;
             if (direction == RIGHT)
                 this->speed += this->right * this->MovementSpeed;
-            if(glm::length(this->speed) > 1e-5)
+            if (glm::length(this->speed) > 1e-5)
                 this->speed = glm::normalize(this->speed) * this->MovementSpeed;
             this->speed += y * this->up;
             // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
         }
-        else if(mode == 3) {
+        else if (mode == 3) {
             // this->speed[0] = this->speed[2] = 0.f;
             if (direction == FORWARD && glm::dot(this->speed, this->front) > 0)
                 this->speed -= this->front * glm::dot(this->speed, this->front);
@@ -176,7 +185,7 @@ public:
                 this->speed -= this->right * glm::dot(this->speed, this->right);
             GLfloat y = glm::dot(this->speed, this->up);
             this->speed -= y * this->up;
-            if(glm::length(this->speed) > 1e-5)
+            if (glm::length(this->speed) > 1e-5)
                 this->speed = glm::normalize(this->speed) * this->MovementSpeed;
             this->speed += y * this->up;
             // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
