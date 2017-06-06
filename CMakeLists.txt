@@ -6,7 +6,7 @@ ADD_DEFINITIONS(-O3 -std=c++11)
 
 
 
-add_executable(Shoot program.cpp texture.cpp objloader.cpp texture.h shader.cpp box.cpp game_body_base.cpp resource_manager.cpp game.cpp )
+add_executable(Shoot program.cpp particle_generator.cpp texture.cpp objloader.cpp texture.h shader.cpp box.cpp game_body_base.cpp resource_manager.cpp game.cpp )
 if (UNIX AND NOT APPLE)
 target_link_libraries(Shoot -lGLEW -lSOIL -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl)
 endif()

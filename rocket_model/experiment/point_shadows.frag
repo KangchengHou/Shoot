@@ -1,49 +1,6 @@
 #version 330 core
-
-struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;    
-    float shininess;
-}; 
-
-struct Light {
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-uniform Material material;
-uniform Light light;
-
-// void main()
-// {           
-//     vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
-//     vec3 normal = normalize(fs_in.Normal);
-//     vec3 lightColor = vec3(0.3);
-//     // Ambient
-//     vec3 ambient = light.ambient * material.ambient;
-//     // Diffuse
-//     vec3 lightDir = normalize(light.position - fs_in.FragPos);
-//     float diff = max(dot(lightDir, normal), 0.0);
-//     vec3 diffuse = light.diffuse * (diff * material.diffuse);
-//     // Specular
-//     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-//     vec3 reflectDir = reflect(-lightDir, normal);
-//     float spec = 0.0;
-//     vec3 halfwayDir = normalize(lightDir + viewDir);  
-//     spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-//     vec3 specular = light.specular * (spec * material.specular);    
-//     // Calculate shadow
-//     float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0;                      
-//     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));   
-
-//     FragColor = vec4(lighting, 1.0f);
-// }
-
-// #version 330 core
 out vec4 FragColor;
+
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
@@ -53,7 +10,7 @@ in VS_OUT {
 uniform sampler2D diffuseTexture;
 uniform samplerCube depthMap;
 
-// uniform vec3 lightPos;
+uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 uniform float far_plane;
@@ -73,7 +30,7 @@ vec3 gridSamplingDisk[20] = vec3[]
 float ShadowCalculation(vec3 fragPos)
 {
     // Get vector between fragment position and light position
-    vec3 fragToLight = fragPos - light.position;
+    vec3 fragToLight = fragPos - lightPos;
     // Use the fragment to light vector to sample from the depth map    
     // float closestDepth = texture(depthMap, fragToLight).r;
     // It is currently in linear range between [0,1]. Let's re-transform it back to original depth value
@@ -113,41 +70,40 @@ float ShadowCalculation(vec3 fragPos)
         closestDepth *= far_plane;   // Undo mapping [0;1]
         if(currentDepth - bias > closestDepth)
             shadow += 1.0;
-        // shadow = 1.0;
     }
     shadow /= float(samples);
         
     // Display closestDepth as debug (to visualize depth cubemap)
-    // FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
-        
+    FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
+    // FragColor = vec4(1.0,1.0,1.0,1.0);
+    // FragColor = vec4(0.0, 0.0, 0.0, 0.0);
     // return shadow;
     return shadow;
 }
 
+
 void main()
 {           
-
-    
-    // vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
+    vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightColor = vec3(0.3);
     // Ambient
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 ambient = 0.3 * color;
     // Diffuse
-    vec3 lightDir = normalize(light.position - fs_in.FragPos);
+    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse);
+    vec3 diffuse = diff * lightColor;
     // Specular
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);  
-    spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);    
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    vec3 specular = spec * lightColor;    
     // Calculate shadow
     float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0;                      
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
     
-    FragColor = vec4(lighting, 1.0f);
+    // FragColor = vec4(lighting, 1.0f);
 }
 

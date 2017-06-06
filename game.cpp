@@ -4,7 +4,6 @@
 #include <vector>
 #include <algorithm>
 #include <SOIL.h>
-// std::vector<BoxRenderer*> renderers;
 
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height), player(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f))
@@ -26,6 +25,9 @@ void Game::Init()
     this->cubeVAO = 0;
     this->cubeVBO = 0;
     ResourceManager::LoadTexture("./wood.png", false, "woodTexture");
+    ResourceManager::LoadTexture("./fire.png", GL_TRUE, "fire");
+    ResourceManager::LoadTexture("./booster.png", GL_TRUE, "rocket");
+
     // FIXME: add appropriate position
     // ResourceManager::LoadShader("shaders/lighting.vs", "shaders/lighting.frag", nullptr, "lighting");
     ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
@@ -42,7 +44,7 @@ void Game::Init()
     this->initDepthMap();
     this->lights.push_back(Light(glm::vec3(0.0f)));
 
-    Box* bullet = new Box(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
+    GameBodyBase* bullet = new GameBodyBase(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
     // bullets[0] is the ground
     bullet->init();
     bullets.push_back(bullet); 
@@ -50,9 +52,14 @@ void Game::Init()
     // bullets[1] is the player
     // player.addAcceleration(this->Gravity);
     bullets.push_back(&player);
-    Box * newBullet = new Box(glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(10, 10, 10), glm::vec3(1.0f, 0.0f, 0.0f));
+    GameBodyBase * newBullet = new GameBodyBase(glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(10, 10, 10), glm::vec3(1.0f, 0.0f, 0.0f));
     newBullet->init();
     bullets.push_back(newBullet);
+    
+    glm::vec3 rocketPos = glm::vec3(0.0f, 0.0f, 0.0);
+    rocket = new GameBodyBase(rocketPos, glm::vec3(1.0f), glm::vec4(1.0f));
+    particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(500));
+
     addObjectType("cube");
     addObjectType("rocket");
 }
@@ -122,11 +129,12 @@ bool Game::obbTest(GameBodyBase *a, GameBodyBase *b) {
 
 void Game::Update(GLfloat dt)
 {
-    // TODO: 
-    // in Game::Update
-    // set shader's projection, view, clip matrix 
-    // set ResourceManager::GetShader("...").Use() 
-    // set each shaders' attribute. 
+    // FIXME: add sth. for rocket
+    rocket->speed = (player.camera.front) * player.speed;
+    rocket->position = player.camera.position + glm::vec3(10.0f);
+    particles->update(dt, *rocket, 2, glm::vec3(0.0f));
+
+
     glm::mat4 model;
     // this->lights[0].position = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lights[0].position,1.0f)); 
     // lights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -271,6 +279,9 @@ void Game::depthRender(){
         depthShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
         // 然后用这个shader渲染所有东西 
         RenderScene(depthShader);
+        // FIXME: 换位置
+        renderObject("rocket", depthShader, rocket->position, rocket->size);
+        particles->draw();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
 }
@@ -294,10 +305,15 @@ void Game::Render()
     shader.SetFloat("far_plane",far);// FIXME: 这个float非常重要
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("woodTexture").Bind();
-    // glBindTexture(GL_TEXTURE_2D, this->woodTexture);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
     RenderScene(shader);
+    glActiveTexture(GL_TEXTURE0);
+    ResourceManager::GetTexture("rocket").Bind();
+    renderObject("rocket", shader, rocket->position, rocket->size);
+    glActiveTexture(GL_TEXTURE0);
+    ResourceManager::GetTexture("fire").Bind();
+    particles->draw();
 
 
 }

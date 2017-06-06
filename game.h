@@ -9,6 +9,7 @@
 #include <map>
 #include "light.h"
 #include "objloader.h"
+#include "particle_generator.h"
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -30,6 +31,10 @@ public:
     GLuint shadowWidth;
     GLuint shadowHeight;
     GLFWwindow* window;
+    // FIXME: 删除rocket
+    GameBodyBase* rocket;
+    // FIXME: delete paticles
+    ParticleGenerator* particles;
     Box player;
     std::map<std::string, GLuint> VAOmap;
     std::map<std::string, int> modelSizeMap;
