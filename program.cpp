@@ -138,7 +138,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    Shoot.player->ProcessMouseMovement(xoffset, yoffset);
+    Shoot.boss->ProcessMouseMovement(xoffset, yoffset);
     // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
 
 }

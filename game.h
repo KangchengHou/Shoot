@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "game_body_base.h"
-#include "box.h"
+// #include "box.h"
 #include "shader.h"
 #include <map>
 #include "light.h"
@@ -31,6 +31,7 @@ public:
     GLuint shadowWidth;
     GLuint shadowHeight;
     GLFWwindow* window;
+    
     // FIXME: 删除rocket
     // GameBodyBase* rocket;
     // FIXME: delete paticles
@@ -42,9 +43,9 @@ public:
     GLuint cubeVAO; // 同上
     GLuint cubeVBO; // 同上
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
-
+    GameBodyBase* boss;
     GameBodyBase* player;
-    GameBodyBase* rocket;
+    GameBodyBase* rocket = NULL;
     std::vector<GameBodyBase*> objects;
     std::vector<GameBodyBase*> bullets;
     std::vector<GameBodyBase*> players;
@@ -78,7 +79,7 @@ public:
     void RenderScene(Shader& shader); // FIXME: 这个函数不应该放在Game类当中
     void addObjectType(std::string name);
     void renderObject(const std::string& name, Shader& sh, const glm::vec3& position, glm::vec3 scale = glm::vec3(1.0f),  glm::vec3 color = glm::vec3(1.0f));
-
+    void ProcessMouseMovement(double xoffset, double yoffset);
 };
 
 #endif
