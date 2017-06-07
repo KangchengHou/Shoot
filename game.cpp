@@ -4,21 +4,40 @@
 #include <vector>
 #include <algorithm>
 #include <SOIL/SOIL.h>
-
+#include "physics/q3.h"
+// using namespace reactphysics3d;
+void Game::registerCollisionBody(const GameBodyBase *obj) {
+    // rp3d::Vector3 initPosition(obj->position.x, obj->position.y, obj->position.z);
+    // rp3d::Quaternion initOrientation(obj->pitch, 0, obj->yaw);
+    // rp3d::Transform transform(initPosition , initOrientation);
+    // // Create a collision body in the world
+    // rp3d::CollisionBody* body;
+    // body = world.createCollisionBody(transform);
+}
 Game::Game(GLuint width, GLuint height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
+    // gravity = rp3d::Vector3(0.0, -9.81, 0.0);
+    // world.setGravity(gravity);
+    // // Change the number of iterations of the velocity solver
+    // world.setNbIterationsVelocitySolver(15);
+    // // Change the number of iterations of the position solver
+    // world.setNbIterationsPositionSolver(8);
+
+
     rendernear = 0.1f;
     renderfar = 5000.0f;
-
+    
     player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f));
     objects.push_back(player);
+    registerCollisionBody(player);
     players.push_back(player);
     boss = player;
 
     GLfloat size = 1000.0f;
     room = new GameBodyBase(OTHER, glm::vec3(0.0f, size / 2, 0.0f), glm::vec3(size));
     objects.push_back(room);
+    registerCollisionBody(room);
 }
 void Game::ProcessMouseMovement(double xoffset, double yoffset)
 {
@@ -30,6 +49,7 @@ void Game::ProcessMouseMovement(double xoffset, double yoffset)
 Game::~Game()
 {
 }
+
 
 void Game::Init()
 {
@@ -136,6 +156,7 @@ bool Game::obbTest(GameBodyBase *a, GameBodyBase *b)
 void Game::Update(GLfloat dt)
 {
     // FIXME: add sth. for rocket
+    puts("update");
     if (rocket != NULL) {
         particles->update(dt, *rocket, 20, glm::vec3(0.0f));
     } else {
@@ -166,12 +187,15 @@ void Game::Update(GLfloat dt)
     //             }
     //         }
     // printf("player  %.2lf %.2lf %.2lf\n", player->speed[0], player->speed[1], player->speed[2]);
+    int cnt = 0;
     for (auto iter = objects.cbegin(); iter != objects.cend(); iter++)
     {
+        cnt++;
         (*iter)->updateSpeed(dt);
         (*iter)->updatePos(dt);
         // if ((*iter)->type == ROCKET) std::cout << (*iter)->position.x << " " <<  (*iter)->position.y << std::endl;
     }
+    printf("%d\n", cnt);
 }
 
 void Game::initDepthMap()
@@ -229,6 +253,7 @@ void Game::ProcessInput(GLfloat dt)
                 rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f), glm::vec4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), -89.0f, 89.0f);
                 rocket->speed = glm::vec3(0.0f, 1.0f, 0.0f);
                 objects.push_back(rocket);
+                registerCollisionBody(rocket);
                 rockets.push_back(rocket);
 
                 particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(500));
@@ -269,13 +294,15 @@ void Game::ProcessInput(GLfloat dt)
 
         if (this->mouse[0] == 1)
         {
-            // GameBodyBase *bullet = new GameBodyBase(player->position + player->front, glm::vec3(0.5, 0.5, 0.5));
+            GameBodyBase *bullet = new GameBodyBase(OTHER, boss->camera.position + boss->camera.front, glm::vec3(0.5, 0.5, 0.5));
             // bullet->init();
-            // bullet->setSpeed(glm::vec3(5.0f * player->camera.front + 5.0f * player->camera.up));
-            // // bullet->acceleration = player->camera.front;
-            // bullet->addAcceleration(this->Gravity);
-            // bullets.push_back(bullet);
-            // this->mouse[0] = 2;
+            bullet->setSpeed(glm::vec3(5.0f * player->camera.front + 5.0f * player->camera.up));
+            // bullet->acceleration = player->camera.front;
+            bullet->addAcceleration(this->Gravity);
+            objects.push_back(bullet);
+            registerCollisionBody(bullet);
+            bullets.push_back(bullet);
+            this->mouse[0] = 2;
         }
     }
 }
@@ -348,7 +375,7 @@ void Game::Render()
     shader.SetMatrix4("view", view);
     shader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     shader.SetVector3f("viewPos", this->boss->camera.position.x, this->boss->camera.position.y, this->boss->camera.position.z);
-    std::cout << "camera position : " << this->boss->camera.position.x << " " <<  this->boss->camera.position.y <<" "<< this->boss->camera.position.z << std::endl; 
+    // std::cout << "camera position : " << this->boss->camera.position.x << " " <<  this->boss->camera.position.y <<" "<< this->boss->camera.position.z << std::endl; 
     shader.SetInteger("shadows", 1);
     shader.SetFloat("far_plane", renderfar); // FIXME: 这个float非常重要
     glActiveTexture(GL_TEXTURE0);

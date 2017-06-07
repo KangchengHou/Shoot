@@ -7,11 +7,12 @@
 // #include "box.h"
 #include "shader.h"
 #include <map>
+#include "physics/q3.h"
 #include "light.h"
 #include "objloader.h"
 #include "particle_generator.h"
 #define _APPLE_
-
+// using namespace reactphysics3d;
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -86,6 +87,9 @@ public:
     void addObjectType(std::string name);
     void renderObject(const std::string& name, Shader& sh, GameBodyBase* object);
     void ProcessMouseMovement(double xoffset, double yoffset);
+    void registerCollisionBody(const GameBodyBase *obj);
+private:
+    q3Scene scene = q3Scene( 1.0 / 60.0 );
 };
 
 #endif
