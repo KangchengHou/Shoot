@@ -31,7 +31,9 @@ public:
     GLuint shadowWidth;
     GLuint shadowHeight;
     GLFWwindow* window;
-    
+    GLfloat rendernear;
+    GLfloat renderfar;
+
     // FIXME: 删除rocket
     // GameBodyBase* rocket;
     // FIXME: delete paticles
@@ -43,8 +45,10 @@ public:
     GLuint cubeVAO; // 同上
     GLuint cubeVBO; // 同上
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
-    GameBodyBase* boss;
-    GameBodyBase* player;
+
+    GameBodyBase* room = NULL;
+    GameBodyBase* boss = NULL;
+    GameBodyBase* player = NULL;
     GameBodyBase* rocket = NULL;
     std::vector<GameBodyBase*> objects;
     std::vector<GameBodyBase*> bullets;
@@ -78,7 +82,7 @@ public:
     void initDepthMap();
     void RenderScene(Shader& shader); // FIXME: 这个函数不应该放在Game类当中
     void addObjectType(std::string name);
-    void renderObject(const std::string& name, Shader& sh, const glm::vec3& position, glm::vec3 scale = glm::vec3(1.0f),  glm::vec3 color = glm::vec3(1.0f));
+    void renderObject(const std::string& name, Shader& sh, GameBodyBase* object);
     void ProcessMouseMovement(double xoffset, double yoffset);
 };
 

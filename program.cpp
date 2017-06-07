@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // OpenGL configuration
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) ;
+    glViewport(0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2) ;
     glEnable(GL_CULL_FACE);
     // glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);

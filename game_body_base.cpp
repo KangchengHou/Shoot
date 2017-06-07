@@ -20,8 +20,8 @@ void GameBodyBase::updateVectors()
 void GameBodyBase::rotate(GLfloat a, glm::vec3 axis)
 {
     glm::mat4 model;
-    position = glm::vec3(glm::rotate(model, a, axis) 
-                * glm::vec4(position,1.0f)); 
+    position = glm::vec3(glm::rotate(model, a, axis)
+                         * glm::vec4(position, 1.0f));
 }
 void GameBodyBase::addSpeed(glm::vec3 dltSpeed) {
     speed += dltSpeed;
@@ -42,46 +42,22 @@ void GameBodyBase::addAcceleration(glm::vec3 dltAcceleration) {
     acceleration += dltAcceleration;
 }
 void GameBodyBase::updateSpeed(GLfloat dt)
-{   
-    GLfloat a[3];
-    // printf("before  %.2lf %.2lf %.2lf\n", acceleration[0], acceleration[1], acceleration[2]);
-    a[0] = glm::dot(front, acceleration);
-    a[1] = glm::dot(up, acceleration);
-    a[2] = glm::dot(right, acceleration);
-    GLfloat v[3];
-    v[0] = glm::dot(front, speed);
-    v[1] = glm::dot(up, speed);
-    v[2] = glm::dot(right, speed);
-    // if(fabs(glm::dot(up, speed)) > 1e-5) {
-    //     printf("a  %.2lf %.2lf %.2lf\n", a[0], a[1], a[2]);
-    //     printf("v  %.2lf %.2lf %.2lf\n", v[0], v[1], v[2]);
-    // }
-    for(int j = 0; j < 3; j++)
-        v[j] += a[j] * dt;
+{
+    speed.x += acceleration.x * dt;
+    speed.y += acceleration.y * dt;
+    speed.z += acceleration.z * dt;
 
-    for(int j = 0; j < 6; j++){
-        if(stuck[j]) {
-            if ( (v[j/2]>0) ^ (j ^ 1) )
-                v[j/2] = 0;
-            // setAcceleration(j/2, 0);
-        }
-    }
-    speed = v[0] * front + v[1] * up + v[2] * right;
-    // if(fabs(glm::dot(up, speed)) > 1e-5 && fabs(v[1] < 1e-5)) {
-    //     printf("after  %.2lf %.2lf %.2lf\n", acceleration[0], acceleration[1], acceleration[2]);
-    //     printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
-    // }
-    // printf("after  %.2lf %.2lf %.2lf\n", acceleration[0], acceleration[1], acceleration[2]);
-    // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
-    
 }
 void GameBodyBase::updatePos(GLfloat dt)
 {
-    glm::mat4 model;
-    // printf("uppos  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
-    position = glm::vec3(glm::translate(glm::vec3(glm::scale(model, glm::vec3(dt, dt, dt)) * glm::vec4(speed, 1.0f))) 
-                * glm::vec4(position, 1.0f));
+    // std::cout << "before" << position.y << std::endl;
+    // std::cout << "speed" << speed.y << std::endl;
+    position.x += speed.x * dt;
+    position.y += speed.y * dt;
+    position.z += speed.z * dt;
+    // std::cout << "after" << position.y << std::endl;
     this->camera.updatePos(this->position, this->front, this->up);
+
 }
 void GameBodyBase::addPos(glm::vec3 dltPos)
 {

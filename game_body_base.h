@@ -23,19 +23,19 @@ enum OBJECTTYPE
 {
     PLAYER,
     ROCKET,
-    GOD
+    OTHER
 };
 
 // Default player values
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 3.0f;
+const GLfloat SPEED = 5.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 
 class Camera
 {
-  public:
+public:
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
@@ -74,7 +74,7 @@ class Camera
 // An abstract player class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
 class GameBodyBase
 {
-  public:
+public:
     // GameBodyBase Attributes
     OBJECTTYPE type;
     glm::vec3 acceleration;
@@ -90,6 +90,8 @@ class GameBodyBase
     // Eular Angles
     GLfloat yaw;
     GLfloat pitch;
+    GLfloat selfyaw;
+    GLfloat selfpitch;
     GLboolean stuck[6];
     // GameBodyBase options
     GLfloat MovementSpeed;
@@ -100,6 +102,9 @@ class GameBodyBase
                  glm::vec3 size,
                  glm::vec3 color = glm::vec3(1, 1, 1),
                  glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+                 glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f),
+                 GLfloat selfyaw = 89.0f,
+                 GLfloat selfpitch = 0.0f,
                  GLfloat yaw = YAW,
                  GLfloat pitch = PITCH)
         : type(type),
@@ -108,13 +113,17 @@ class GameBodyBase
           acceleration(glm::vec3(0., 0., 0.)),
           speed(glm::vec3(0., 0., 0.)),
           color(color),
-          front(glm::vec3(0.0f, 0.0f, -1.0f)),
+          front(front),
+          up(up),
+          selfyaw(selfyaw),
+          selfpitch(selfpitch),
           MovementSpeed(SPEED),
           MouseSensitivity(SENSITIVTY),
           zoom(ZOOM)
     {
         this->position = position;
-        this->worldUp = up;
+        // this->worldUp = up;
+        this->worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
         this->yaw = yaw;
         this->pitch = pitch;
         this->camera.updatePos(position, this->front, this->up);
@@ -155,14 +164,12 @@ class GameBodyBase
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of player defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(GameBodyBase_Movement direction, GLfloat deltaTime, GLbyte mode)
     {
-        // printf("mode %d\n", mode);
+        // printf("type %d\n", type);
         if (type == PLAYER)
         {
             GLfloat velocity = this->MovementSpeed * deltaTime;
             if (mode == 1)
             {
-                // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
-                // this->speed[0] = this->speed[2] = 0.f;
                 GLfloat y = glm::dot(this->speed, this->up);
                 this->speed -= y * this->up;
                 if (direction == FORWARD)
@@ -176,12 +183,13 @@ class GameBodyBase
                 if (glm::length(this->speed) > 1e-5)
                     this->speed = glm::normalize(this->speed) * this->MovementSpeed;
                 this->speed += y * this->up;
-                // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
+                this->position += this->speed * deltaTime;
+                // printf("position  %.2lf %.2lf %.2lf\n", position[0], position[1], position[2]);
             }
             else if (mode == 3)
             {
                 // this->speed[0] = this->speed[2] = 0.f;
-                if (direction == FORWARD)
+                if (direction == FORWARD && glm::dot(this->speed, this->front) > 0)
                     this->speed -= this->front * glm::dot(this->speed, this->front);
                 if (direction == BACKWARD && glm::dot(this->speed, this->front) < 0)
                     this->speed -= this->front * glm::dot(this->speed, this->front);
@@ -197,22 +205,32 @@ class GameBodyBase
                 // printf("speed  %.2lf %.2lf %.2lf\n", speed[0], speed[1], speed[2]);
             }
         }
-        else if (type == ROCKET)
+        else if (type == ROCKET && mode == 1)
         {
-            if (direction == FORWARD)
-                this->speed += this->up * 0.1f;
-            if (direction == BACKWARD)
-                this->speed -= this->up * 0.1f;
-            if (direction == RIGHT)
-                this->speed += this->right * 0.1f;
-            if (direction == LEFT)
-                this->speed -= this->right * 0.1f;
-            GLfloat y = glm::dot(this->speed, this->up);
+            if (direction == FORWARD) {
+                // W
+                this->selfpitch += 5.0f;
+            }
+            if (direction == BACKWARD) {
+                this->selfpitch -= 5.0f;
+            }
+            if (direction == RIGHT) {
+                this->selfyaw -= 5.0f;
+            }
+            if (direction == LEFT) {
+                this->selfyaw += 5.0f;
+            }
+
+            this->front.x = cos(glm::radians(selfpitch)) * cos(glm::radians(selfyaw));
+            this->front.z = cos(glm::radians(selfpitch)) * sin(glm::radians(selfyaw));
+            this->front.y = sin(glm::radians(selfpitch));
+
+            // GLfloat y = glm::dot(this->speed, this->up);
             if (glm::length(this->speed) > 1e-5)
-                this->speed = glm::normalize(this->speed) * this->MovementSpeed;
-            this->front = this->speed / this->MovementSpeed;
-            this->right = glm::cross(this->front, this->up);
-            this->up = glm::cross(this->right, this->front);
+                this->speed = glm::normalize(this->front) * this->MovementSpeed;
+            // this->front = this->speed / this->MovementSpeed;
+            this->right = glm::normalize(glm::cross(this->front, this->up));
+            this->up = glm::normalize(glm::cross(this->right, this->front));
         }
     }
 
@@ -224,7 +242,7 @@ class GameBodyBase
 
         this->yaw += xoffset;
         this->pitch += yoffset;
-        std::cout << "yaw : " << this->yaw << " pitch : " << this->pitch << std::endl;
+        // std::cout << "yaw : " << this->yaw << " pitch : " << this->pitch << std::endl;
         // Make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch)
         {
@@ -233,14 +251,14 @@ class GameBodyBase
             if (this->pitch < -89.0f)
                 this->pitch = -89.0f;
         }
-        
+
         // Update front, right and up Vectors using the updated Eular angles
         this->updateGameBodyBaseVectors();
     }
 
     // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 
-  private:
+private:
     // Calculates the front vector from the GameBodyBase's (updated) Eular Angles
     void updateGameBodyBaseVectors()
     {

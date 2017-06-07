@@ -8,10 +8,17 @@
 Game::Game(GLuint width, GLuint height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
+    rendernear = 0.1f;
+    renderfar = 5000.0f;
+
     player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f));
     objects.push_back(player);
     players.push_back(player);
     boss = player;
+
+    GLfloat size = 1000.0f;
+    room = new GameBodyBase(OTHER, glm::vec3(0.0f, size / 2, 0.0f), glm::vec3(size));
+    objects.push_back(room);
 }
 void Game::ProcessMouseMovement(double xoffset, double yoffset)
 {
@@ -45,28 +52,6 @@ void Game::Init()
     this->initDepthMap();
     this->lights.push_back(Light(glm::vec3(0.0f)));
 
-    // GameBodyBase* bullet = new GameBodyBase(glm::vec3(0.0f, -7.0f, 0.0f), glm::vec3(100, 10, 100), glm::vec3(1.0f, 0.0f, 0.0f));
-    // // objects[0] is the ground
-    // bullet->init();
-    // objects.push_back(bullet);
-
-    // objects[1] is the player
-    // player->addAcceleration(this->Gravity);
-    // player = new GameBodyBase(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f));
-    // player->init();
-    // objects.push_back(player);
-    // players.push_back(player);
-
-    // GameBodyBase * newBullet = new GameBodyBase(glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(10, 10, 10), glm::vec3(1.0f, 0.0f, 0.0f));
-    // newBullet->init();
-    // objects.push_back(newBullet);
-
-    // glm::vec3 rocketPos = glm::vec3(0.0f, 0.0f, 0.0f);
-    // rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f), glm::vec4(1.0f));
-    // objects.push_back(rocket);
-    // rockets.push_back(rocket);
-
-    // particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(500));
 
     addObjectType("cube");
     addObjectType("rocket");
@@ -79,7 +64,7 @@ bool Game::aabbTest(GameBodyBase *a, GameBodyBase *b)
         // printf("%.0lf %.0lf\n", a->position[i] + a->size[i]/2 , b->position[i] - b->size[i]/2);
         // printf("%.0lf %.0lf\n", b->position[i] + b->size[i]/2 , a->position[i] - a->size[i]/2);
         if (a->position[i] + a->size[i] / 2 < b->position[i] - b->size[i] / 2 ||
-            b->position[i] + b->size[i] / 2 < a->position[i] - a->size[i] / 2)
+                b->position[i] + b->size[i] / 2 < a->position[i] - a->size[i] / 2)
             return false;
         // puts("live");
     }
@@ -151,61 +136,42 @@ bool Game::obbTest(GameBodyBase *a, GameBodyBase *b)
 void Game::Update(GLfloat dt)
 {
     // FIXME: add sth. for rocket
-    if(rocket != NULL){
-        particles->update(dt, *rocket, 2, glm::vec3(0.0f));
-    }else{
-        
+    if (rocket != NULL) {
+        particles->update(dt, *rocket, 20, glm::vec3(0.0f));
+    } else {
+
     }
 
     glm::mat4 model;
     // this->lights[0].position = glm::vec3(glm::rotate(model, dt, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(this->lights[0].position,1.0f));
     // lights[0]->rotate(dt, glm::vec3(0.0f, 1.0f, 0.0f));
-    for (auto a : objects)
-    {
-        for (int j = 0; j < 6; j++)
-            a->stuck[j] = false;
-    }
-    lights[0].position = this->player->position;
+    // for (auto a : objects)
+    // {
+    //     for (int j = 0; j < 6; j++)
+    //         a->stuck[j] = false;
+    // }
+    lights[0].position = this->boss->camera.position;
     bool flag = false;
-    for (auto a = objects.cbegin(); a != objects.cend(); a++)
-        for (auto b = objects.cbegin(); b != objects.cend(); b++)
-            if (a != b)
-            {
-                if (aabbTest(*a, *b))
-                {
-                    if ((*a) != player)
-                    {
-                        (*a)->setSpeed(glm::vec3(0.f, 0.f, 0.f));
-                        (*a)->setAcceleration(glm::vec3(0, 0, 0));
-                    }
-                    // puts("fuck");
-
-                    // (*a)->setAcceleration(glm::vec3(0, 0, 0));
-                    // (*b)->setAcceleration(glm::vec3(0, 0, 0));
-                    // printf("%d\n", itera == iterb);
-                    // printf("%.0lf %.0lf %.0lf\n", (*a)->position[0], (*a)->position[1], (*a)->position[2]);
-                    // printf("%.0lf %.0lf %.0lf\n", (*b)->position[0], (*b)->position[1], (*b)->position[2]);
-                    // exit(0);
-                }
-            }
+    // for (auto a = objects.cbegin(); a != objects.cend(); a++)
+    //     for (auto b = objects.cbegin(); b != objects.cend(); b++)
+    //         if (a != b)
+    //         {
+    //             if (aabbTest(*a, *b))
+    //             {
+    //                 if ((*a) != player)
+    //                 {
+    //                     // (*a)->setSpeed(glm::vec3(0.f, 0.f, 0.f));
+    //                     // (*a)->setAcceleration(glm::vec3(0, 0, 0));
+    //                 }
+    //             }
+    //         }
     // printf("player  %.2lf %.2lf %.2lf\n", player->speed[0], player->speed[1], player->speed[2]);
     for (auto iter = objects.cbegin(); iter != objects.cend(); iter++)
     {
-        // printf("before  %.2lf %.2lf %.2lf\n", (*iter)->speed[0], (*iter)->speed[1], (*iter)->speed[2]);
-        // for(int j = 0; j < 6; j++)
-        //     printf("%d ", (*iter)->stuck[j]);
-        // puts("");
         (*iter)->updateSpeed(dt);
         (*iter)->updatePos(dt);
-        // printf("after  %.2lf %.2lf %.2lf\n", (*iter)->speed[0], (*iter)->speed[1], (*iter)->speed[2]);
-        // if(objects.size() > 1) {
-        // printf("ind %d\n", iter - objects.cbegin());
-        // printf("%.0lf %.0lf %.0lf\n", (*iter)->position[0], (*iter)->position[1], (*iter)->position[2]);
-        // }
+        // if ((*iter)->type == ROCKET) std::cout << (*iter)->position.x << " " <<  (*iter)->position.y << std::endl;
     }
-    // printf("player  %.2lf %.2lf %.2lf\n", player->speed[0], player->speed[1], player->speed[2]);
-    // if(flag) exit(0);
-    // puts("+================+");
 }
 
 void Game::initDepthMap()
@@ -244,23 +210,30 @@ void Game::ProcessInput(GLfloat dt)
     {
         // now in the game state
         // process input for player
-        if (this->Keys[GLFW_KEY_TAB] == 1 || this->Keys[GLFW_KEY_TAB] == 3)
+        if (this->Keys[GLFW_KEY_TAB] == 1 )
         {
-            if(rocket == NULL){
+            if (rocket == NULL) {
                 std::cout << "no rocket" << std::endl;
-            }else{
+            } else if (boss->type == PLAYER) {
                 boss = rocket;
+            } else if (boss->type == ROCKET) {
+                boss = player;
             }
+            this->Keys[GLFW_KEY_TAB]++;
         }
         if (this->Keys[GLFW_KEY_ENTER] == 1 || this->Keys[GLFW_KEY_ENTER] == 3)
         {
-            glm::vec3 rocketPos = player->position + glm::vec3(0.0f, 2.0f, 0.0f);
-            rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f), glm::vec4(1.0f));
-            rocket->speed = glm::vec3(0.0f, 2.0f, 0.0f);
-            objects.push_back(rocket);
-            rockets.push_back(rocket);
+            if (rocket == NULL) {
+                std::cout << "fuck" << std::endl;
+                glm::vec3 rocketPos = player->position + glm::vec3(0.0f, 2.0f, 0.0f);
+                rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f), glm::vec4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), -89.0f, 89.0f);
+                rocket->speed = glm::vec3(0.0f, 1.0f, 0.0f);
+                objects.push_back(rocket);
+                rockets.push_back(rocket);
 
-            particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(500));
+                particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(500));
+
+            }
         }
         boss->speed = boss->up * glm::dot(boss->speed, boss->up);
         if (this->Keys[GLFW_KEY_W] == 1 || this->Keys[GLFW_KEY_W] == 3)
@@ -310,9 +283,9 @@ void Game::ProcessInput(GLfloat dt)
 void Game::depthRender()
 {
     GLfloat aspect = (GLfloat)this->shadowWidth / (GLfloat)this->shadowHeight;
-    GLfloat near = 1.0f;
-    GLfloat far = 100.0f;
-    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far); // 太远的东西也会被剪裁掉
+    // GLfloat near = 0.1f;
+    // GLfloat far = 100.0f;
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, rendernear, renderfar); // 太远的东西也会被剪裁掉
     std::vector<glm::mat4> shadowTransforms;
     // 现在先创建一个光源的，这个貌似就比较复杂了。。
     // TODO: 增加多光源
@@ -333,24 +306,24 @@ void Game::depthRender()
         depthShader.SetMatrix4(("shadowTransforms[" + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
     }
     // far 是用来控制裁剪空间远近的
-    depthShader.SetFloat("far_plane", far);
+    depthShader.SetFloat("far_plane", renderfar);
     depthShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     // 然后用这个shader渲染所有东西
     RenderScene(depthShader);
 
-    for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
-    {
-        renderObject("cube", depthShader, (*iter)->position, glm::vec3(1.5f));
-    }
+    // for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
+    // {
+    //     renderObject("cube", depthShader, (*iter)->position, glm::vec3(1.5f));
+    // }
 
     for (auto iter = players.begin(); iter != players.end(); iter++)
     {
-        renderObject("player", depthShader, (*iter)->position, glm::vec3(1.5f));
+        renderObject("player", depthShader, (*iter));
     }
 
     // FIXME: 换位置
-    if(rocket != NULL){
-        renderObject("rocket", depthShader, rocket->position, rocket->size);
+    if (rocket != NULL) {
+        renderObject("rocket", depthShader, rocket);
         particles->draw();
     }
 
@@ -358,22 +331,22 @@ void Game::depthRender()
 }
 void Game::Render()
 {
-    GLfloat near = 1.0f; //FIXME: 这两个其实重复了，改了一个别忘记该另外一个，在depthRender里面
-    GLfloat far = 5000.0f;
+    // GLfloat near = 0.1f; //FIXME: 这两个其实重复了，改了一个别忘记该另外一个，在depthRender里面
+    // GLfloat far = 5000.0f;
     depthRender();
     // 渲染普通的场景
-    glViewport(0, 0, this->Width, this->Height);
+    glViewport(0, 0, this->Width * 2, this->Height * 2);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.Use();
-    glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, near, far);
-    glm::mat4 view = player->camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
+    glm::mat4 view = boss->camera.GetViewMatrix();
     shader.SetMatrix4("projection", projection);
     shader.SetMatrix4("view", view);
     shader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     shader.SetVector3f("viewPos", this->boss->camera.position.x, this->boss->camera.position.y, this->boss->camera.position.z);
 
     shader.SetInteger("shadows", 1);
-    shader.SetFloat("far_plane", far); // FIXME: 这个float非常重要
+    shader.SetFloat("far_plane", renderfar); // FIXME: 这个float非常重要
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("woodTexture").Bind();
     glActiveTexture(GL_TEXTURE1);
@@ -382,18 +355,21 @@ void Game::Render()
 
     for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
     {
-        renderObject("cube", shader, (*iter)->position, glm::vec3(1.5f));
+        renderObject("cube", shader, (*iter));
     }
 
     for (auto iter = players.begin(); iter != players.end(); iter++)
     {
-        renderObject("player", shader, (*iter)->position, glm::vec3(1.5f));
+        renderObject("player", shader, (*iter));
     }
 
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("rocket").Bind();
-    if(rocket != NULL){
-        renderObject("rocket", shader, rocket->position, rocket->size);
+    for (auto iter = rockets.begin(); iter != rockets.end(); iter++) {
+        // std::cout << "have huojian" << std::endl;
+        renderObject("rocket", shader, rocket);
+    }
+    if (rocket != NULL) {
         glActiveTexture(GL_TEXTURE0);
         ResourceManager::GetTexture("fire").Bind();
         particles->draw();
@@ -409,7 +385,7 @@ void Game::RenderScene(Shader &sh)
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
     sh.SetInteger("reverse_normals", 1);
     // 这是一种特殊的cube，最大的那个cube，特殊处理
-    renderObject("cube", sh, glm::vec3(0.0f, size / 2, 0.0f), glm::vec3(size));
+    renderObject("cube", sh, room);
     sh.SetInteger("reverse_normals", 0);
     glEnable(GL_CULL_FACE);
 
@@ -560,14 +536,21 @@ void Game::addObjectType(std::string name)
         modelSizeMap[name] = modelSize;
     }
 }
-void Game::renderObject(const std::string &name, Shader &sh, const glm::vec3 &position, glm::vec3 scale, glm::vec3 color)
+void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase* object)
 {
     // TODO: add ambient light etc.
     glm::mat4 model = glm::mat4();
-    model = glm::translate(model, position);
-    model = glm::scale(model, scale);
+    model = glm::translate(model, object->position);
+    model = glm::scale(model, object->size);
+
+    model = glm::rotate(model, name == "rocket" ? glm::radians(object->selfpitch - 90.0f) : glm::radians(object->selfpitch), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(object->selfyaw), glm::vec3(0.0f, 1.0f, 0.0f));
+
+
     sh.SetMatrix4("model", model);
     GLuint VAO = VAOmap[name];
+
+
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, modelSizeMap[name]);
