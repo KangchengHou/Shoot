@@ -43,7 +43,8 @@ public:
     GLfloat zoom;
     void updatePos(glm::vec3 position, glm::vec3 front, glm::vec3 up)
     {
-        this->position = position - front * 2.0f + up * 1.0f;
+        // this->position = position - front * 2.0f + up * 1.0f;
+        this->position = position + glm::vec3(0.0f, 0.0f, 3.0f) + glm::vec3(0.0f, 3.0f, 0.0f);
     }
     void updateCameraVectors(GLfloat yaw, GLfloat pitch, glm::vec3 worldUp)
     {
@@ -224,10 +225,12 @@ public:
             this->front.x = cos(glm::radians(selfpitch)) * cos(glm::radians(selfyaw));
             this->front.z = cos(glm::radians(selfpitch)) * sin(glm::radians(selfyaw));
             this->front.y = sin(glm::radians(selfpitch));
-
+            std::cout << "speed : " << this->speed.y << std::endl;
             // GLfloat y = glm::dot(this->speed, this->up);
-            if (glm::length(this->speed) > 1e-5)
+            if (glm::length(this->speed) > 1e-5){
                 this->speed = glm::normalize(this->front) * this->MovementSpeed;
+
+            }
             // this->front = this->speed / this->MovementSpeed;
             this->right = glm::normalize(glm::cross(this->front, this->up));
             this->up = glm::normalize(glm::cross(this->right, this->front));

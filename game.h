@@ -10,6 +10,8 @@
 #include "light.h"
 #include "objloader.h"
 #include "particle_generator.h"
+#define _APPLE_
+
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,

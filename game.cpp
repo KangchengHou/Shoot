@@ -235,7 +235,7 @@ void Game::ProcessInput(GLfloat dt)
 
             }
         }
-        boss->speed = boss->up * glm::dot(boss->speed, boss->up);
+        // boss->speed = boss->up * glm::dot(boss->speed, boss->up);
         if (this->Keys[GLFW_KEY_W] == 1 || this->Keys[GLFW_KEY_W] == 3)
         {
             // printf("W %d\n", this->Keys[GLFW_KEY_W]);
@@ -324,7 +324,7 @@ void Game::depthRender()
     // FIXME: 换位置
     if (rocket != NULL) {
         renderObject("rocket", depthShader, rocket);
-        particles->draw();
+        // particles->draw();
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -335,7 +335,11 @@ void Game::Render()
     // GLfloat far = 5000.0f;
     depthRender();
     // 渲染普通的场景
+    #ifdef _APPLE_
     glViewport(0, 0, this->Width * 2, this->Height * 2);
+    #else 
+    glViewport(0, 0, this->Width, this->Height);
+    #endif
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.Use();
     glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
@@ -344,7 +348,7 @@ void Game::Render()
     shader.SetMatrix4("view", view);
     shader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     shader.SetVector3f("viewPos", this->boss->camera.position.x, this->boss->camera.position.y, this->boss->camera.position.z);
-
+    std::cout << "camera position : " << this->boss->camera.position.x << " " <<  this->boss->camera.position.y <<" "<< this->boss->camera.position.z << std::endl; 
     shader.SetInteger("shadows", 1);
     shader.SetFloat("far_plane", renderfar); // FIXME: 这个float非常重要
     glActiveTexture(GL_TEXTURE0);
@@ -372,7 +376,7 @@ void Game::Render()
     if (rocket != NULL) {
         glActiveTexture(GL_TEXTURE0);
         ResourceManager::GetTexture("fire").Bind();
-        particles->draw();
+        // particles->draw();
     }
 
 }
@@ -540,11 +544,17 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase* objec
 {
     // TODO: add ambient light etc.
     glm::mat4 model = glm::mat4();
-    model = glm::translate(model, object->position);
-    model = glm::scale(model, object->size);
-
-    model = glm::rotate(model, name == "rocket" ? glm::radians(object->selfpitch - 90.0f) : glm::radians(object->selfpitch), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(object->selfyaw), glm::vec3(0.0f, 1.0f, 0.0f));
+    if(name == "rocket"){
+        model = glm::translate(model, object->position);
+        model = glm::scale(model, object->size);
+        model = glm::rotate(model, glm::radians(object->selfpitch - 90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(object->selfyaw), glm::vec3(0.0f, 1.0f, 0.0f));
+    }else{
+        model = glm::translate(model, object->position);
+        model = glm::scale(model, object->size);
+        model = glm::rotate(model, glm::radians(object->selfpitch), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(object->selfyaw), glm::vec3(0.0f, 1.0f, 0.0f));   
+    }
 
 
     sh.SetMatrix4("model", model);
