@@ -9,7 +9,7 @@
 #include <vector>
 #include <iostream>
 #include "shader.h"
-
+#include "physics/q3.h"
 // Defines several possible options for player movement. Used as abstraction to stay away from window-system specific input methods
 enum GameBodyBase_Movement
 {
@@ -27,8 +27,9 @@ enum OBJECTTYPE
 };
 
 // Default player values
-const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
+const GLfloat YAW = -90.0f;
+const GLfloat ROLL = 0.0f;
 const GLfloat SPEED = 5.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
@@ -76,6 +77,7 @@ public:
 class GameBodyBase
 {
 public:
+    q3Body* body;
     // GameBodyBase Attributes
     OBJECTTYPE type;
     glm::vec3 acceleration;
@@ -89,8 +91,10 @@ public:
     glm::vec3 worldUp;
     Camera camera;
     // Eular Angles
-    GLfloat yaw;
-    GLfloat pitch;
+    GLfloat pitch; // x
+    GLfloat yaw;   // y
+    GLfloat roll;  // z
+    glm::mat3 rotationMatrix;
     GLfloat selfyaw;
     GLfloat selfpitch;
     GLboolean stuck[6];
@@ -107,6 +111,7 @@ public:
                  GLfloat selfyaw = 89.0f,
                  GLfloat selfpitch = 0.0f,
                  GLfloat yaw = YAW,
+                 GLfloat roll = ROLL,
                  GLfloat pitch = PITCH)
         : type(type),
           position(position),
@@ -126,7 +131,9 @@ public:
         // this->worldUp = up;
         this->worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
         this->yaw = yaw;
+        this->roll = roll;
         this->pitch = pitch;
+        this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         this->camera.updatePos(position, this->front, this->up);
         this->camera.zoom = ZOOM;
         this->updateGameBodyBaseVectors();
@@ -146,6 +153,30 @@ public:
     void initRenderData();
     void render(glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, const GameBodyBase &player, Shader shader);
     void updateVectors();
+    glm::mat3 euler2matrix(double pitch, double yaw, double roll)
+    {
+        // Calculate rotation about x axis
+        glm::mat3 R_x(
+                1,       0,              0,
+                0,       cos(pitch),   -sin(pitch),
+                0,       sin(pitch),   cos(pitch)
+                );
+        // Calculate rotation about y axis
+        glm::mat3  R_y(
+                cos(yaw),    0,      sin(yaw),
+                0,            1,      0,
+                -sin(yaw),   0,      cos(yaw)
+                );
+        // Calculate rotation about z axis
+        glm::mat3  R_z (
+                cos(roll),    -sin(roll),      0,
+                sin(roll),    cos(roll),       0,
+                0,             0,                1);
+        
+        // Combined rotation matrix
+        glm::mat3 R = R_z * R_y * R_x;
+        return R;
+    }
     // Constructor with vectors
 
     // Constructor with scalar values
@@ -154,7 +185,9 @@ public:
         this->position = glm::vec3(posX, posY, posZ);
         this->worldUp = glm::vec3(upX, upY, upZ);
         this->yaw = yaw;
+        this->roll = 0;
         this->pitch = pitch;
+        this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         this->updateGameBodyBaseVectors();
         for (int i = 0; i < 6; i++)
             this->stuck[i] = GL_FALSE;
@@ -169,35 +202,37 @@ public:
         if (type == PLAYER)
         {
             GLfloat velocity = this->MovementSpeed * deltaTime;
+            glm::vec3 frontProject = this->front - glm::dot(this->front, this->worldUp) * this->worldUp;
+            glm::vec3 rightProject = this->right - glm::dot(this->right, this->worldUp) * this->worldUp;
             if (mode == 1)
             {
-                GLfloat y = glm::dot(this->speed, this->up);
-                this->speed -= y * this->up;
+                GLfloat y = glm::dot(this->speed, this->worldUp);
+                this->speed -= y * this->worldUp;
                 if (direction == FORWARD)
-                    this->speed += this->front * this->MovementSpeed;
+                    this->speed += frontProject * this->MovementSpeed;
                 if (direction == BACKWARD)
-                    this->speed -= this->front * this->MovementSpeed;
+                    this->speed -= frontProject * this->MovementSpeed;
                 if (direction == LEFT)
-                    this->speed -= this->right * this->MovementSpeed;
+                    this->speed -= rightProject * this->MovementSpeed;
                 if (direction == RIGHT)
-                    this->speed += this->right * this->MovementSpeed;
+                    this->speed += rightProject * this->MovementSpeed;
                 if (glm::length(this->speed) > 1e-5)
                     this->speed = glm::normalize(this->speed) * this->MovementSpeed;
-                this->speed += y * this->up;
-                this->position += this->speed * deltaTime;
+                this->speed += y * this->worldUp;
+                // this->position += this->speed * deltaTime;
                 // printf("position  %.2lf %.2lf %.2lf\n", position[0], position[1], position[2]);
             }
             else if (mode == 3)
             {
                 // this->speed[0] = this->speed[2] = 0.f;
-                if (direction == FORWARD && glm::dot(this->speed, this->front) > 0)
-                    this->speed -= this->front * glm::dot(this->speed, this->front);
-                if (direction == BACKWARD && glm::dot(this->speed, this->front) < 0)
-                    this->speed -= this->front * glm::dot(this->speed, this->front);
-                if (direction == RIGHT && glm::dot(this->speed, this->right) > 0)
-                    this->speed -= this->right * glm::dot(this->speed, this->right);
-                if (direction == LEFT && glm::dot(this->speed, this->right) < 0)
-                    this->speed -= this->right * glm::dot(this->speed, this->right);
+                if (direction == FORWARD  && glm::dot(this->speed, frontProject) > 0)
+                    this->speed -= frontProject * glm::dot(this->speed, frontProject);
+                if (direction == BACKWARD && glm::dot(this->speed, frontProject) < 0)
+                    this->speed -= frontProject * glm::dot(this->speed, frontProject);
+                if (direction == RIGHT && glm::dot(this->speed, rightProject) > 0)
+                    this->speed -= rightProject * glm::dot(this->speed, rightProject);
+                if (direction == LEFT  && glm::dot(this->speed, rightProject) < 0)
+                    this->speed -= rightProject * glm::dot(this->speed, rightProject);
                 GLfloat y = glm::dot(this->speed, this->up);
                 this->speed -= y * this->up;
                 if (glm::length(this->speed) > 1e-5)
@@ -258,7 +293,13 @@ public:
         // Update front, right and up Vectors using the updated Eular angles
         this->updateGameBodyBaseVectors();
     }
-
+    void setPos(double x, double y, double z)
+    {
+        position.x = x;
+        position.y = y;
+        position.z = z;
+        this->camera.updatePos(this->position, this->front, this->up);
+    }
     // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 
 private:
@@ -266,15 +307,20 @@ private:
     void updateGameBodyBaseVectors()
     {
         // Calculate the new front vector
+        // printf("front %.2lf %.2lf %.2lf\n", this->front.x, this->front.y, this->front.z);
+        this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         camera.updateCameraVectors(this->yaw, this->pitch, this->worldUp);
-        glm::vec3 front;
-        front.x = cos(glm::radians(this->yaw));
-        front.y = sin(glm::radians(0.f));
-        front.z = sin(glm::radians(this->yaw));
-        this->front = glm::normalize(front);
-        // Also re-calculate the right and up vector
-        this->right = glm::normalize(glm::cross(this->front, this->worldUp)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        this->up = glm::normalize(glm::cross(this->right, this->front));
+        // glm::vec3 front;
+        // front.x = cos(glm::radians(this->yaw));
+        // front.y = sin(glm::radians(0.f));
+        // front.z = sin(glm::radians(this->yaw));
+        this->front = glm::vec3(0, 0, -1) * this->rotationMatrix;
+        this->right = glm::vec3(1, 0,  0) * this->rotationMatrix;
+        this->up    = glm::vec3(0, 1,  0) * this->rotationMatrix;
+        // this->front = glm::normalize(front);
+        // // Also re-calculate the right and up vector
+        // this->right = glm::normalize(glm::cross(this->front, this->worldUp)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        // this->up = glm::normalize(glm::cross(this->right, this->front));
     }
 };
 

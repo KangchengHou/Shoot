@@ -87,9 +87,10 @@ public:
     void addObjectType(std::string name);
     void renderObject(const std::string& name, Shader& sh, GameBodyBase* object);
     void ProcessMouseMovement(double xoffset, double yoffset);
-    void registerCollisionBody(const GameBodyBase *obj);
+    void registerCollisionBody(GameBodyBase *obj, bool rest = false);
 private:
-    q3Scene scene = q3Scene( 1.0 / 60.0 );
+    const double sceneDt = 1.0/60.0;
+    q3Scene scene = q3Scene( sceneDt );
 };
 
 #endif

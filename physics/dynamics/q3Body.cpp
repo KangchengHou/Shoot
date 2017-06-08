@@ -53,7 +53,6 @@ q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
 
 	if ( def.bodyType == eDynamicBody )
 		m_flags |= q3Body::eDynamic;
-
 	else
 	{
 		if ( def.bodyType == eStaticBody )
@@ -68,7 +67,7 @@ q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
 		else if ( def.bodyType == eKinematicBody )
 			m_flags |= q3Body::eKinematic;
 	}
-
+	
 	if ( def.allowSleep )
 		m_flags |= eAllowSleep;
 
@@ -86,7 +85,7 @@ q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
 
 	if ( def.lockAxisZ )
 		m_flags |= eLockAxisZ;
-
+	printf("m4 %d\n", m_flags);
 	m_boxes = NULL;
 	m_contactList = NULL;
 }
@@ -322,7 +321,6 @@ void q3Body::SetLinearVelocity( const q3Vec3& v )
 	// Velocity of static bodies cannot be adjusted
 	if ( m_flags & eStatic )
 		assert( false );
-
 	if ( q3Dot( v, v ) > r32( 0.0 ) )
 	{
 		SetToAwake( );

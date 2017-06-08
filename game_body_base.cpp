@@ -28,6 +28,8 @@ void GameBodyBase::addSpeed(glm::vec3 dltSpeed) {
 }
 void GameBodyBase::setSpeed(glm::vec3 newSpeed) {
     speed = newSpeed;
+    body->SetLinearVelocity(q3Vec3(speed.x, speed.y, speed.z));
+    puts("fuck");
 }
 void GameBodyBase::setSpeed(int d, GLfloat v) {
     speed[d] = v;
@@ -57,8 +59,8 @@ void GameBodyBase::updatePos(GLfloat dt)
     position.z += speed.z * dt;
     // std::cout << "after" << position.y << std::endl;
     this->camera.updatePos(this->position, this->front, this->up);
-
 }
+
 void GameBodyBase::addPos(glm::vec3 dltPos)
 {
     position += dltPos;

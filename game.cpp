@@ -5,14 +5,32 @@
 #include <algorithm>
 #include <SOIL/SOIL.h>
 #include "physics/q3.h"
-// using namespace reactphysics3d;
-void Game::registerCollisionBody(const GameBodyBase *obj) {
-    // rp3d::Vector3 initPosition(obj->position.x, obj->position.y, obj->position.z);
-    // rp3d::Quaternion initOrientation(obj->pitch, 0, obj->yaw);
-    // rp3d::Transform transform(initPosition , initOrientation);
-    // // Create a collision body in the world
-    // rp3d::CollisionBody* body;
-    // body = world.createCollisionBody(transform);
+
+
+void Game::registerCollisionBody(GameBodyBase *obj, bool rest) {
+    q3BodyDef bodyDef;
+    bodyDef.position = q3Vec3(obj->position.x, obj->position.y, obj->position.z);
+    if(!rest) {
+        bodyDef.bodyType = q3BodyType::eDynamicBody;
+    }
+    
+
+	q3Body* body = scene.CreateBody( bodyDef );
+    q3BoxDef boxDef; // See q3Box.h for settings details
+	q3Transform trans; // Contains position and orientation, see q3Transform.h for details
+	// q3Identity( localSpace ); // Specify the origin, and identity orientation
+	trans.position = q3Vec3(0.f, 0.f, 0.f);
+    double v[9] = {0.0};
+    const float *pSource = (const float*)glm::value_ptr(obj->rotationMatrix);
+    for (int i = 0; i < 9; ++i)
+        v[i] = pSource[i];
+    trans.rotation = q3Mat3(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
+    
+	// Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
+	// and add it to a rigid body. The transform is defined relative to the owning body
+	boxDef.Set( trans, q3Vec3( obj->size[0], obj->size[1], obj->size[2] ) );
+	body->AddBox( boxDef );
+    obj->body = body;
 }
 Game::Game(GLuint width, GLuint height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
@@ -29,15 +47,19 @@ Game::Game(GLuint width, GLuint height)
     renderfar = 5000.0f;
     
     player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f));
-    objects.push_back(player);
-    registerCollisionBody(player);
+    // objects.push_back(player);
+    // registerCollisionBody(player);
     players.push_back(player);
     boss = player;
 
     GLfloat size = 1000.0f;
     room = new GameBodyBase(OTHER, glm::vec3(0.0f, size / 2, 0.0f), glm::vec3(size));
-    objects.push_back(room);
-    registerCollisionBody(room);
+    // objects.push_back(room);
+
+    GameBodyBase* ground = new GameBodyBase(OTHER, glm::vec3(0.0f, -100/2, 0.0f), glm::vec3(100));
+    objects.push_back(ground);
+    bullets.push_back(ground);
+    registerCollisionBody(ground, true);
 }
 void Game::ProcessMouseMovement(double xoffset, double yoffset)
 {
@@ -156,7 +178,18 @@ bool Game::obbTest(GameBodyBase *a, GameBodyBase *b)
 void Game::Update(GLfloat dt)
 {
     // FIXME: add sth. for rocket
-    puts("update");
+    // puts("update");
+    static f32 accumulator = 0;
+	accumulator += dt;
+	accumulator = q3Clamp01( accumulator );
+    static int acc = 0;
+	while ( accumulator >= sceneDt )
+	{
+        scene.Step( );
+        accumulator -= sceneDt;
+        acc++;
+	}
+    // printf("%d\n", acc);
     if (rocket != NULL) {
         particles->update(dt, *rocket, 20, glm::vec3(0.0f));
     } else {
@@ -173,29 +206,22 @@ void Game::Update(GLfloat dt)
     // }
     lights[0].position = this->boss->camera.position;
     bool flag = false;
-    // for (auto a = objects.cbegin(); a != objects.cend(); a++)
-    //     for (auto b = objects.cbegin(); b != objects.cend(); b++)
-    //         if (a != b)
-    //         {
-    //             if (aabbTest(*a, *b))
-    //             {
-    //                 if ((*a) != player)
-    //                 {
-    //                     // (*a)->setSpeed(glm::vec3(0.f, 0.f, 0.f));
-    //                     // (*a)->setAcceleration(glm::vec3(0, 0, 0));
-    //                 }
-    //             }
-    //         }
-    // printf("player  %.2lf %.2lf %.2lf\n", player->speed[0], player->speed[1], player->speed[2]);
+
     int cnt = 0;
     for (auto iter = objects.cbegin(); iter != objects.cend(); iter++)
     {
         cnt++;
-        (*iter)->updateSpeed(dt);
-        (*iter)->updatePos(dt);
+        q3Transform trans = (*iter)->body->GetTransform();
+        q3Vec3 pos = trans.position;
+        q3Mat3 rot = trans.rotation;
+        // printf("%d ", cnt);
+        // (*iter)->body->prtflags();
+        // printf("q3  %.2lf %.2lf %.2lf\n", pos.x, pos.y, pos.z);
+        // printf("it  %.2lf %.2lf %.2lf\n", (*iter)->position.x, (*iter)->position.y, (*iter)->position.z);
+        (*iter)->setPos(pos.x, pos.y, pos.z);
         // if ((*iter)->type == ROCKET) std::cout << (*iter)->position.x << " " <<  (*iter)->position.y << std::endl;
     }
-    printf("%d\n", cnt);
+    // printf("%d\n", cnt);
 }
 
 void Game::initDepthMap()
@@ -255,12 +281,11 @@ void Game::ProcessInput(GLfloat dt)
                 objects.push_back(rocket);
                 registerCollisionBody(rocket);
                 rockets.push_back(rocket);
-
                 particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(500));
 
             }
         }
-        // boss->speed = boss->up * glm::dot(boss->speed, boss->up);
+        boss->speed = boss->worldUp * glm::dot(boss->speed, boss->worldUp);
         if (this->Keys[GLFW_KEY_W] == 1 || this->Keys[GLFW_KEY_W] == 3)
         {
             // printf("W %d\n", this->Keys[GLFW_KEY_W]);
@@ -294,13 +319,14 @@ void Game::ProcessInput(GLfloat dt)
 
         if (this->mouse[0] == 1)
         {
-            GameBodyBase *bullet = new GameBodyBase(OTHER, boss->camera.position + boss->camera.front, glm::vec3(0.5, 0.5, 0.5));
-            // bullet->init();
-            bullet->setSpeed(glm::vec3(5.0f * player->camera.front + 5.0f * player->camera.up));
-            // bullet->acceleration = player->camera.front;
-            bullet->addAcceleration(this->Gravity);
-            objects.push_back(bullet);
+            // GameBodyBase *bullet = new GameBodyBase(OTHER, boss->camera.position + boss->camera.front, glm::vec3(0.5, 0.5, 0.5));
+            GameBodyBase *bullet = new GameBodyBase(OTHER, player->camera.position + player->camera.front, glm::vec3(0.5, 0.5, 0.5));
             registerCollisionBody(bullet);
+            // bullet->init();
+            bullet->setSpeed(glm::vec3(5.0f * player->camera.front));
+            // bullet->acceleration = player->camera.front;
+            // bullet->addAcceleration(this->Gravity);
+            objects.push_back(bullet);
             bullets.push_back(bullet);
             this->mouse[0] = 2;
         }
@@ -383,11 +409,14 @@ void Game::Render()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
     RenderScene(shader);
-
+    int rencnt = 0;
     for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
     {
         renderObject("cube", shader, (*iter));
+        rencnt ++;
+
     }
+    // printf("render bullets: %d\n", rencnt);
 
     for (auto iter = players.begin(); iter != players.end(); iter++)
     {
@@ -416,7 +445,7 @@ void Game::RenderScene(Shader &sh)
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
     sh.SetInteger("reverse_normals", 1);
     // 这是一种特殊的cube，最大的那个cube，特殊处理
-    renderObject("cube", sh, room);
+    // renderObject("cube", sh, room);
     sh.SetInteger("reverse_normals", 0);
     glEnable(GL_CULL_FACE);
 
@@ -584,9 +613,9 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase* objec
     }
 
 
+
     sh.SetMatrix4("model", model);
     GLuint VAO = VAOmap[name];
-
 
 
     glBindVertexArray(VAO);
