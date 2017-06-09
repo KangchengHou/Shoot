@@ -7,12 +7,10 @@
 // #include "box.h"
 #include "shader.h"
 #include <map>
-#include "physics/q3.h"
 #include "light.h"
 #include "objloader.h"
 #include "particle_generator.h"
-#define _APPLE_
-// using namespace reactphysics3d;
+#include "physics/q3.h"
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -28,8 +26,9 @@ class Game
 public:
     // Game state
     GameState              State;
-    GLbyte              Keys[1024];
-    GLbyte              mouse[5];
+    bool             Keys[1024];
+    bool                   leftMouse;
+    bool                   rightMouse;
     GLuint                 Width, Height;
     GLuint shadowWidth;
     GLuint shadowHeight;
@@ -89,7 +88,7 @@ public:
     void ProcessMouseMovement(double xoffset, double yoffset);
     void registerCollisionBody(GameBodyBase *obj, bool rest = false);
 private:
-    const double sceneDt = 1.0/60.0;
+    const double sceneDt = 1.0 / 60.0;
     q3Scene scene = q3Scene( sceneDt );
 };
 

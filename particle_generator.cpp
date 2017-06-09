@@ -35,25 +35,6 @@ void ParticleGenerator::update(GLfloat dt, GameBodyBase &object, GLuint newParti
 
 void ParticleGenerator::draw()
 {
-	// Use additive blending to give it a 'glow' effect
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	// this->shader.Use();
-	// for (Particle particle : this->particles)
-	// {
-	// 	if (particle.life > 0.0f)
-	// 	{
-	// 		this->shader.SetVector3f("offset", particle.position);
-	// 		this->shader.SetVector4f("color", particle.color);
-	// 		this->texture.Bind();
-	// 		glBindVertexArray(this->VAO);
-	// 		glDrawArrays(GL_TRIANGLES, 0, 6);
-	// 		glBindVertexArray(0);
-	// 		// std::cout << particle.position.x << std::endl;
-	// 	}
-	// }
-	// // Don't forget to reset to default blending mode
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	for (Particle particle : this->particles)
 	{
 		if (particle.life > 0.0f)

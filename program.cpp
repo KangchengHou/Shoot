@@ -111,10 +111,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetWindowShouldClose(window, GL_TRUE);
     if (key >= 0 && key < 1024)
     {
-        if (action == GLFW_PRESS && Shoot.Keys[key] > 2)
-            Shoot.Keys[key] = 1;
-        else if (action == GLFW_RELEASE && Shoot.Keys[key] < 3)
-            Shoot.Keys[key] = 3;
+        if (action == GLFW_PRESS)
+            Shoot.Keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            Shoot.Keys[key] = false;
     }
 }
 
@@ -138,23 +138,37 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    Shoot.boss->ProcessMouseMovement(xoffset, yoffset);
+    // 这是侯新加的 谁都不能动！！！！！！！！！！！！！！！！
+    if (Shoot.Keys[GLFW_KEY_P]) {
+        // std::cout << "?" << std::endl;
+        Shoot.boss->updateCameraPosition(xoffset, yoffset);
+    }
+    else {
+        // std::cout << "!" << std::endl;
+        Shoot.boss->ProcessMouseMovement(xoffset, yoffset);
+
+    }
     // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
 
 }
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+void mouse_button_callback(GLFWwindow* window, int button, int action, int modes)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
-        if (action == GLFW_PRESS && Shoot.mouse[0] == 0)
-            Shoot.mouse[0] = 1;
+        if (action == GLFW_PRESS)
+            Shoot.leftMouse = true;
         else if (action == GLFW_RELEASE)
-            Shoot.mouse[0] = 0;
-        // puts("fuck");
+            Shoot.leftMouse = false;
+    }
+    if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (action == GLFW_PRESS)
+            Shoot.rightMouse = true;
+        else if (action == GLFW_RELEASE)
+            Shoot.rightMouse = false;
     }
 }
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Shoot.player->camera.ProcessMouseScroll(yoffset);
+    // Shoot.boss->camera.ProcessMouseScroll(yoffset);
 }
 
 

@@ -26,13 +26,13 @@ void GameBodyBase::rotate(GLfloat a, glm::vec3 axis)
 void GameBodyBase::addSpeed(glm::vec3 dltSpeed) {
     speed += dltSpeed;
 }
+// void GameBodyBase::setSpeed(glm::vec3 newSpeed) {
+//     speed = newSpeed;
+// }
 void GameBodyBase::setSpeed(glm::vec3 newSpeed) {
     speed = newSpeed;
     body->SetLinearVelocity(q3Vec3(speed.x, speed.y, speed.z));
-    puts("fuck");
-}
-void GameBodyBase::setSpeed(int d, GLfloat v) {
-    speed[d] = v;
+    // puts("fuck");
 }
 void GameBodyBase::setAcceleration(glm::vec3 newAcceleration) {
     acceleration = newAcceleration;
@@ -43,14 +43,25 @@ void GameBodyBase::setAcceleration(int d, GLfloat a) {
 void GameBodyBase::addAcceleration(glm::vec3 dltAcceleration) {
     acceleration += dltAcceleration;
 }
-void GameBodyBase::updateSpeed(GLfloat dt)
+void GameBodyBase::updatePosSpeed(GLfloat dt)
 {
-    speed.x += acceleration.x * dt;
-    speed.y += acceleration.y * dt;
-    speed.z += acceleration.z * dt;
+
+
+    if (type == ROCKET) {
+        GLfloat x = cos(glm::radians(selfpitch)) * cos(glm::radians(selfyaw));
+        GLfloat y = sin(glm::radians(selfpitch));
+        GLfloat z = cos(glm::radians(selfpitch)) * sin(glm::radians(selfyaw));
+
+        this->speed = glm::vec3(x, y, z) * SPEED;
+    } else {
+        speed.x += acceleration.x * dt;
+        speed.y += acceleration.y * dt;
+        speed.z += acceleration.z * dt;
+
+    }
 
 }
-void GameBodyBase::updatePos(GLfloat dt)
+void GameBodyBase::updatePos(GLfloat dt,  GLboolean p_pressed)
 {
     // std::cout << "before" << position.y << std::endl;
     // std::cout << "speed" << speed.y << std::endl;
@@ -58,9 +69,13 @@ void GameBodyBase::updatePos(GLfloat dt)
     position.y += speed.y * dt;
     position.z += speed.z * dt;
     // std::cout << "after" << position.y << std::endl;
-    this->camera.updatePos(this->position, this->front, this->up);
-}
+    if (p_pressed)
+        this->camera.updatePos_point(this->position, this->front, this->up);
+    else
+        this->camera.updatePos_track(this->position, this->front, this->up);
 
+
+}
 void GameBodyBase::addPos(glm::vec3 dltPos)
 {
     position += dltPos;
