@@ -47,8 +47,8 @@ Game::Game(GLuint width, GLuint height)
     renderfar = 5000.0f;
     
     player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f));
-    // objects.push_back(player);
-    // registerCollisionBody(player);
+    objects.push_back(player);
+    registerCollisionBody(player);
     players.push_back(player);
     boss = player;
 
@@ -276,7 +276,7 @@ void Game::ProcessInput(GLfloat dt)
             if (rocket == NULL) {
                 std::cout << "fuck" << std::endl;
                 glm::vec3 rocketPos = player->position + glm::vec3(0.0f, 2.0f, 0.0f);
-                rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f), glm::vec4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), -89.0f, 89.0f);
+                rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f),  0.f, -90.f, 0.f, glm::vec4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), -89.0f, 89.0f);
                 rocket->speed = glm::vec3(0.0f, 1.0f, 0.0f);
                 objects.push_back(rocket);
                 registerCollisionBody(rocket);
@@ -320,7 +320,7 @@ void Game::ProcessInput(GLfloat dt)
         if (this->mouse[0] == 1)
         {
             // GameBodyBase *bullet = new GameBodyBase(OTHER, boss->camera.position + boss->camera.front, glm::vec3(0.5, 0.5, 0.5));
-            GameBodyBase *bullet = new GameBodyBase(OTHER, player->camera.position + player->camera.front, glm::vec3(0.5, 0.5, 0.5));
+            GameBodyBase *bullet = new GameBodyBase(OTHER, player->camera.position + player->camera.front, glm::vec3(0.5, 0.5, 0.5), player->pitch, player->yaw, player->roll);
             registerCollisionBody(bullet);
             // bullet->init();
             bullet->setSpeed(glm::vec3(5.0f * player->camera.front));

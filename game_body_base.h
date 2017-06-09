@@ -105,14 +105,14 @@ public:
     GameBodyBase(OBJECTTYPE type,
                  glm::vec3 position,
                  glm::vec3 size,
+                 GLfloat pitch = PITCH,
+                 GLfloat yaw = YAW,
+                 GLfloat roll = ROLL,
                  glm::vec3 color = glm::vec3(1, 1, 1),
                  glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
                  glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f),
                  GLfloat selfyaw = 89.0f,
-                 GLfloat selfpitch = 0.0f,
-                 GLfloat yaw = YAW,
-                 GLfloat roll = ROLL,
-                 GLfloat pitch = PITCH)
+                 GLfloat selfpitch = 0.0f)
         : type(type),
           position(position),
           size(size),
