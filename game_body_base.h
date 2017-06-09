@@ -29,73 +29,83 @@ enum OBJECTTYPE
 // Default player values
 const GLfloat YAW = 90.0f;
 const GLfloat PITCH = -45.0f;
+const GLfloat YAWACC = 0.5f;
+const GLfloat PITCHACC = 0.5f;
 const GLfloat ROLL = 0.0f;
 const GLfloat SPEED = 5.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
+const GLfloat CAMERARADIUS = 10.0f;
+const glm::vec3 WORLDUP = glm::vec3(0.0f, 1.0f, 0.0f);
+
 
 class Camera
 {
 public:
     glm::vec3 position;
+    glm::vec3 target;
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
-    GLfloat zoom;
+
+    GLfloat zoom = 1;
+    GLfloat MouseSensitivity;
 
     // 照相机在以被拍摄物体为中心的球上
-    GLfloat cameraposyaw = -90.0f;
-    GLfloat camerapospitch = 45.0f;
+    GLfloat cameraposyaw;
+    GLfloat camerapospitch;
     GLfloat cameraposradius = 5.0f;
 
-    Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f)) {
-        cameraposyaw = -90.0f;
-        camerapospitch = 45.0f;
-        cameraposradius = 5.0f;
-        front = glm::vec3(0.0f, 0.7f * cameraposradius, 0.7f * cameraposradius);
-        right = glm::normalize(glm::cross(worldUp, this->front));
-        up = glm::normalize(glm::cross( this->front, this->right));
-        position = pos + front;
-        zoom = 1;
-        std::cout << "in cfun " << this->front.x << " " << this->front.y << " " << this->front.z << " " << std::endl;
+    Camera(glm::vec3 targetpos, glm::vec3 targetfront, GLfloat targetyaw, GLfloat targetpitch) {
+
+        MouseSensitivity = SENSITIVTY;
+        cameraposradius = CAMERARADIUS;
+        updateSelfAnglesAccordingToTargetAngles(targetyaw, targetpitch);
+        updateBaseVectorsAccordingToSelfAngles();
+        updateTargetPosition(targetpos);
+        updateCameraPosition();
+        // zoom = 1;
+        // std::cout << "in cfun " << this->front.x << " " << this->front.y << " " << this->front.z << " " << std::endl;
     }
-    void updatePos(glm::vec3 position, glm::vec3 front, glm::vec3 up)
-    {
-        // this->position = position - front * 2.0f + up * 1.0f;
-        this->position = position + glm::vec3(0.0f, 0.0f, 3.0f) + glm::vec3(0.0f, 3.0f, 0.0f);
+    void updateSelfAnglesAccordingToTargetAngles(GLfloat targetyaw, GLfloat targetpitch) {
+        cameraposyaw = targetyaw - 180.0f;
+        camerapospitch = -targetpitch;
     }
-    // 物体更新位置时会更新照相机位置 会根据是否按p进入其中一个函数
-    void updatePos_point(glm::vec3 pos, glm::vec3 front, glm::vec3 up)
-    {
-        // this->position = position - front * 2.0f + up * 1.0f;
-        this->position = pos + this->front;
+    void updateCameraPosition() {
+        position = target - front * cameraposradius;
     }
-    void updatePos_track(glm::vec3 pos, glm::vec3 front, glm::vec3 up)
-    {
-        this->position = pos + glm::vec3(0.0f, 0.7f, 0.7f) * cameraposradius;
+    void updateTargetPosition(glm::vec3 targetpos) {
+        target = targetpos;
+    }
+    void updateBaseVectorsAccordingToSelfAngles() {
+        glm::vec3 to;
+        to.x = cos(glm::radians(camerapospitch)) * cos(glm::radians(cameraposyaw));
+        to.y = sin(glm::radians(camerapospitch));
+        to.z = -cos(glm::radians(camerapospitch)) * sin(glm::radians(cameraposyaw));
+
+        this->front = glm::normalize(-to);
+        this->right = glm::normalize(glm::cross(this->front, WORLDUP)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        this->up = glm::normalize(glm::cross(this->right, this->front));
     }
 
-    // 没按p时会进入这里
-    void updateCameraVectors(GLfloat yaw, GLfloat pitch, glm::vec3 worldUp)
-    {
-        // Calculate the new front vector
-        glm::vec3 f;
-        f.x = cameraposradius * cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        f.y = cameraposradius * sin(glm::radians(pitch));
-        f.z = -cameraposradius * sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        // this->front = glm::normalize(f);
-        this->front = (-f);
-        // Also re-calculate the right and up vector
-        this->right = glm::normalize(glm::cross(worldUp, this->front)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        this->up = glm::normalize(glm::cross( this->front, this->right));
+    void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset) {
+        xoffset *= this->MouseSensitivity;
+        yoffset *= this->MouseSensitivity;
+
+        this->cameraposyaw += xoffset;
+        this->camerapospitch += yoffset;
+
+
+        this->updateBaseVectorsAccordingToSelfAngles();
+        this->updateCameraPosition();
     }
 
     glm::mat4 GetViewMatrix() const
     {
-        std::cout << "in getviewmatrix front " << this->front.x << " " << this->front.y << " " << this->front.z << " " << std::endl;
-        std::cout << "in getviewmatrix position " << this->position.x << " " << this->position.y << " " << this->position.z << " " << std::endl;
+        // std::cout << "in getviewmatrix front " << this->front.x << " " << this->front.y << " " << this->front.z << " " << std::endl;
+        // std::cout << "in getviewmatrix position " << this->position.x << " " << this->position.y << " " << this->position.z << " " << std::endl;
 
-        return glm::lookAt(this->position, this->position - this->front, this->up);
+        return glm::lookAt(this->position, this->target, this->up);
     }
 
 };
@@ -105,94 +115,99 @@ class GameBodyBase
 public:
     q3Body* body = NULL;
     // GameBodyBase Attributes
-    OBJECTTYPE type;
+    OBJECTTYPE type; glm::vec3 size;
+    glm::vec3 color;
+
     glm::vec3 acceleration;
     glm::vec3 speed;
     glm::vec3 position;
-    glm::vec3 size;
-    glm::vec3 color;
+
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
-    glm::vec3 worldUp;
+
+
     Camera camera;
     // Eular Angles
     GLfloat pitch; // x
     GLfloat yaw;   // y
     GLfloat roll;  // z
     glm::mat3 rotationMatrix;
-    // 画火箭用的 画人的时候应该可以无视掉 其他的正常使用
-    GLfloat selfyaw;
-    GLfloat selfpitch;
-    GLfloat selfyawspeed;
-    GLfloat selfpitchspeed;
-    const GLfloat selfyawacc = 0.5f;
-    const GLfloat selfpitchacc = 0.5f;
 
-    GLboolean stuck[6];
-    // GameBodyBase options
-    GLfloat MovementSpeed;
+    // GLfloat renderyaw;
+    // GLfloat renderpitch;
+    // GLboolean synchro;
+
+    // 用以产生火箭各种姿态renderyaw
+    GLfloat yawspeed;
+    GLfloat pitchspeed;
+    const GLfloat yawacc = YAWACC;
+    const GLfloat pitchacc = PITCHACC;
+
+    const GLfloat MovementSpeed;
+
     GLfloat MouseSensitivity;
-    GLfloat zoom;
+
     GameBodyBase(OBJECTTYPE type,
                  glm::vec3 position,
-                 glm::vec3 size,
-                 GLfloat pitch = PITCH,
-                 GLfloat yaw = YAW,
-                 GLfloat roll = ROLL,
+                 GLfloat yaw,
+                 GLfloat pitch,
+                 GLfloat roll,
 
-                 glm::vec3 color = glm::vec3(1, 1, 1),
-                 glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-                 glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f),
-                 GLfloat selfyaw = 89.0f,
-                 GLfloat selfpitch = 0.0f
+                 // GLfloat renderyaw,
+                 // GLfloat renderpitch,
+                 // GLboolean synchro,
+
+                 glm::vec3 size = glm::vec3(1, 1, 1),
+                 glm::vec3 color = glm::vec3(1, 1, 1)
+                                   // ,GLfloat zoom = 1
                 )
         : type(type),
           position(position),
-          size(size),
           acceleration(glm::vec3(0., 0., 0.)),
           speed(glm::vec3(0., 0., 0.)),
+          yaw(yaw),
+          pitch(pitch),
+          roll(roll),
+
+          // renderyaw(renderyaw),
+          // renderpitch(renderpitch),
+          // synchro(synchro),
+
+          size(size),
           color(color),
-          front(front),
-          up(up),
-          selfyaw(selfyaw),
-          selfpitch(selfpitch),
           MovementSpeed(SPEED),
           MouseSensitivity(SENSITIVTY),
-          zoom(ZOOM),
-          camera(Camera(position))
+          yawspeed(0.0f),
+          yawacc(YAWACC),
+          pitchspeed(0.0f),
+          pitchacc(PITCHACC),
+
+
+          // 下面会覆盖掉的 只是因为没有Camera()的构造函数
+          camera(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 90.0f, 0.0f))
     {
-        this->position = position;
-        // this->worldUp = up;
-        this->worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-        this->yaw = yaw;
-        this->roll = roll;
-        this->pitch = pitch;
+
+        // camera.zoom = ZOOM;
+
         this->rotationMatrix = euler2matrix(pitch, yaw, roll);
-
-        this->selfyawspeed = 0.0f;
-        // this->selfyawacc = 0.0f;
-
-        this->selfpitchspeed = 0.0f;
-        // this->selfpitchacc = 0.0f;
-        // this->camera.updatePos(position, this->front, this->up);
-        this->camera.zoom = ZOOM;
-        this->updateGameBodyBaseVectors();
+        this->updateBaseVectorsAccordingToSelfAngles();
+        this->camera = Camera(position, front, yaw, pitch);
     }
     ~GameBodyBase();
 
-    void rotate(GLfloat a, glm::vec3 axis);
+    // void rotate(GLfloat a, glm::vec3 axis);
     void setSpeed(glm::vec3 newSpeed);
-    void setSpeed(int d, GLfloat v);
-    void addSpeed(glm::vec3 dltSpeed);
+    // void setSpeed(int d, GLfloat v);
+    // void addSpeed(glm::vec3 dltSpeed);
     void setAcceleration(glm::vec3 newAcceleration);
-    void setAcceleration(int d, GLfloat a);
-    void addAcceleration(glm::vec3 dltAcceleration);
-    void addPos(glm::vec3 dltPos);
-    void initRenderData();
-    void render(glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, const GameBodyBase &player, Shader shader);
-    void updateVectors();
-    // Constructor with vectors
+    // void setAcceleration(int d, GLfloat a);
+    // void addAcceleration(glm::vec3 dltAcceleration);
+    // void addPos(glm::vec3 dltPos);
+    // void initRenderData();
+    // void render(glm::vec3 color, glm::vec3 lightPos, GLuint gameWidth, GLuint gameHeight, const GameBodyBase &player, Shader shader);
+    // void updateVectors();
+    // // Constructor with vectors
     glm::mat3 euler2matrix(double pitch, double yaw, double roll)
     {
         // Calculate rotation about x axis
@@ -217,96 +232,57 @@ public:
         glm::mat3 R = R_z * R_y * R_x;
         return R;
     }
-    void updateAngleAndAngleSpeed(GLfloat dt, GLboolean p_pressed) {
-        updateAngleSpeed(dt);
-        updateAngle(dt);
-    }
 
-    void updatePosAndPosSpeed(GLfloat dt, GLboolean p_pressed) {
-        updatePosSpeed(dt);
-        updatePos(dt, p_pressed);
-    }
-    void setPos(double x, double y, double z, GLboolean p_pressed)
+    void setPos(double x, double y, double z)
     {
         position.x = x;
         position.y = y;
         position.z = z;
-        // this->camera.updatePos(this->position, this->front, this->up);
 
-        std::cout << "p pressed? : " << p_pressed << std::endl;
-        if (p_pressed) {
-            std::cout << this->position.x << " " << this->position.y << " " << this->position.z << std::endl;
-            this->camera.updatePos_point(this->position, this->front, this->up);
-        } else
-            this->camera.updatePos_track(this->position, this->front, this->up);
-    }
-    // Constructor with scalar values
-    GameBodyBase(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) : front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), zoom(ZOOM), camera(Camera(position))
-    {
-        this->position = glm::vec3(posX, posY, posZ);
-        this->worldUp = glm::vec3(upX, upY, upZ);
-        this->yaw = yaw;
-        this->pitch = pitch;
-        // this->updateGameBodyBaseVectors();
-        for (int i = 0; i < 6; i++)
-            this->stuck[i] = GL_FALSE;
+
+        this->camera.updateTargetPosition(position);
+
+        this->camera.updateCameraPosition();
+
     }
 
-    // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-
-    // Processes input received from any keyboard-like input system. Accepts input parameter in the form of player defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard(GameBodyBase_Movement direction, GLfloat deltaTime)
+    void ProcessKeyboard(GameBodyBase_Movement direction, GLfloat deltaTime, GLboolean pressed)
     {
         // printf("type %d\n", type);
         if (type == PLAYER)
         {
-            // GLfloat velocity = this->MovementSpeed * deltaTime;
 
-            GLfloat y = glm::dot(this->speed, this->up);
-            this->speed -= y * this->up;
+
             if (direction == FORWARD)
-                this->speed += this->front * this->MovementSpeed;
+                setSpeed(this->speed + glm::vec3(front.x, 0, front.z) * this->MovementSpeed);
             if (direction == BACKWARD)
-                this->speed -= this->front * this->MovementSpeed;
+                setSpeed(this->speed - glm::vec3(front.x, 0, front.z) * this->MovementSpeed);
             if (direction == LEFT)
-                this->speed -= this->right * this->MovementSpeed;
+                setSpeed(this->speed - glm::vec3(right.x, 0, right.z) * this->MovementSpeed);
             if (direction == RIGHT)
-                this->speed += this->right * this->MovementSpeed;
-            if (glm::length(this->speed) > 1e-5)
-                this->speed = glm::normalize(this->speed) * this->MovementSpeed;
-            this->speed += y * this->up;
-            this->position += this->speed * deltaTime;
+                setSpeed(this->speed + glm::vec3(right.x, 0, right.z) * this->MovementSpeed);
+
 
         }
         else if (type == ROCKET)
         {
             if (direction == FORWARD) {
-                // std::cout << "forwardpitch: " << " ";
-                this->selfpitchspeed -= this->selfpitchacc;
-                // std::cout << this->selfpitchacc << std::endl;
+                this->pitchspeed -= this->pitchacc;
             }
             if (direction == BACKWARD) {
-                // std::cout << "backwardpitch: " << " ";
-                this->selfpitchspeed += this->selfpitchacc;
-                // std::cout << this->selfpitchacc << std::endl;
+                this->pitchspeed += this->pitchacc;
             }
             if (direction == RIGHT) {
-                // std::cout << "rightyaw: " << " ";
-                this->selfyawspeed += this->selfyawacc;
-                // std::cout << this->selfyawspeed << std::endl;
+                this->yawspeed += this->yawacc;
             }
             if (direction == LEFT) {
-                // std::cout << "leftyaw: " << " ";
-                this->selfyawspeed -= this->selfyawacc;
-                // std::cout << this->selfyawacc << std::endl;
+                this->yawspeed -= this->yawacc;
             }
 
         }
 
     }
 
-    // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-    // 没按p时动鼠标进入这里
     void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch = true)
     {
         xoffset *= this->MouseSensitivity;
@@ -314,84 +290,29 @@ public:
 
         this->yaw -= xoffset;
         this->pitch += yoffset;
-        // std::cout << "yaw : " << this->yaw << " pitch : " << this->pitch << std::endl;
-        // Make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (this->pitch > 89.0f)
-                this->pitch = 89.0f;
-            if (this->pitch < -89.0f)
-                this->pitch = -89.0f;
-        }
+
 
         // Update front, right and up Vectors using the updated Eular angles
-        this->updateGameBodyBaseVectors();
+        this->updateBaseVectorsAccordingToSelfAngles();
+        this->camera.updateSelfAnglesAccordingToTargetAngles(this->yaw, this->pitch);
+        this->camera.updateBaseVectorsAccordingToSelfAngles();
+        this->camera.updateCameraPosition();
     }
 
-    void ProcessMouseScroll(GLfloat yoffset)
-    {
-        // if (this->zoom >= 1.0f && this->zoom <= 45.0f)
-        //     this->zoom -= yoffset;
-        // if (this->zoom <= 1.0f)
-        //     this->zoom = 1.0f;
-        // if (this->zoom >= 45.0f)
-        //     this->zoom = 45.0f;
-        if (camera.cameraposradius >= 2.0f) {
-            camera.cameraposradius -= yoffset;
-            cameraUpdateRelativePosition2Object();
-        }
-    }
-
-    // 按p时动鼠标进入这里
-    void updateCameraPosition(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch = true) {
-        xoffset *= this->MouseSensitivity;
-        yoffset *= this->MouseSensitivity;
-
-        camera.cameraposyaw += xoffset;
-        camera.camerapospitch += yoffset;
-
-        cameraUpdateRelativePosition2Object();
-    }
-
-    void cameraUpdateRelativePosition2Object() {
-        camera.position.x = position.x + camera.cameraposradius * cos(glm::radians(camera.camerapospitch)) * cos(glm::radians(camera.cameraposyaw));
-        camera.position.z = position.z - camera.cameraposradius * cos(glm::radians(camera.camerapospitch)) * sin(glm::radians(camera.cameraposyaw));
-        camera.position.y = position.y + camera.cameraposradius * sin(glm::radians(camera.camerapospitch));
-
-        camera.front = -(position - camera.position);
-        camera.right = glm::normalize(glm::cross(worldUp, camera.front));
-        camera.up = glm::normalize(glm::cross(camera.front, camera.right));
-        // std::cout << "after set front " << camera.front.x << " " << camera.front.y << " " << camera.front.z << " " << std::endl;
-    }
-
-    // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-
-private:
+// private:
     // Calculates the front vector from the GameBodyBase's (updated) Eular Angles
-    void updateGameBodyBaseVectors()
+    void updateBaseVectorsAccordingToSelfAngles()
     {
         // Calculate the new front vector
-        camera.updateCameraVectors(this->yaw, this->pitch, this->worldUp);
-        glm::vec3 front;
-        front.x = cos(glm::radians(this->yaw));
-        front.y = sin(glm::radians(0.f));
-        front.z = sin(glm::radians(this->yaw));
-        this->front = glm::normalize(front);
+        // camera.updateCameraVectors(this->yaw, this->pitch, this->worldUp);
+        glm::vec3 f;
+        f.x = cos(glm::radians(this->pitch)) * cos(glm::radians(this->yaw));
+        f.y = sin(glm::radians(this->pitch));
+        f.z = -cos(glm::radians(this->pitch)) * sin(glm::radians(this->yaw));
+        this->front = glm::normalize(f);
         // Also re-calculate the right and up vector
-        this->right = glm::normalize(glm::cross(this->front, this->worldUp)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        this->right = glm::normalize(glm::cross(this->front, WORLDUP)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         this->up = glm::normalize(glm::cross(this->right, this->front));
-    }
-    void updatePosSpeed(GLfloat dt);
-    void updatePos(GLfloat dt,  GLboolean p_pressed);
-    void updateAngleSpeed(GLfloat dt) {
-        // 在处理input的时候已经做了
-
-    }
-
-    void updateAngle(GLfloat dt) {
-        this->selfyaw += this->selfyawspeed * dt;
-        this->selfpitch += this->selfpitchspeed * dt;
-
     }
 
 

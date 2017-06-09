@@ -17,18 +17,20 @@ Game::Game(GLuint width, GLuint height)
     rendernear = 0.1f;
     renderfar = 5000.0f;
 
-    player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f));
+    player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 10.0f, 0.0f), 90.0f, 0.0f, 0.0f, glm::vec3(0.3f, 0.5f, 0.3f));
+    // player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 10.0f, 0.0f), 90.0f, 0.0f, 0.0f, 90.0f, 0.0f, false, glm::vec3(0.3f, 0.5f, 0.3f));
     objects.push_back(player);
     players.push_back(player);
     registerCollisionBody(player);
 
     boss = player;
 
-    GLfloat size = 1000.0f;
-    room = new GameBodyBase(OTHER, glm::vec3(0.0f, size / 2, 0.0f), glm::vec3(size));
+    // GLfloat size = 100.0f;
+    // room = new GameBodyBase(OTHER, glm::vec3(0.0f, size / 2, 0.0f), 90.0f, 0.0f, 0.0f, 90.0f, 0.0f, false, glm::vec3(size));
     // objects.push_back(room);
 
-    GameBodyBase* ground = new GameBodyBase(OTHER, glm::vec3(0.0f, -100 / 2, 0.0f), glm::vec3(100));
+    GameBodyBase* ground = new GameBodyBase(OTHER, glm::vec3(0.0f, -100 / 2, 0.0f), 90.0f, 0.0f, 0.0f, glm::vec3(100));
+    // GameBodyBase* ground = new GameBodyBase(OTHER, glm::vec3(0.0f, -100 / 2, 0.0f), 90.0f, 0.0f, 0.0f, 90.0f, 0.0f, false, glm::vec3(100));
     objects.push_back(ground);
     bullets.push_back(ground);
     registerCollisionBody(ground, true);
@@ -36,10 +38,10 @@ Game::Game(GLuint width, GLuint height)
 }
 void Game::ProcessMouseMovement(double xoffset, double yoffset)
 {
-    if (this->State == GAME_ACTIVE)
-    {
-        this->boss->ProcessMouseMovement(xoffset, yoffset);
-    }
+    // if (this->State == GAME_ACTIVE)
+    // {
+    //     this->boss->ProcessMouseMovement(xoffset, yoffset);
+    // }
 }
 Game::~Game()
 {
@@ -75,14 +77,6 @@ void Game::Init()
 
 void Game::Update(GLfloat dt)
 {
-    // lights[0].position = this->boss->camera.position;
-    // bool flag = false;
-    // for (auto iter = objects.cbegin(); iter != objects.cend(); iter++)
-    // {
-    //     (*iter)->updateAngleAndAngleSpeed(dt, Keys[GLFW_KEY_P]);
-    //     (*iter)->updatePosAndPosSpeed(dt, Keys[GLFW_KEY_P]);
-    // }
-
     static f32 accumulator = 0;
     accumulator += dt;
     accumulator = q3Clamp01( accumulator );
@@ -102,19 +96,41 @@ void Game::Update(GLfloat dt)
     lights[0].position = this->boss->camera.position;
     bool flag = false;
 
+    // std::cout << "107m" << std::endl;
+
+
     int cnt = 0;
     for (auto iter = objects.cbegin(); iter != objects.cend(); iter++)
     {
+        // std::cout << (*iter)->type << std::endl;
+        if ((*iter)->type == ROCKET) {
+            (*iter)->yaw += (*iter)->yawspeed * dt;
+            (*iter)->pitch += (*iter)->pitchspeed * dt;
+            // (*iter)->yaw = (*iter)->renderyaw;
+            // (*iter)->pitch = (*iter)->renderpitch;
+            std::cout << "----" << std::endl;
+            std::cout << (*iter)->yaw << " " << (*iter)->pitch << " " << std::endl;
+
+            (*iter)->updateBaseVectorsAccordingToSelfAngles();
+            std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " "  << std::endl;
+            // // std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " "  << std::endl;
+            // // std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " "  << std::endl;
+
+            std::cout << "----" << std::endl;
+
+            (*iter)->setSpeed((*iter)->front * (*iter)->MovementSpeed);
+
+
+        }
         cnt++;
         q3Transform trans = (*iter)->body->GetTransform();
         q3Vec3 pos = trans.position;
         q3Mat3 rot = trans.rotation;
-        // (*iter)->setPos(pos.x, pos.y, pos.z);
 
-        // std::cout << " ??? " << std::endl;
-        (*iter)->updateAngleAndAngleSpeed(dt, Keys[GLFW_KEY_P]);
-        (*iter)->setPos(pos.x, pos.y, pos.z, Keys[GLFW_KEY_P]);
-        //     (*iter)->updatePosAndPosSpeed(dt, Keys[GLFW_KEY_P]);
+        // std::cout << "115" << std::endl;
+
+        (*iter)->setPos(pos.x, pos.y, pos.z);
+        // std::cout << (*iter)->position.x << " " << (*iter)->position.y << " " << (*iter)->position.z << " " << std::endl;
     }
 
 }
@@ -153,8 +169,8 @@ void Game::ProcessInput(GLfloat dt)
 
     if (this->State == GAME_ACTIVE)
     {
-        // now in the game state
-        // process input for player
+        //     // now in the game state
+        //     // process input for player
         if (this->Keys[GLFW_KEY_TAB] == 1 )
         {
             this->Keys[GLFW_KEY_TAB] = false;
@@ -162,6 +178,7 @@ void Game::ProcessInput(GLfloat dt)
                 std::cout << "no rocket" << std::endl;
             } else if (boss->type == PLAYER) {
                 boss = rocket;
+                std::cout << "change boss to rocket" << std::endl;
             } else if (boss->type == ROCKET) {
                 boss = player;
             }
@@ -170,61 +187,60 @@ void Game::ProcessInput(GLfloat dt)
         if (this->Keys[GLFW_KEY_ENTER] == 1 )
         {
             // if (rocket == NULL) {
-            // std::cout << "fuck" << std::endl;
-            glm::vec3 rocketPos = player->position + glm::vec3(0.0f, 2.0f, 0.0f);
-            rocket = new GameBodyBase(ROCKET, rocketPos, glm::vec3(1.0f), -45.0f, 90.0f, 0.0f, glm::vec4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), -89.0f, 89.0f);
-            rocket->speed = glm::vec3(0.0f, 1.0f, 0.0f);
+            // std::cout << "202" << std::endl;
+
+            Keys[GLFW_KEY_ENTER] = false;
+            // std::cout << "204" << std::endl;
+
+            glm::vec3 rocketPos = player->position + WORLDUP * 2.0f;
+            rocket = new GameBodyBase(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, glm::vec3(1.0f),  glm::vec4(1.0f));
+            // rocket = new GameBodyBase(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, 90.0f, 90.0f, false, glm::vec3(1.0f),  glm::vec4(1.0f));
+            // std::cout << "209" << std::endl;
+            // std::cout << "211" << std::endl;
 
             objects.push_back(rocket);
             rockets.push_back(rocket);
-            registerCollisionBody(rocket);
-            rocket->body->ApplyLinearForce(q3Vec3(0, 9.8 * rocket->body->GetMass(), 0));
+            registerCollisionBody(rocket, false, 0);
+            rocket->setSpeed(glm::vec3(0.0f, 1.0f, 0.0f));
+
+            // std::cout << "198" << std::endl;
 
             particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(5));
 
         }
 
-
-        // boss->speed = boss->up * glm::dot(boss->speed, boss->up);
         if (this->Keys[GLFW_KEY_W] == true)
-        {
-            // printf("W %d\n", this->Keys[GLFW_KEY_W]);
-            boss->ProcessKeyboard(FORWARD, dt);
-            // this->Keys[GLFW_KEY_W] ++;
+            boss->ProcessKeyboard(FORWARD, dt, this->Keys[GLFW_KEY_W]);
+        else if (this->Keys[GLFW_KEY_S] == true)
+            boss->ProcessKeyboard(BACKWARD, dt, this->Keys[GLFW_KEY_S]);
+        else if (this->Keys[GLFW_KEY_A] == true)
+            boss->ProcessKeyboard(LEFT, dt, this->Keys[GLFW_KEY_A]);
+        else if (this->Keys[GLFW_KEY_D] == true)
+            boss->ProcessKeyboard(RIGHT, dt, this->Keys[GLFW_KEY_D]);
+        else {
+            if (boss->type == PLAYER) {
+
+                q3Vec3 v = boss->body->GetLinearVelocity();
+                boss->setSpeed(glm::vec3(0.0f, v.y, 0.0f));
+            }
         }
-        if (this->Keys[GLFW_KEY_S] == true)
-        {
-            boss->ProcessKeyboard(BACKWARD, dt);
-            // this->Keys[GLFW_KEY_S] ++;
-        }
-        if (this->Keys[GLFW_KEY_A] == true)
-        {
-            boss->ProcessKeyboard(LEFT, dt);
-            // this->Keys[GLFW_KEY_A] ++;
-        }
-        if (this->Keys[GLFW_KEY_D] == true)
-        {
-            boss->ProcessKeyboard(RIGHT, dt);
-            // this->Keys[GLFW_KEY_D] ++;
-        }
+
 
         if (this->Keys[GLFW_KEY_SPACE] == 1)
         {
-            boss->addPos(boss->up * 0.1f);
-            boss->addSpeed(glm::vec3(5.0f * boss->up));
-            boss->setAcceleration(1, 0);
-            boss->addAcceleration(this->Gravity);
-            // this->Keys[GLFW_KEY_SPACE]++;
+            boss->setSpeed(glm::vec3(boss->MovementSpeed * boss->up));
         }
 
         if (leftMouse)
         {
-            GameBodyBase *bullet = new GameBodyBase(OTHER, player->camera.position - player->camera.front, glm::vec3(0.5, 0.5, 0.5), player->pitch, player->yaw, player->roll);
+            leftMouse = false;
+            GameBodyBase *bullet = new GameBodyBase(OTHER, player->position + player->front,  player->pitch, player->yaw, player->roll,  glm::vec3(0.5, 0.5, 0.5));
+            // GameBodyBase *bullet = new GameBodyBase(OTHER, player->position + player->front,  player->pitch, player->yaw, player->roll, player->pitch, player->yaw,  true,  glm::vec3(0.5, 0.5, 0.5));
             registerCollisionBody(bullet);
             // bullet->init();
-            bullet->setSpeed(glm::vec3(5.0f * player->camera.front));
+            bullet->setSpeed(glm::vec3(5.0f * player->front));
             // bullet->acceleration = player->camera.front;
-            // bullet->addAcceleration(this->Gravity);
+            // bullet->setAcceleration(this->Gravity);
             objects.push_back(bullet);
             bullets.push_back(bullet);
 
@@ -263,10 +279,10 @@ void Game::depthRender()
     // 然后用这个shader渲染所有东西
     RenderScene(depthShader);
 
-    // for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
-    // {
-    //     renderObject("cube", depthShader, (*iter)->position, glm::vec3(1.5f));
-    // }
+    for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
+    {
+        renderObject("cube", depthShader, (*iter));
+    }
 
     for (auto iter = players.begin(); iter != players.end(); iter++)
     {
@@ -313,14 +329,17 @@ void Game::Render()
     for (auto iter = players.begin(); iter != players.end(); iter++)
     {
         renderObject("player", shader, (*iter));
+        // std::cout << "317" << std::endl;
+
     }
 
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("rocket").Bind();
     for (auto iter = rockets.begin(); iter != rockets.end(); iter++) {
         // std::cout << "have huojian" << std::endl;
-        renderObject("rocket", shader, rocket);
+        renderObject("rocket", shader, (*iter));
     }
+    // std::cout << rockets.size() << std::endl;
     if (rocket != NULL) {
         glActiveTexture(GL_TEXTURE0);
         ResourceManager::GetTexture("fire").Bind();
@@ -332,14 +351,14 @@ void Game::Render()
 void Game::RenderScene(Shader &sh)
 {
     // 房间的cube
-    GLfloat size = 1000.0f;
+    // GLfloat size = 1000.0f;
 
-    glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-    sh.SetInteger("reverse_normals", 1);
-    // 这是一种特殊的cube，最大的那个cube，特殊处理
-    renderObject("cube", sh, room);
-    sh.SetInteger("reverse_normals", 0);
-    glEnable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+    // sh.SetInteger("reverse_normals", 1);
+    // // 这是一种特殊的cube，最大的那个cube，特殊处理
+    // renderObject("cube", sh, room);
+    // sh.SetInteger("reverse_normals", 0);
+    // glEnable(GL_CULL_FACE);
 
 }
 
@@ -495,8 +514,8 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase* objec
     model = glm::translate(model, object->position);
     model = glm::scale(model, object->size);
 
-    model = glm::rotate(model, name == "rocket" ? glm::radians(object->selfpitch - 90.0f) : glm::radians(object->selfpitch), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, name == "rocket" ? glm::radians(object->selfyaw) : glm::radians(object->selfyaw + 90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, object->type == ROCKET ? glm::radians(object->pitch - 90.0f) : glm::radians(object->pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, (object->type == ROCKET ? glm::radians(object->yaw) : glm::radians(object->yaw + 90.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
     sh.SetMatrix4("model", model);
@@ -509,13 +528,13 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase* objec
     glBindVertexArray(0);
 }
 
-void Game::registerCollisionBody(GameBodyBase *obj, bool rest) {
+void Game::registerCollisionBody(GameBodyBase *obj, bool rest, float gravityScale) {
     q3BodyDef bodyDef;
     bodyDef.position = q3Vec3(obj->position.x, obj->position.y, obj->position.z);
     if (!rest) {
         bodyDef.bodyType = q3BodyType::eDynamicBody;
     }
-
+    bodyDef.gravityScale = gravityScale;
 
     q3Body* body = scene.CreateBody( bodyDef );
     q3BoxDef boxDef; // See q3Box.h for settings details

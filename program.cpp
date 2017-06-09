@@ -138,17 +138,17 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    // 这是侯新加的 谁都不能动！！！！！！！！！！！！！！！！
-    if (Shoot.Keys[GLFW_KEY_P]) {
-        // std::cout << "?" << std::endl;
-        Shoot.boss->updateCameraPosition(xoffset, yoffset);
+    if (Shoot.boss->type == PLAYER) {
+        if (Shoot.Keys[GLFW_KEY_P]) {
+            // std::cout << "?" << std::endl;
+            Shoot.boss->camera.ProcessMouseMovement(xoffset, yoffset);
+        } else {
+            // std::cout << "!" << std::endl;
+            Shoot.boss->ProcessMouseMovement(xoffset, yoffset);
+        }
+    } else if (Shoot.boss->type == ROCKET) {
+        Shoot.boss->camera.ProcessMouseMovement(xoffset, yoffset);
     }
-    else {
-        // std::cout << "!" << std::endl;
-        Shoot.boss->ProcessMouseMovement(xoffset, yoffset);
-
-    }
-    // std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
 
 }
 void mouse_button_callback(GLFWwindow* window, int button, int action, int modes)

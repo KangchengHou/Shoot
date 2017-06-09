@@ -86,7 +86,7 @@ public:
     void addObjectType(std::string name);
     void renderObject(const std::string& name, Shader& sh, GameBodyBase* object);
     void ProcessMouseMovement(double xoffset, double yoffset);
-    void registerCollisionBody(GameBodyBase *obj, bool rest = false);
+    void registerCollisionBody(GameBodyBase *obj, bool rest = false, float gravityScale = 1.0);
 private:
     const double sceneDt = 1.0 / 60.0;
     q3Scene scene = q3Scene( sceneDt );
