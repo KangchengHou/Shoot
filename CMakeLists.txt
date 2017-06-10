@@ -4,7 +4,7 @@ project (Shoot)
 
 ADD_DEFINITIONS(-O3 -std=c++11)
 
-add_executable(Shoot program.cpp particle_generator.cpp texture.cpp objloader.cpp texture.h shader.cpp game_body_base.cpp resource_manager.cpp game.cpp )
+add_executable(Shoot program.cpp particle_generator.cpp texture.cpp objloader.cpp texture.h shader.cpp game_body_base.cpp resource_manager.cpp game.cpp model.cpp )
 
 set(qu3e_version 1.1)
 
@@ -24,10 +24,10 @@ include_directories (
 )
 
 if (UNIX AND NOT APPLE)
-target_link_libraries(Shoot -lGLEW -lSOIL -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl)
+target_link_libraries(Shoot -lGLEW qu3e -lSOIL -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl)
 endif()
 
 if(APPLE)
-target_link_libraries(Shoot -lGLEW -L/usr/local/lib -I/usr/local/include qu3e -lSOIL -lGLEW -lglfw3 "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
+target_link_libraries(Shoot -lGLEW -L/usr/local/lib -I/usr/local/include qu3e -lASSIMP -lSOIL -lGLEW -lglfw3 "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
 endif()
 

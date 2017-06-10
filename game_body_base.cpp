@@ -4,6 +4,8 @@
 // {}
 GameBodyBase::~GameBodyBase()
 {
+    //!!!!!!!!!!!!!!!!!❤️️️️️️
+    this->body->RemoveAllBoxes();
 }
 // void GameBodyBase::updateVectors()
 // {
@@ -31,10 +33,10 @@ GameBodyBase::~GameBodyBase()
 // // }
 void GameBodyBase::setSpeed(glm::vec3 newSpeed) {
     speed = newSpeed;
-    std::cout << "?" << std::endl;
+    // std::cout << "?" << std::endl;
 
     body->SetLinearVelocity(q3Vec3(speed.x, speed.y, speed.z));
-    std::cout << "??" << std::endl;
+    // std::cout << "??" << std::endl;
 
     // puts("fuck");
 }

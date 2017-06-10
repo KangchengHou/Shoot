@@ -23,7 +23,8 @@ enum OBJECTTYPE
 {
     PLAYER,
     ROCKET,
-    OTHER
+    OTHER,
+    CANNON
 };
 
 // Default player values
@@ -113,10 +114,14 @@ public:
 class GameBodyBase
 {
 public:
+    std::string renderType;
     q3Body* body = NULL;
     // GameBodyBase Attributes
-    OBJECTTYPE type; glm::vec3 size;
+    OBJECTTYPE type; 
+    GLfloat scale;
     glm::vec3 color;
+    glm::vec3 offset = glm::vec3(0, 0, 0);
+    GLfloat life = 1e9;
 
     glm::vec3 acceleration;
     glm::vec3 speed;
@@ -125,7 +130,7 @@ public:
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
-
+    bool visible;
 
     Camera camera;
     // Eular Angles
@@ -157,8 +162,8 @@ public:
                  // GLfloat renderyaw,
                  // GLfloat renderpitch,
                  // GLboolean synchro,
-
-                 glm::vec3 size = glm::vec3(1, 1, 1),
+                 GLfloat scale,
+                 bool visible = true,
                  glm::vec3 color = glm::vec3(1, 1, 1)
                                    // ,GLfloat zoom = 1
                 )
@@ -169,12 +174,13 @@ public:
           yaw(yaw),
           pitch(pitch),
           roll(roll),
+          visible(visible),
 
           // renderyaw(renderyaw),
           // renderpitch(renderpitch),
           // synchro(synchro),
 
-          size(size),
+          scale(scale),
           color(color),
           MovementSpeed(SPEED),
           MouseSensitivity(SENSITIVTY),
@@ -189,7 +195,10 @@ public:
     {
 
         // camera.zoom = ZOOM;
-
+        if(type == PLAYER)  renderType = "player";
+        if(type == ROCKET)  renderType = "rocket";
+        if(type == OTHER)   renderType = "cube";
+        if(type == CANNON)  renderType = "cannon";
         this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         this->updateBaseVectorsAccordingToSelfAngles();
         this->camera = Camera(position, front, yaw, pitch);

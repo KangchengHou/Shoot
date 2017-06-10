@@ -85,7 +85,6 @@ q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
 
 	if ( def.lockAxisZ )
 		m_flags |= eLockAxisZ;
-	printf("m4 %d\n", m_flags);
 	m_boxes = NULL;
 	m_contactList = NULL;
 }

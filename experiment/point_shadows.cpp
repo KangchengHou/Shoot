@@ -16,7 +16,11 @@
 
 // Other Libs
 #include <SOIL/SOIL.h>
-
+enum RENDERTYPE{
+    NORMAL, 
+    SPECULAR,
+};
+RENDERTYPE renderType = NORMAL;
 // Properties
 const GLuint SCR_WIDTH = 800, SCR_HEIGHT = 600;
 
@@ -29,7 +33,7 @@ GLuint loadTexture(GLchar const * path);
 void RenderScene(Shader &shader);
 
 void RenderCube();
-void RenderQuad();
+void RenderQuad(GLfloat size);
 
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -44,7 +48,10 @@ GLboolean shadows = true;
 // Global variables
 GLuint woodTexture;
 GLuint planeVAO;
-
+GLuint containerTexture;
+GLuint containerSpecularTexture;
+GLuint brickTexture;
+GLuint brickNormalTexture;
 // The MAIN function, from here we start our application and run our Game loop
 int main()
 {
@@ -82,18 +89,35 @@ int main()
     // 这里应该需要加上和粒子有关的shader
     ResourceManager::LoadShader("./point_shadows.vs", "./point_shadows.frag", nullptr, "point_shadows");
     ResourceManager::LoadShader("../shaders/point_shadows_depth.vs", "../shaders/point_shadows_depth.frag", "../shaders/point_shadows_depth.gs", "point_shadows_depth");
-    Shader shader = ResourceManager::GetShader("point_shadows");
+    ResourceManager::LoadShader("./normal_point_shadows.vs", "./normal_point_shadows.frag", nullptr, "normal_point_shadows");
+    Shader shader;
+    // if(renderType == NORMAL){
+    shader = ResourceManager::GetShader("normal_point_shadows");
+    // }else{
+    //     shader = ResourceManager::GetShader("point_shadows");
+    // }
     Shader simpleDepthShader = ResourceManager::GetShader("point_shadows_depth");
     // Load textures
     woodTexture = loadTexture("./wood.png");
+    containerTexture = loadTexture("./container.png");
+    containerSpecularTexture = loadTexture("./container_specular.png");
+    brickTexture = loadTexture("./brickwall.jpg");
+    brickNormalTexture = loadTexture("./brickwall_normal.jpg");
+ 
     // Set texture samples
     shader.Use();
     // Light source
     // 灯的位置可以调整
     glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-    shader.SetInteger("diffuseTexture", 0);
-    shader.SetInteger("depthMap", 1);
-
+    if(renderType == NORMAL){
+        shader.SetInteger("material.diffuseTexture", 0);
+        shader.SetInteger("depthMap", 1);
+        shader.SetInteger("material.normalTexture", 2);
+    }else{
+        shader.SetInteger("material.diffuseTexture", 0);
+        shader.SetInteger("depthMap", 1);
+        shader.SetInteger("material.specularTexture", 2);
+    }
 
 
     // Configure depth map FBO
@@ -135,7 +159,7 @@ int main()
 
         // Move light position over time
         //lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
-
+        lightPos = camera.Position;
         // 0. Create depth cubemap transformation matrices
         GLfloat aspect = (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT;
         GLfloat near = 1.0f;
@@ -157,7 +181,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(simpleDepthShader.ID, ("shadowTransforms[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(shadowTransforms[i]));
 
         simpleDepthShader.SetFloat("far_plane", far);
-        // glUniform1f(glGetUniformLocation(simpleDepthShader.ID, "far_plane"), far);
         simpleDepthShader.SetVector3f("light.position", lightPos.x, lightPos.y, lightPos.z);
         // 然后用这个shader渲染所有东西
         RenderScene(simpleDepthShader);
@@ -181,21 +204,30 @@ int main()
         shader.SetVector3f("material.diffuse", 1.0f, 0.5f, 0.31f);
         shader.SetVector3f("material.specular", 0.5f, 0.5f, 0.5f);
         shader.SetFloat("material.shininess", 32.0f);
-        glm::vec3 lightColor;
-        lightColor.x = sin(glfwGetTime() * 2.0f);
-        lightColor.y = sin(glfwGetTime() * 0.7f);
-        lightColor.z = sin(glfwGetTime() * 1.3f);
-        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // Decrease the influence
-        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // Low influence
+        glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        glm::vec3 diffuseColor = lightColor * glm::vec3(1.0f); // Decrease the influence
+        glm::vec3 ambientColor = lightColor * glm::vec3(0.1f); // Low influence
 
         shader.SetVector3f("light.ambient", ambientColor.x, ambientColor.y, ambientColor.z);
         shader.SetVector3f("light.diffuse", diffuseColor.x, diffuseColor.y, diffuseColor.z);
-        shader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetVector3f("light.specular", 0.2f, 0.2f, 0.2f);
+        if(renderType == NORMAL){
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, brickTexture);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, brickNormalTexture);
+        }else{
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, containerTexture);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, containerSpecularTexture);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, woodTexture);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+        }
         RenderScene(shader);
         glfwSwapBuffers(window);
     }
@@ -211,35 +243,38 @@ void RenderScene(Shader &shader)
     model = glm::scale(model, glm::vec3(10.0));
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-    glUniform1i(glGetUniformLocation(shader.ID, "reverse_normals"), 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+    shader.SetInteger("reverse_normals", 1);
+    // glUniform1i(glGetUniformLocation(shader.ID, "reverse_normals"), 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
     RenderCube();
-    glUniform1i(glGetUniformLocation(shader.ID, "reverse_normals"), 0); // And of course disable it
+    shader.SetInteger("reverse_normals", 0);
+    // glUniform1i(glGetUniformLocation(shader.ID, "reverse_normals"), 0); // And of course disable it
     glEnable(GL_CULL_FACE);
 
     // Cubes
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    shader.SetMatrix4("model", model);
     RenderCube();
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
     model = glm::scale(model, glm::vec3(1.5));
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    shader.SetMatrix4("model", model);
     RenderCube();
     model = glm::mat4();
     model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    shader.SetMatrix4("model", model);
     RenderCube();
-    // model = glm::mat4();
-    // model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
-    // glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    // RenderCube();
-    // model = glm::mat4();
-    // model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
-    // model = glm::rotate(model, 60.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    // model = glm::scale(model, glm::vec3(1.5));
-    // glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    // RenderCube();
+    // 对于quad的测试
+    model = glm::mat4();
+    shader.SetMatrix4("model", model);
+    RenderQuad(1.0f);
+    
+    model = glm::mat4();
+    shader.SetMatrix4("model", model);
+    RenderCube();
+
+    
+
 }
 
 
@@ -316,6 +351,106 @@ void RenderCube()
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
+
+GLuint quadVAO = 0;
+GLuint quadVBO;
+void RenderQuad(GLfloat size)
+{
+    if (quadVAO == 0)
+    {
+        // positions
+        glm::vec3 pos1(-size, size, 0.0);
+        glm::vec3 pos2(-size, -size, 0.0);
+        glm::vec3 pos3(size, -size, 0.0);
+        glm::vec3 pos4(size, size, 0.0);
+        
+        // glm::vec3 pos1(-1.0, 1.0, 0.0);
+        // glm::vec3 pos2(-1.0, -1.0, 0.0);
+        // glm::vec3 pos3(1.0, -1.0, 0.0);
+        // glm::vec3 pos4(1.0, 1.0, 0.0);
+        
+        // texture coordinates
+        glm::vec2 uv1(0.0, size);
+        glm::vec2 uv2(0.0, 0.0);
+        glm::vec2 uv3(size, 0.0);
+        glm::vec2 uv4(size, size);
+        // normal vector
+        glm::vec3 nm(0.0, 0.0, size);
+
+        // calculate tangent/bitangent vectors of both triangles
+        glm::vec3 tangent1, bitangent1;
+        glm::vec3 tangent2, bitangent2;
+        // - triangle 1
+        glm::vec3 edge1 = pos2 - pos1;
+        glm::vec3 edge2 = pos3 - pos1;
+        glm::vec2 deltaUV1 = uv2 - uv1;
+        glm::vec2 deltaUV2 = uv3 - uv1;
+
+        GLfloat f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent1 = glm::normalize(tangent1);
+
+        bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent1 = glm::normalize(bitangent1);
+
+        // - triangle 2
+        edge1 = pos3 - pos1;
+        edge2 = pos4 - pos1;
+        deltaUV1 = uv3 - uv1;
+        deltaUV2 = uv4 - uv1;
+
+        f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent2 = glm::normalize(tangent2);
+
+
+        bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent2 = glm::normalize(bitangent2);
+
+
+        GLfloat quadVertices[] = {
+            // Positions            // normal         // TexCoords  // Tangent                          // Bitangent
+            pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+            pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+            pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+
+            pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+            pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+            pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
+        };
+        // Setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (GLvoid*)(11 * sizeof(GLfloat)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+
 
 // This function loads a texture from file. Note: texture loading functions like these are usually
 // managed by a 'Resource Manager' that manages all resources (like textures, models, audio).

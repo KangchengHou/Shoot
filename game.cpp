@@ -1,14 +1,16 @@
 #include "game.h"
-#include "resource_manager.h"
+
 // #include "box_renderer.h"
 #include <vector>
 #include <algorithm>
 #include <SOIL/SOIL.h>
 #include "physics/q3.h"
+
 Game::Game(GLuint width, GLuint height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
-    for (int i = 0; i < 1024; i++) {
+    for (int i = 0; i < 1024; i++)
+    {
         Keys[i] = false;
     }
     leftMouse = false;
@@ -17,32 +19,8 @@ Game::Game(GLuint width, GLuint height)
     rendernear = 0.1f;
     renderfar = 5000.0f;
 
-    player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 10.0f, 0.0f), 90.0f, 0.0f, 0.0f, glm::vec3(0.3f, 0.5f, 0.3f));
-    // player = new GameBodyBase(PLAYER, glm::vec3(0.0f, 10.0f, 0.0f), 90.0f, 0.0f, 0.0f, 90.0f, 0.0f, false, glm::vec3(0.3f, 0.5f, 0.3f));
-    objects.push_back(player);
-    players.push_back(player);
-    registerCollisionBody(player);
-
-    boss = player;
-
-    // GLfloat size = 100.0f;
-    // room = new GameBodyBase(OTHER, glm::vec3(0.0f, size / 2, 0.0f), 90.0f, 0.0f, 0.0f, 90.0f, 0.0f, false, glm::vec3(size));
-    // objects.push_back(room);
-
-    GameBodyBase* ground = new GameBodyBase(OTHER, glm::vec3(0.0f, -100 / 2, 0.0f), 90.0f, 0.0f, 0.0f, glm::vec3(100));
-    // GameBodyBase* ground = new GameBodyBase(OTHER, glm::vec3(0.0f, -100 / 2, 0.0f), 90.0f, 0.0f, 0.0f, 90.0f, 0.0f, false, glm::vec3(100));
-    objects.push_back(ground);
-    bullets.push_back(ground);
-    registerCollisionBody(ground, true);
-
 }
-void Game::ProcessMouseMovement(double xoffset, double yoffset)
-{
-    // if (this->State == GAME_ACTIVE)
-    // {
-    //     this->boss->ProcessMouseMovement(xoffset, yoffset);
-    // }
-}
+
 Game::~Game()
 {
 }
@@ -55,42 +33,83 @@ void Game::Init()
     ResourceManager::LoadTexture("./wood.png", false, "woodTexture");
     ResourceManager::LoadTexture("./fire.png", GL_TRUE, "fire");
     ResourceManager::LoadTexture("./booster.png", GL_TRUE, "rocket");
+    ResourceManager::LoadTexture("./brickwall.jpg", GL_FALSE, "ground");
+    ResourceManager::LoadTexture("./brickwall_normal.jpg", GL_FALSE, "ground_normal");
+    ResourceManager::LoadTexture("./wall.png",GL_FALSE, "wall");
+    ResourceManager::LoadTexture("./wall_normal.png",GL_FALSE, "wall_normal");
+    
 
+    // ResourceManager::LoadTexture("./brickwall.jpg", GL_FALSE, "brickwall");
+    // ResourceManager::LoadTexture("./brickwall_normal.jpg", GL_FALSE, "brickwall_normal");
     // FIXME: add appropriate position
 
-    ResourceManager::LoadShader("shaders/lamp.vs", "shaders/lamp.frag", nullptr, "lamp");
     ResourceManager::LoadShader("shaders/point_shadows.vs", "shaders/point_shadows.frag", nullptr, "point_shadows");
+    ResourceManager::LoadShader("shaders/normal_mapping.vs", "shaders/normal_mapping.frag", nullptr, "normal_mapping");
 
-    lightShader = ResourceManager::GetShader("lamp");
-    // TODO: new added shader
     shader = ResourceManager::GetShader("point_shadows");
     depthShader = ResourceManager::GetShader("point_shadows_depth");
     this->initDepthMap();
     this->lights.push_back(Light(glm::vec3(0.0f)));
 
+    ResourceManager::addObjectType("cube");
+    ResourceManager::addObjectType("rocket");
+    // ResourceManager::addObjectType("player");
+    ResourceManager::addObjectType("plane");
+    ResourceManager::loadModel("cannon");
+    ResourceManager::loadModel("player");
 
-    addObjectType("cube");
-    addObjectType("rocket");
-    addObjectType("player");
+
+    player = addObject(PLAYER, glm::vec3(0.0f, 10.0f, 0.0f), 90.0f, 0.0f, 0.0f, 0.1f);
+    boss = player;
+    // players.push_back(player);
+    
+    this->groundSize = 1000.0f;
+    addObject(OTHER, glm::vec3(0.0f, -groundSize / 2, 0.0f), 90.0f, 0.0f, 0.0f, this->groundSize, false, true);
+    puts("fuck");
+    // addObject(CANNON, glm::vec3(5.0f, 50.0f, -5.0f), 90.0f, 0.0f, 0.0f, 0.1f);
+
+    for(int i = 0; i < 5; i++) {
+        cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 10 - 3, 10, -5), 90, 0, 0, 0.1 ));
+        cannongroup.frequency.push_back(((rand()%200) + 1)/ 100.f);
+        cannongroup.timer.push_back(0);
+        printf("%.2lf ", cannongroup.frequency[i]);
+    }
+    puts("");
 }
-
-
+#define sqr(x) ((x)*(x))
 void Game::Update(GLfloat dt)
 {
+    for(int i = 0; i < cannongroup.cannons.size(); i++) {
+        cannongroup.timer[i] += dt;
+        printf("%.2f\n", cannongroup.timer[i]);
+        if(cannongroup.timer[i] > cannongroup.frequency[i]) {
+            cannongroup.timer[i] -= cannongroup.frequency[i];
+            puts("bong");
+            auto *p = addObject(OTHER, cannongroup.cannons[i]->position + glm::vec3(0, 5, 0), 90, 0, 0, 1);
+            auto dis =  player->position - cannongroup.cannons[i]->position;
+            float speed = 10;
+            float t = sqrt(sqr(dis.x) + sqr(dis.z)) / speed;
+            p->setSpeed(glm::vec3( speed * dis.x / sqrt(sqr(dis.x) + sqr(dis.z)), 20, speed * dis.z / sqrt(sqr(dis.x) + sqr(dis.z))));
+            p->life = 10;
+        }
+    }
+    puts("");
     static f32 accumulator = 0;
     accumulator += dt;
-    accumulator = q3Clamp01( accumulator );
+    accumulator = q3Clamp01(accumulator);
     static int acc = 0;
-    while ( accumulator >= sceneDt )
+    while (accumulator >= sceneDt)
     {
-        scene.Step( );
+        scene.Step();
         accumulator -= sceneDt;
         acc++;
     }
-    if (rocket != NULL) {
+    if (rocket != NULL)
+    {
         particles->update(dt, *rocket, 20, glm::vec3(0.0f));
-    } else {
-
+    }
+    else
+    {
     }
     glm::mat4 model;
     lights[0].position = this->boss->camera.position;
@@ -98,12 +117,24 @@ void Game::Update(GLfloat dt)
 
     // std::cout << "107m" << std::endl;
 
-
     int cnt = 0;
-    for (auto iter = objects.cbegin(); iter != objects.cend(); iter++)
+    auto iter = objects.cbegin();
+    while( iter != objects.cend())
     {
         // std::cout << (*iter)->type << std::endl;
-        if ((*iter)->type == ROCKET) {
+        (*iter)->life -= dt;
+        auto next = ++iter;
+        iter--;
+        if((*iter)->life <= 0) {
+            delete (*iter);
+            objects.erase(iter);
+            iter = next;
+            continue;
+        }
+
+        if(iter == objects.cend()) break;
+        if ((*iter)->type == ROCKET)
+        {
             (*iter)->yaw += (*iter)->yawspeed * dt;
             (*iter)->pitch += (*iter)->pitchspeed * dt;
             // (*iter)->yaw = (*iter)->renderyaw;
@@ -112,15 +143,13 @@ void Game::Update(GLfloat dt)
             std::cout << (*iter)->yaw << " " << (*iter)->pitch << " " << std::endl;
 
             (*iter)->updateBaseVectorsAccordingToSelfAngles();
-            std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " "  << std::endl;
+            std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " " << std::endl;
             // // std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " "  << std::endl;
             // // std::cout << (*iter)->front.x << " " << (*iter)->front.y << " " << (*iter)->front.z << " "  << std::endl;
 
             std::cout << "----" << std::endl;
 
             (*iter)->setSpeed((*iter)->front * (*iter)->MovementSpeed);
-
-
         }
         cnt++;
         q3Transform trans = (*iter)->body->GetTransform();
@@ -128,13 +157,33 @@ void Game::Update(GLfloat dt)
         q3Mat3 rot = trans.rotation;
 
         // std::cout << "115" << std::endl;
-
-        (*iter)->setPos(pos.x, pos.y, pos.z);
+        glm::vec3 off = (*iter)->offset * (*iter)->scale;
+        (*iter)->setPos(pos.x - off.x, pos.y - off.y, pos.z - off.z);
         // std::cout << (*iter)->position.x << " " << (*iter)->position.y << " " << (*iter)->position.z << " " << std::endl;
+        iter++;
     }
-
 }
+GLuint Game::loadTexture(GLchar const *path)
+{
+    // Generate texture ID and load texture data
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    int width, height;
+    unsigned char *image = SOIL_load_image(path, &width, &height, 0, SOIL_LOAD_RGB);
+    // Assign texture to ID
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
+    // Parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    SOIL_free_image_data(image);
+    return textureID;
+}
 void Game::initDepthMap()
 {
     shader.Use();
@@ -166,25 +215,30 @@ void Game::initDepthMap()
 }
 void Game::ProcessInput(GLfloat dt)
 {
-
+    
     if (this->State == GAME_ACTIVE)
     {
         //     // now in the game state
         //     // process input for player
-        if (this->Keys[GLFW_KEY_TAB] == 1 )
+        if (this->Keys[GLFW_KEY_TAB] == 1)
         {
             this->Keys[GLFW_KEY_TAB] = false;
-            if (rocket == NULL) {
+            if (rocket == NULL)
+            {
                 std::cout << "no rocket" << std::endl;
-            } else if (boss->type == PLAYER) {
+            }
+            else if (boss->type == PLAYER)
+            {
                 boss = rocket;
                 std::cout << "change boss to rocket" << std::endl;
-            } else if (boss->type == ROCKET) {
+            }
+            else if (boss->type == ROCKET)
+            {
                 boss = player;
             }
             // this->Keys[GLFW_KEY_TAB]++;
         }
-        if (this->Keys[GLFW_KEY_ENTER] == 1 )
+        if (this->Keys[GLFW_KEY_ENTER] == 1)
         {
             // if (rocket == NULL) {
             // std::cout << "202" << std::endl;
@@ -193,20 +247,12 @@ void Game::ProcessInput(GLfloat dt)
             // std::cout << "204" << std::endl;
 
             glm::vec3 rocketPos = player->position + WORLDUP * 2.0f;
-            rocket = new GameBodyBase(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, glm::vec3(1.0f),  glm::vec4(1.0f));
-            // rocket = new GameBodyBase(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, 90.0f, 90.0f, false, glm::vec3(1.0f),  glm::vec4(1.0f));
-            // std::cout << "209" << std::endl;
-            // std::cout << "211" << std::endl;
-
-            objects.push_back(rocket);
-            rockets.push_back(rocket);
-            registerCollisionBody(rocket, false, 0);
+            rocket = addObject(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, 1.0f);
             rocket->setSpeed(glm::vec3(0.0f, 1.0f, 0.0f));
 
             // std::cout << "198" << std::endl;
 
             particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(5));
-
         }
 
         if (this->Keys[GLFW_KEY_W] == true)
@@ -217,14 +263,15 @@ void Game::ProcessInput(GLfloat dt)
             boss->ProcessKeyboard(LEFT, dt, this->Keys[GLFW_KEY_A]);
         else if (this->Keys[GLFW_KEY_D] == true)
             boss->ProcessKeyboard(RIGHT, dt, this->Keys[GLFW_KEY_D]);
-        else {
-            if (boss->type == PLAYER) {
+        else
+        {
+            if (boss->type == PLAYER)
+            {
 
                 q3Vec3 v = boss->body->GetLinearVelocity();
                 boss->setSpeed(glm::vec3(0.0f, v.y, 0.0f));
             }
         }
-
 
         if (this->Keys[GLFW_KEY_SPACE] == 1)
         {
@@ -234,15 +281,8 @@ void Game::ProcessInput(GLfloat dt)
         if (leftMouse)
         {
             leftMouse = false;
-            GameBodyBase *bullet = new GameBodyBase(OTHER, player->position + player->front,  player->pitch, player->yaw, player->roll,  glm::vec3(0.5, 0.5, 0.5));
-            // GameBodyBase *bullet = new GameBodyBase(OTHER, player->position + player->front,  player->pitch, player->yaw, player->roll, player->pitch, player->yaw,  true,  glm::vec3(0.5, 0.5, 0.5));
-            registerCollisionBody(bullet);
-            // bullet->init();
+            GameBodyBase *bullet = addObject(OTHER, player->position + player->front, player->pitch, player->yaw, player->roll, 0.5f);
             bullet->setSpeed(glm::vec3(5.0f * player->front));
-            // bullet->acceleration = player->camera.front;
-            // bullet->setAcceleration(this->Gravity);
-            objects.push_back(bullet);
-            bullets.push_back(bullet);
 
         }
     }
@@ -251,12 +291,10 @@ void Game::ProcessInput(GLfloat dt)
 void Game::depthRender()
 {
     GLfloat aspect = (GLfloat)this->shadowWidth / (GLfloat)this->shadowHeight;
-    // GLfloat near = 0.1f;
-    // GLfloat far = 100.0f;
+
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, rendernear, renderfar); // 太远的东西也会被剪裁掉
     std::vector<glm::mat4> shadowTransforms;
-    // 现在先创建一个光源的，这个貌似就比较复杂了。。
-    // TODO: 增加多光源
+
     shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
     shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
     shadowTransforms.push_back(shadowProj * glm::lookAt(lights[0].position, lights[0].position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
@@ -277,21 +315,22 @@ void Game::depthRender()
     depthShader.SetFloat("far_plane", renderfar);
     depthShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     // 然后用这个shader渲染所有东西
-    RenderScene(depthShader);
 
-    for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
+
+    for (auto iter = objects.begin(); iter != objects.end(); iter++)
+        if((*iter)->visible){
+            renderObject((*iter)->renderType, depthShader, (*iter));
+        }
+
+    // for (auto iter = players.begin(); iter != players.end(); iter++)
+    // {
+    //     renderObject("player", depthShader, (*iter));
+    // }
+
+
+    if (rocket != NULL)
     {
-        renderObject("cube", depthShader, (*iter));
-    }
-
-    for (auto iter = players.begin(); iter != players.end(); iter++)
-    {
-        renderObject("player", depthShader, (*iter));
-    }
-
-    // FIXME: 换位置
-    if (rocket != NULL) {
-        renderObject("rocket", depthShader, rocket);
+        // renderObject("rocket", depthShader, rocket);
         particles->draw();
     }
 
@@ -299,12 +338,15 @@ void Game::depthRender()
 }
 void Game::Render()
 {
-    // GLfloat near = 0.1f; //FIXME: 这两个其实重复了，改了一个别忘记该另外一个，在depthRender里面
-    // GLfloat far = 5000.0f;
-    depthRender();
+
+    depthRender(); // 将所有物体都渲染一遍
     // 渲染普通的场景
     glViewport(0, 0, this->Width * 2, this->Height * 2);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    renderEnvironment(); // 将墙壁和地面都渲染一遍 这些是带有阴影和法线的
+
+    // renderGameObjects(); // 将其他所有物体都渲染一遍， 带有阴影的
     shader.Use();
     glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
     glm::mat4 view = boss->camera.GetViewMatrix();
@@ -313,243 +355,131 @@ void Game::Render()
     shader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     shader.SetVector3f("viewPos", this->boss->camera.position.x, this->boss->camera.position.y, this->boss->camera.position.z);
 
-    shader.SetInteger("shadows", 1);
     shader.SetFloat("far_plane", renderfar); // FIXME: 这个float非常重要
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("woodTexture").Bind();
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
-    RenderScene(shader);
 
-    for (auto iter = bullets.begin(); iter != bullets.end(); iter++)
-    {
-        renderObject("cube", shader, (*iter));
-    }
+    for (auto iter = objects.begin(); iter != objects.end(); iter++)
+        if((*iter)->visible) {
+            renderObject((*iter)->renderType, shader, (*iter));
+        }
 
-    for (auto iter = players.begin(); iter != players.end(); iter++)
-    {
-        renderObject("player", shader, (*iter));
-        // std::cout << "317" << std::endl;
-
-    }
+    // for (auto iter = players.begin(); iter != players.end(); iter++)
+    // {
+    //     renderObject("player", shader, (*iter));
+    //     // std::cout << "317" << std::endl;
+    // }
 
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("rocket").Bind();
-    for (auto iter = rockets.begin(); iter != rockets.end(); iter++) {
-        // std::cout << "have huojian" << std::endl;
-        renderObject("rocket", shader, (*iter));
-    }
+    // for (auto iter = rockets.begin(); iter != rockets.end(); iter++)
+    // {
+    //     // std::cout << "have huojian" << std::endl;
+    //     renderObject("rocket", shader, (*iter));
+    // }
     // std::cout << rockets.size() << std::endl;
-    if (rocket != NULL) {
+    if (rocket != NULL)
+    {
         glActiveTexture(GL_TEXTURE0);
         ResourceManager::GetTexture("fire").Bind();
         particles->draw();
     }
-
 }
 
-void Game::RenderScene(Shader &sh)
+void Game::renderEnvironment()
 {
-    // 房间的cube
-    // GLfloat size = 1000.0f;
+    // 渲染房间的底部 以及 周围
+    // 首先渲染房间的下面
+    Shader normalShader = ResourceManager::GetShader("normal_mapping");
+    normalShader.Use();
+    normalShader.SetInteger("diffuseMap", 0);
+    normalShader.SetInteger("normalMap", 1);
 
-    // glDisable(GL_CULL_FACE); // Note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-    // sh.SetInteger("reverse_normals", 1);
-    // // 这是一种特殊的cube，最大的那个cube，特殊处理
-    // renderObject("cube", sh, room);
-    // sh.SetInteger("reverse_normals", 0);
-    // glEnable(GL_CULL_FACE);
+    glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
+    glm::mat4 view = boss->camera.GetViewMatrix();
+    normalShader.SetMatrix4("projection", projection);
+    normalShader.SetMatrix4("view", view);
+    normalShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
+    normalShader.SetVector3f("viewPos", this->boss->camera.position.x, this->boss->camera.position.y, this->boss->camera.position.z);
+
+    // normalShader.Use();
+    glActiveTexture(GL_TEXTURE0);
+    ResourceManager::GetTexture("ground").Bind();
+    // glBindTexture(GL_TEXTURE_2D, diffuseMap);
+    glActiveTexture(GL_TEXTURE1);
+    ResourceManager::GetTexture("ground_normal").Bind();
+
+
+    glm::mat4 model;
+    model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(10.0f));
+    normalShader.Use();
+    normalShader.SetMatrix4("model", model);
+
+    glBindVertexArray(ResourceManager::VAOmap["plane"]);
+    glDrawArrays(GL_TRIANGLES, 0, ResourceManager::VAOSizeMap["plane"]);
+    glBindVertexArray(0);
+
+
+
+   
+
 
 }
 
-void Game::addObjectType(std::string name)
-{
-    GLuint VAO = 0;
-    GLuint VBO = 0;
-    if (name == "cube")
-    {
-        GLfloat vertices[] = {
-            // Back face
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,   // top-right
-            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,  // bottom-right
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,   // top-right
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,  // top-left
-            // Front face
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom-left
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  // bottom-right
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // top-right
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // top-right
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  // top-left
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom-left
-            // Left face
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // top-right
-            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // top-left
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-left
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-left
-            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // bottom-right
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // top-right
-            // Right face
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // top-left
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
-            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // top-right
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // top-left
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // bottom-left
-            // Bottom face
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
-            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,  // top-left
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,   // bottom-left
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,   // bottom-left
-            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,  // bottom-right
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
-            // Top face
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top-left
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // bottom-right
-            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,  // top-right
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // bottom-right
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top-left
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f   // bottom-left
-        };
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        // Fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // Link vertex attributes
-        glBindVertexArray(VAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        VAOmap[name] = VAO;
-        modelSizeMap[name] = 36;
-    }
-    if (name == "rocket")
-    {
-        std::vector<glm::vec3> verts;
-        std::vector<glm::vec3> normals;
-        std::vector<glm::vec2> uvs;
-        loadOBJ("./rocket3.obj", verts, uvs, normals);
-        int modelSize = verts.size();
-        // std::cout << "vert : " << verts.size() << "normals : " << normals.size() << "uvs: " <<uvs.size()<<std::endl;
-        GLfloat *vertices = new GLfloat[modelSize * 8];
-        for (int i = 0; i < modelSize; i++)
-        {
-            vertices[i * 8 + 0] = verts[i].x;
-            vertices[i * 8 + 1] = verts[i].y;
-            vertices[i * 8 + 2] = verts[i].z;
-            vertices[i * 8 + 3] = normals[i].x;
-            vertices[i * 8 + 4] = normals[i].y;
-            vertices[i * 8 + 5] = normals[i].z;
-            vertices[i * 8 + 6] = uvs[i].x;
-            vertices[i * 8 + 7] = uvs[i].y;
-        }
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        // Fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * modelSize * 8, vertices, GL_STATIC_DRAW);
-        // Link vertex attributes
-        glBindVertexArray(VAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        VAOmap[name] = VAO;
-        modelSizeMap[name] = modelSize;
-    }
-    if (name == "player")
-    {
-        std::vector<glm::vec3> verts;
-        std::vector<glm::vec3> normals;
-        std::vector<glm::vec2> uvs;
-        loadOBJ("./face.obj", verts, uvs, normals);
-        int modelSize = verts.size();
-        // std::cout << "vert : " << verts.size() << "normals : " << normals.size() << "uvs: " <<uvs.size()<<std::endl;
-        GLfloat *vertices = new GLfloat[modelSize * 8];
-        for (int i = 0; i < modelSize; i++)
-        {
-            vertices[i * 8 + 0] = verts[i].x;
-            vertices[i * 8 + 1] = verts[i].y;
-            vertices[i * 8 + 2] = verts[i].z;
-            vertices[i * 8 + 3] = normals[i].x;
-            vertices[i * 8 + 4] = normals[i].y;
-            vertices[i * 8 + 5] = normals[i].z;
-            vertices[i * 8 + 6] = uvs[i].x;
-            vertices[i * 8 + 7] = uvs[i].y;
-        }
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        // Fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * modelSize * 8, vertices, GL_STATIC_DRAW);
-        // Link vertex attributes
-        glBindVertexArray(VAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        VAOmap[name] = VAO;
-        modelSizeMap[name] = modelSize;
-    }
-}
-void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase* object)
+void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase *object)
 {
     // TODO: add ambient light etc.
     glm::mat4 model = glm::mat4();
     model = glm::translate(model, object->position);
-    model = glm::scale(model, object->size);
+    model = glm::scale(model, glm::vec3(object->scale));
 
     model = glm::rotate(model, object->type == ROCKET ? glm::radians(object->pitch - 90.0f) : glm::radians(object->pitch), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::rotate(model, (object->type == ROCKET ? glm::radians(object->yaw) : glm::radians(object->yaw + 90.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 
-
     sh.SetMatrix4("model", model);
-    GLuint VAO = VAOmap[name];
-
-
-
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, modelSizeMap[name]);
-    glBindVertexArray(0);
+    
+    if(name == "cannon" || name == "player") {
+        ResourceManager::LoadedModels[name]->Draw(sh);
+    }
+    else {
+        GLuint VAO = ResourceManager::VAOmap[name];
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, ResourceManager::VAOSizeMap[name]);
+        glBindVertexArray(0);
+    }
+    
 }
 
-void Game::registerCollisionBody(GameBodyBase *obj, bool rest, float gravityScale) {
+void Game::registerCollisionBody(GameBodyBase *obj, bool rest, float gravityScale)
+{
     q3BodyDef bodyDef;
-    bodyDef.position = q3Vec3(obj->position.x, obj->position.y, obj->position.z);
-    if (!rest) {
+    glm::vec3 pos = obj->position + obj->offset * obj->scale;
+    bodyDef.position = q3Vec3(pos.x, pos.y, pos.z);
+    if (!rest)
+    {
         bodyDef.bodyType = q3BodyType::eDynamicBody;
     }
     bodyDef.gravityScale = gravityScale;
 
-    q3Body* body = scene.CreateBody( bodyDef );
-    q3BoxDef boxDef; // See q3Box.h for settings details
+    q3Body *body = scene.CreateBody(bodyDef);
+    q3BoxDef boxDef;   // See q3Box.h for settings details
     q3Transform trans; // Contains position and orientation, see q3Transform.h for details
     // q3Identity( localSpace ); // Specify the origin, and identity orientation
     trans.position = q3Vec3(0.f, 0.f, 0.f);
     double v[9] = {0.0};
-    const float *pSource = (const float*)glm::value_ptr(obj->rotationMatrix);
+    const float *pSource = (const float *)glm::value_ptr(obj->rotationMatrix);
     for (int i = 0; i < 9; ++i)
         v[i] = pSource[i];
     trans.rotation = q3Mat3(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
 
     // Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
     // and add it to a rigid body. The transform is defined relative to the owning body
-    boxDef.Set( trans, q3Vec3( obj->size[0], obj->size[1], obj->size[2] ) );
-    body->AddBox( boxDef );
+
+    glm::vec3 size = ResourceManager::modelSizeMap[obj->renderType] * obj->scale;
+    boxDef.Set(trans, q3Vec3(size[0], size[1], size[2]));
+    body->AddBox(boxDef);
     obj->body = body;
 }

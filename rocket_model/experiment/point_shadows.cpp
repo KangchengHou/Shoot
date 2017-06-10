@@ -55,7 +55,7 @@ GLuint particleTexture;
 // GLuint fireTexture;
 GLuint planeVAO;
 std::map<std::string, GLuint> VAOmap;
-std::map<std::string, int> modelSizeMap;
+std::map<std::string, int> VAOSizeMap;
 
 // The MAIN function, from here we start our application and run our Game loop
 int main()
@@ -462,7 +462,7 @@ void addObjectType(std::string name) {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         VAOmap[name] = VAO;
-        modelSizeMap[name] = 36;
+        VAOSizeMap[name] = 36;
     }
     if (name == "rocket") {
         std::vector<glm::vec3> verts;
@@ -498,7 +498,7 @@ void addObjectType(std::string name) {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         VAOmap[name] = VAO;
-        modelSizeMap[name] = modelSize;
+        VAOSizeMap[name] = modelSize;
     }
 
 
@@ -512,12 +512,12 @@ void renderObject(const std::string& name, Shader& sh, const glm::vec3& position
     GLuint VAO = VAOmap[name];
     if (name == "cube") {
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, modelSizeMap["cube"]);
+        glDrawArrays(GL_TRIANGLES, 0, VAOSizeMap["cube"]);
         glBindVertexArray(0);
     }
     if (name == "rocket") {
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, modelSizeMap["rocket"]);
+        glDrawArrays(GL_TRIANGLES, 0, VAOSizeMap["rocket"]);
         glBindVertexArray(0);
     }
 }

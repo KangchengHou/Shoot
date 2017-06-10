@@ -8,8 +8,8 @@
 #include <SOIL/SOIL.h>
 #include "texture.h"
 #include "shader.h"
-
-
+#include "model.h"
+#include "objloader.h"
 // A static singleton ResourceManager class that hosts several
 // functions to load Textures and Shaders. Each loaded texture
 // and/or shader is also stored for future reference by string
@@ -21,6 +21,11 @@ public:
     // Resource storage
     static std::map<std::string, Shader>    Shaders;
     static std::map<std::string, Texture2D> Textures;
+    static std::map<std::string, Model*> LoadedModels;
+    static std::map<std::string, GLuint> VAOmap;
+    static std::map<std::string, int> VAOSizeMap;
+    static std::map<std::string, glm::vec3> modelSizeMap;
+    
     // Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
     static Shader   LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name);
     // Retrieves a stored sader
@@ -31,6 +36,8 @@ public:
     static Texture2D LoadTexture(const GLchar *file, GLboolean alpha, std::string name);
     // Retrieves a stored texture
     static Texture2D GetTexture(std::string name);
+    static void addObjectType(std::string name);
+    static void loadModel(std::string name);
 private:
     // Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
     ResourceManager() { }
