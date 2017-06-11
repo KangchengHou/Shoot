@@ -60,7 +60,7 @@ public:
     std::list<GameBodyBase*> objects;
     CannonGroup cannongroup;
 
-    ParticleGenerator* particles;
+    // ParticleGenerator* particles;
     glm::vec3 bulletColor = glm::vec3(1.0f, 1.0f, 1.0f);
     Shader bulletShader;
     // std::vector<GameBodyBase*> lights;

@@ -8,15 +8,16 @@
 #include <vector>
 
 #include "shader.h"
-#include "game_body_base.h"
+// #include "game_body_base.h"
 #include "texture.h"
+
 
 struct Particle {
 	glm::vec3 position, velocity;
 	glm::vec4 color;
 	GLfloat life;
 
-	Particle(): position(0.0f), velocity(0.0f), color(1.0f), life(0.0f) {}
+	Particle(): position(0.0f), velocity(0.0f), color(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)), life(0.0f) {}
 };
 
 class ParticleGenerator {
@@ -24,17 +25,18 @@ public:
 	ParticleGenerator(Shader shader, Texture2D texture, GLuint amount);
 	~ParticleGenerator();
 	void init();
-	void draw();
-	void update(GLfloat dt, GameBodyBase &object, GLuint newParticles, glm::vec3 offset);
+	void draw(const glm::mat4 & projection, const glm::mat4 & view, const glm::vec3 camera_front);
+	void update(GLfloat dt, glm::vec3 pos, glm::vec3 velocity, GLuint newParticles, glm::vec3 offset);
 	GLuint firstUnusedParticle();
-	void respawnParticle(Particle &particle, GameBodyBase &object, glm::vec3 offset);
+	void respawnParticle(Particle &particle, glm::vec3 pos, glm::vec3 velocity, glm::vec3 offset);
 
 	Shader shader;
 	Texture2D texture;
 	GLuint amount;
 	GLuint VAO;
 	std::vector<Particle> particles;
-	GLuint amout;
+	
+	// GLuint amount;
 };
 
 #endif

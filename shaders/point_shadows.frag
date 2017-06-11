@@ -10,6 +10,9 @@ in VS_OUT {
 uniform sampler2D diffuseTexture;
 uniform samplerCube depthMap;
 
+uniform bool LoadedModel;
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -83,7 +86,11 @@ float ShadowCalculation(vec3 fragPos)
 
 void main()
 {           
-    vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
+    vec3 color;
+    if(LoadedModel == false)
+        color = texture(diffuseTexture, fs_in.TexCoords).rgb;
+    else 
+        color = texture(texture_diffuse1,fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightColor = vec3(0.3);
     // Ambient
@@ -104,4 +111,6 @@ void main()
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
     
     FragColor = vec4(lighting, 1.0f);
+    // FragColor = vec4(texture(texture_diffuse1, fs_in.TexCoords));
+    // FragColor = vec4(1.0f);
 }

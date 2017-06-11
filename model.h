@@ -35,7 +35,7 @@ public:
         this->loadModel(path);
         this->getBoundary();
         for(int i = 0; i < 6; i++) printf("%.2f  ", boundary[i]);
-        puts("");
+        // puts("");
         cout << "loaded!" << endl;
     }
 

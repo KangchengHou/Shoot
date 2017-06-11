@@ -470,7 +470,7 @@ void addObjectType(std::string name) {
         std::vector<glm::vec2> uvs;
         loadOBJ("./rocket3.obj", verts, uvs, normals);
         int modelSize = verts.size();
-        std::cout << "vert : " << verts.size() << "normals : " << normals.size() << "uvs: " << uvs.size() << std::endl;
+        // std::cout << "vert : " << verts.size() << "normals : " << normals.size() << "uvs: " << uvs.size() << std::endl;
         GLfloat* vertices = new GLfloat[modelSize * 8];
         for (int i = 0; i < modelSize; i++) {
             vertices[i * 8 + 0] = verts[i].x;

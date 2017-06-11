@@ -10,6 +10,8 @@
 #include <iostream>
 #include "shader.h"
 #include "physics/q3.h"
+#include "particle_generator.h"
+#include "resource_manager.h"
 // Defines several possible options for player movement. Used as abstraction to stay away from window-system specific input methods
 enum GameBodyBase_Movement
 {
@@ -24,7 +26,8 @@ enum OBJECTTYPE
     PLAYER,
     ROCKET,
     OTHER,
-    CANNON
+    CANNON,
+    CANNONBULLET
 };
 
 // Default player values
@@ -133,6 +136,7 @@ public:
     bool visible;
 
     Camera camera;
+    ParticleGenerator* particleGenerator = NULL;
     // Eular Angles
     GLfloat pitch; // x
     GLfloat yaw;   // y
@@ -189,9 +193,9 @@ public:
           pitchspeed(0.0f),
           pitchacc(PITCHACC),
 
-
           // 下面会覆盖掉的 只是因为没有Camera()的构造函数
-          camera(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 90.0f, 0.0f))
+          camera(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 90.0f, 0.0f)),
+          particleGenerator(NULL)
     {
 
         // camera.zoom = ZOOM;
@@ -199,9 +203,13 @@ public:
         if(type == ROCKET)  renderType = "rocket";
         if(type == OTHER)   renderType = "cube";
         if(type == CANNON)  renderType = "cannon";
+        if(type == CANNONBULLET) renderType = "sphere";
         this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         this->updateBaseVectorsAccordingToSelfAngles();
         this->camera = Camera(position, front, yaw, pitch);
+        if (type == CANNONBULLET || type == ROCKET) {
+            particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 50 );
+        }
     }
     ~GameBodyBase();
 
@@ -300,6 +308,10 @@ public:
         this->yaw -= xoffset;
         this->pitch += yoffset;
 
+        if (constrainPitch) {
+            if (pitch >0 ) pitch = 0;
+            if (pitch < -89.0f) pitch = -89.0f;
+        }
 
         // Update front, right and up Vectors using the updated Eular angles
         this->updateBaseVectorsAccordingToSelfAngles();
