@@ -12,9 +12,9 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 // The Width of the screen
-const GLuint SCREEN_WIDTH = 1200;
+const GLuint SCREEN_WIDTH = 1920;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 900;
+const GLuint SCREEN_HEIGHT = 1080;
 
 GLfloat lastX = SCREEN_WIDTH ;
 GLfloat lastY = SCREEN_HEIGHT ;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Shoot", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Shoot", glfwGetPrimaryMonitor(), nullptr);
     glfwMakeContextCurrent(window);
     // bind window to the game
     Shoot.window = window;

@@ -35,6 +35,7 @@ void Game::Init()
     ResourceManager::LoadTexture("./wood.png", false, "woodTexture");
     ResourceManager::LoadTexture("./flame.png", GL_TRUE, "flame");
     ResourceManager::LoadTexture("./particle.png", GL_TRUE, "laser");
+    ResourceManager::LoadTexture("./texture2.jpg", GL_TRUE, "rust");
     ResourceManager::LoadTexture("./fire.png", GL_TRUE, "fire");
     ResourceManager::LoadTexture("./booster.png", GL_TRUE, "rocket");
     ResourceManager::LoadTexture("./brickwall.jpg", GL_FALSE, "ground");
@@ -65,7 +66,8 @@ void Game::Init()
     ResourceManager::loadModel("sphere");
     ResourceManager::loadModel("gun");
     ResourceManager::loadModel("building");
-    player = addObject(PLAYER, glm::vec3(0.0f, 15.0f, 100.0f), 90.0f, 0.0f, 0.0f, 10.0f, false);
+    player = addObject(PLAYER, glm::vec3(0.0f, 15.0f, 100.0f), 90.0f, 0.0f, 0.0f, 15.0f, false);
+    // player->MovementSpeed = 3.0f;
     boss = player;
     time_gun = 0.0f;
     shootTime = 0.0f;
@@ -78,8 +80,8 @@ void Game::Init()
 
     for (int i = 0; i < 5; i++)
     {
-        cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 40 - 80, 10, -20), 90, 0, 0, 0.1));
-        cannongroup.frequency.push_back(((rand() % 200) + 1) / 5.f);
+        cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 100 - 200, 20, 0), 90, 0, 0, 0.3));
+        cannongroup.frequency.push_back(((rand() % 200) + 1) / 40.f);
         cannongroup.timer.push_back(0);
     }
 
@@ -99,7 +101,7 @@ void Game::Update(GLfloat dt)
             cannongroup.timer[i] -= cannongroup.frequency[i];
             // puts("bong");
             glm::vec3 shootposition = cannongroup.cannons[i]->position + cannongroup.cannons[i]->front * 5.0f + cannongroup.cannons[i]->up * 2.0f;
-            auto *p = addObject(CANNONBULLET, shootposition, 90, 0, 0, 0.3);
+            auto *p = addObject(CANNONBULLET, shootposition, 90, 0, 0, 1.0);
             auto dis = player->position - shootposition;
             float speed = 10;
             // float t = sqrt(sqr(dis.x) + sqr(dis.z)) / speed;
@@ -129,7 +131,7 @@ void Game::Update(GLfloat dt)
     }
 
     glm::mat4 model;
-    lights[0].position = glm::vec3(this->player->position.x, 10.0f, this->player->position.z);
+    lights[0].position = this->player->position + glm::vec3(0.0f, 12.0f, 0.0f) + this->player->camera.front * (-6.0f);
     bool flag = false;
 
     // std::cout << "107m" << std::endl;
@@ -181,22 +183,26 @@ void Game::Update(GLfloat dt)
         // std::cout << "115" << std::endl;
         glm::vec3 off = (*iter)->offset * (*iter)->scale;
         (*iter)->setPos(pos.x - off.x, pos.y - off.y, pos.z - off.z);
-        
-        
+
         // cout << (*iter)->renderType << endl;
         // cout << (*iter)->rest_life << endl;
         // cout << (*iter)->body->GetFlag() << endl;
         // std::cout << (*iter)->position.x << " " << (*iter)->position.y << " " << (*iter)->position.z << " " << std::endl;
         // std::cout << (*iter)->body->GetTransform().position.x << " " << (*iter)->body->GetTransform().position.y << " " << (*iter)->body->GetTransform().position.z << " " << std::endl;
         // puts("before");
-        if((*iter)->type == CANNONBULLET || (*iter)->type == LASER){
+        if ((*iter)->type == CANNONBULLET || (*iter)->type == LASER)
+        {
             // puts("fuck");
-            if( (*iter)->body->IsColliding() && (*iter)->life - (*iter)->rest_life > 1) {
-                explosionParticles.push_back(new explosionParticle(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50, 0.5f, (*iter)->position));
+            if ((*iter)->body->IsColliding() && (*iter)->life - (*iter)->rest_life > 1)
+            {   
+                explosionParticle* newep = new explosionParticle(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50, 0.5f, (*iter)->position);
+
+                explosionParticles.push_back(newep);
 
                 (*iter)->rest_life = 0;
             }
-            else {
+            else
+            {
                 // puts("no");
             }
         }
@@ -208,11 +214,13 @@ void Game::Update(GLfloat dt)
     {
         es->life -= dt;
         if (es->life > 0)
-            es->particleSystem->update(dt, es->position,glm::vec3(0.0f), 2, glm::vec3(((rand() % 100) - 50) / 50.0f,((rand() % 100) - 50) / 50.0f,((rand() % 100) - 50) / 50.0f) );
+            es->particleSystem->update(dt, es->position, glm::vec3(0.0f), 2, glm::vec3(((rand() % 100) - 50) / 50.0f, ((rand() % 100) - 50) / 50.0f, ((rand() % 100) - 50) / 50.0f));
     }
     time_gun += dt * 200.0f;
-    if (time_gun > 360.0f) time_gun = 0.0f;
-    if (shootTime > 0) shootTime -= 1.0f;
+    if (time_gun > 360.0f)
+        time_gun = 0.0f;
+    if (shootTime > 0)
+        shootTime -= 1.0f;
 }
 GLuint Game::loadTexture(GLchar const *path)
 {
@@ -262,7 +270,7 @@ void Game::initDepthMap()
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.6f, 0.8f, 0.8f, 1.0f);
 }
 void Game::ProcessInput(GLfloat dt)
 {
@@ -326,15 +334,16 @@ void Game::ProcessInput(GLfloat dt)
 
         if (this->Keys[GLFW_KEY_SPACE] == 1)
         {
-            boss->setSpeed(glm::vec3(boss->MovementSpeed * boss->up));
+            this->Keys[GLFW_KEY_SPACE] = 0;
+            boss->setSpeed(10.0f * glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
         if (leftMouse)
         {
             leftMouse = false;
-            GameBodyBase *bullet = addObject(LASER, player->position + 5.0f * player->camera.front, player->pitch, player->yaw, player->roll, 0.1f, false, false, 0);
+            GameBodyBase *bullet = addObject(LASER, player->position + 15.0f * player->camera.front + player->camera.right, player->pitch, player->yaw, player->roll, 1.0f, false, false, 0);
             bullet->life = bullet->rest_life = 10;
-            bullet->setSpeed(glm::vec3(20.0f * player->camera.front));
+            bullet->setSpeed(glm::vec3(500.0f * player->camera.front - player->camera.right));
             shootTime = 6.0f;
         }
     }
@@ -368,16 +377,32 @@ void Game::depthRender()
     depthShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     // 然后用这个shader渲染所有东西
 
-    for (auto iter = objects.begin(); iter != objects.end(); iter++){
+    for (auto iter = objects.begin(); iter != objects.end(); iter++)
+    {
+        if ((*iter)->type == BUILDING)
+        {
+            continue;
+        }
         if ((*iter)->visible)
         {
             renderObject((*iter)->renderType, depthShader, (*iter));
         }
     }
-    
-    
-    // 渲染地面
+
+        // 渲染枪
     glm::mat4 model;
+    glm::vec3 gun_pos = this->player->camera.position +
+                        this->player->camera.front * (1.5f + 0.2f * sin(glm::radians(30.0f * shootTime))) + this->player->camera.right * 1.5f + this->player->camera.up * (-1.5f + 0.05f * sin(glm::radians(time_gun)));
+    model = glm::translate(model, gun_pos);
+
+    model = glm::rotate(model, glm::radians(-player->camera.camerapospitch), player->camera.right);
+    model = glm::rotate(model, glm::radians(player->camera.cameraposyaw + 5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.5f));
+    depthShader.SetMatrix4("model", model);
+    ResourceManager::LoadedModels["gun"]->Draw(depthShader);
+
+    // 渲染地面
+    model = glm::mat4();
     model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(10.0f));
     depthShader.SetMatrix4("model", model);
@@ -387,6 +412,8 @@ void Game::depthRender()
     glBindVertexArray(0);
 
 
+
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 void Game::Render()
@@ -394,7 +421,7 @@ void Game::Render()
 
     depthRender(); // 将所有物体都渲染一遍
     // 渲染普通的场景
-    glViewport(0, 0, this->Width * 2 , this->Height * 2);
+    glViewport(0, 0, this->Width, this->Height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderEnvironment(); // 将墙壁和地面都渲染一遍 这些是带有阴影和法线的
 
@@ -418,8 +445,8 @@ void Game::Render()
                         this->player->camera.front * (1.5f + 0.2f * sin(glm::radians(30.0f * shootTime))) + this->player->camera.right * 1.5f + this->player->camera.up * (-1.5f + 0.05f * sin(glm::radians(time_gun)));
     glm::mat4 model;
     model = glm::translate(model, gun_pos);
-    
-    model = glm::rotate(model, glm::radians(-player->camera.camerapospitch ), player->camera.right);
+
+    model = glm::rotate(model, glm::radians(-player->camera.camerapospitch), player->camera.right);
     model = glm::rotate(model, glm::radians(player->camera.cameraposyaw + 5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.SetMatrix4("model", model);
@@ -433,30 +460,30 @@ void Game::Render()
 
     glActiveTexture(GL_TEXTURE0);
 
-    
     for (auto &object : objects)
     {
         if (object->particleGenerator)
         {
-            if(object->type == CANNONBULLET)
+            if (object->type == CANNONBULLET)
                 ResourceManager::GetTexture("flame").Bind(); //待会人发出的子弹要和cannon bullet 区别
-            if(object->type == LASER)
+            if (object->type == LASER)
                 ResourceManager::GetTexture("laser").Bind(); //待会人发出的子弹要和cannon bullet 区别
-            if(object->type == LASER){
+            if (object->type == LASER)
+            {
                 object->particleGenerator->draw(projection, view, this->boss->camera.front, glm::vec3(5.0f));
             }
-            if(object->type == CANNONBULLET){
-                object->particleGenerator->draw(projection, view, this->boss->camera.front);
+            if (object->type == CANNONBULLET)
+            {
+                object->particleGenerator->draw(projection, view, this->boss->camera.front, glm::vec3(15.0f));
             }
-            
         }
     }
 
     for (auto &es : explosionParticles)
     {
-        if (es->life > 0) 
+        if (es->life > 0)
         {
-            es->particleSystem->draw(projection, view, this->boss->camera.front, glm::vec3(40.0f));
+            es->particleSystem->draw(projection, view, this->boss->camera.front, glm::vec3(150.0f));
         }
     }
 }
@@ -470,7 +497,7 @@ void Game::renderEnvironment()
     normalShader.SetInteger("diffuseMap", 0);
     normalShader.SetInteger("normalMap", 1);
     normalShader.SetInteger("depthMap", 2);
-    normalShader.SetFloat("far_plane",this->renderfar);
+    normalShader.SetFloat("far_plane", this->renderfar);
     glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
     glm::mat4 view = boss->camera.GetViewMatrix();
     normalShader.SetMatrix4("projection", projection);
@@ -486,7 +513,6 @@ void Game::renderEnvironment()
     ResourceManager::GetTexture("ground_normal").Bind();
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
-
 
     glm::mat4 model;
     model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -516,6 +542,11 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase *objec
         // if(name == "building") {
         //     puts("drawing building");
         // }
+        if (name == "cannon" || name == "sphere")
+        {
+            glActiveTexture(GL_TEXTURE0);
+            ResourceManager::GetTexture("rust").Bind();
+        }
         ResourceManager::LoadedModels[name]->Draw(sh);
     }
     else

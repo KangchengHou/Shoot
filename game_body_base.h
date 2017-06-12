@@ -38,7 +38,7 @@ const GLfloat PITCH = -45.0f;
 const GLfloat YAWACC = 0.5f;
 const GLfloat PITCHACC = 0.5f;
 const GLfloat ROLL = 0.0f;
-const GLfloat SPEED = 5.0f;
+const GLfloat SPEED = 1.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 const GLfloat CAMERARADIUS = 10.0f;
@@ -217,7 +217,7 @@ public:
             particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("laser"), 50 );
         }
         if (type == CANNONBULLET || type == ROCKET) {
-            particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50 );
+            particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 500 );
         }
         if(type == PLAYER) {
             this->camera.cameraposradius = 0.5f;
