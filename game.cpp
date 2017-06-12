@@ -185,8 +185,8 @@ void Game::Update(GLfloat dt)
         if((*iter)->type == CANNONBULLET || (*iter)->type == LASER){
             // puts("fuck");
             if( (*iter)->body->IsColliding() && (*iter)->life - (*iter)->rest_life > 1) {
-                puts("bang!");
-                cout << (*iter)->rest_life << endl;
+                explosionParticles.push_back(new explosionParticle(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50, 0.5f, (*iter)->position));
+
                 (*iter)->rest_life = 0;
             }
             else {
@@ -196,6 +196,12 @@ void Game::Update(GLfloat dt)
         // puts("after");
 
         iter++;
+    }
+    for (auto &es : explosionParticles)
+    {
+        es->life -= dt;
+        if (es->life > 0)
+            es->particleSystem->update(dt, es->position,glm::vec3(0.0f), 2, glm::vec3(((rand() % 100) - 50) / 50.0f,((rand() % 100) - 50) / 50.0f,((rand() % 100) - 50) / 50.0f) );
     }
 }
 GLuint Game::loadTexture(GLchar const *path)
@@ -316,7 +322,7 @@ void Game::ProcessInput(GLfloat dt)
         if (leftMouse)
         {
             leftMouse = false;
-            GameBodyBase *bullet = addObject(LASER, player->position + 5.0f * player->camera.front, player->pitch, player->yaw, player->roll, 0.1f, true, false, 0);
+            GameBodyBase *bullet = addObject(LASER, player->position + 5.0f * player->camera.front, player->pitch, player->yaw, player->roll, 0.1f, false, false, 0);
             bullet->life = bullet->rest_life = 10;
             bullet->setSpeed(glm::vec3(10.0f * player->camera.front));
 
@@ -399,12 +405,12 @@ void Game::Render()
 
     // render gun
     glm::vec3 gun_pos = this->player->camera.position +
-                        this->player->camera.front * 2.0f + this->player->camera.right * 1.2f;
+                        this->player->camera.front * 1.5f + this->player->camera.right * 1.5f + this->player->camera.up * (-1.5f);
     glm::mat4 model;
     model = glm::translate(model, gun_pos);
     
     model = glm::rotate(model, glm::radians(-player->camera.camerapospitch ), player->camera.right);
-    model = glm::rotate(model, glm::radians(player->camera.cameraposyaw + 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(player->camera.cameraposyaw + 5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.SetMatrix4("model", model);
     ResourceManager::LoadedModels["gun"]->Draw(shader);
@@ -426,7 +432,21 @@ void Game::Render()
                 ResourceManager::GetTexture("flame").Bind(); //待会人发出的子弹要和cannon bullet 区别
             if(object->type == LASER)
                 ResourceManager::GetTexture("laser").Bind(); //待会人发出的子弹要和cannon bullet 区别
-            object->particleGenerator->draw(projection, view, this->boss->camera.front);
+            if(object->type == LASER){
+                object->particleGenerator->draw(projection, view, this->boss->camera.front, glm::vec3(5.0f));
+            }
+            if(object->type == CANNONBULLET){
+                object->particleGenerator->draw(projection, view, this->boss->camera.front);
+            }
+            
+        }
+    }
+
+    for (auto &es : explosionParticles)
+    {
+        if (es->life > 0) 
+        {
+            es->particleSystem->draw(projection, view, this->boss->camera.front, glm::vec3(40.0f));
         }
     }
 }

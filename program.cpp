@@ -12,9 +12,9 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 // The Width of the screen
-const GLuint SCREEN_WIDTH = 600;
+const GLuint SCREEN_WIDTH = 1200;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 400;
+const GLuint SCREEN_HEIGHT = 900;
 
 GLfloat lastX = SCREEN_WIDTH ;
 GLfloat lastY = SCREEN_HEIGHT ;

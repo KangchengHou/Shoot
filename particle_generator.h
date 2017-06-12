@@ -25,7 +25,7 @@ public:
 	ParticleGenerator(Shader shader, Texture2D texture, GLuint amount);
 	~ParticleGenerator();
 	void init();
-	void draw(const glm::mat4 & projection, const glm::mat4 & view, const glm::vec3 camera_front);
+	void draw(const glm::mat4 & projection, const glm::mat4 & view, const glm::vec3 camera_front, glm::vec3 scale = glm::vec3(1.0f));
 	void update(GLfloat dt, glm::vec3 pos, glm::vec3 velocity, GLuint newParticles, glm::vec3 offset);
 	GLuint firstUnusedParticle();
 	void respawnParticle(Particle &particle, glm::vec3 pos, glm::vec3 velocity, glm::vec3 offset);

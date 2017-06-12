@@ -35,7 +35,7 @@ void ParticleGenerator::update(GLfloat dt, glm::vec3 pos, glm::vec3 velocity, GL
 	}
 }
 
-void ParticleGenerator::draw(const glm::mat4 & projection, const glm::mat4 & view, const glm::vec3 camera_front)
+void ParticleGenerator::draw(const glm::mat4 & projection, const glm::mat4 & view, const glm::vec3 camera_front, glm::vec3 scale)
 {
 	// std::cout << "38" << std::endl;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -64,6 +64,7 @@ void ParticleGenerator::draw(const glm::mat4 & projection, const glm::mat4 & vie
 			model = glm::mat4();
 			model = glm::translate(model, particle.position);
 			model = glm::rotate(model, angle, normal_vec);
+			model = glm::scale(model, scale);
 			this->shader.SetMatrix4("model", model);
 			this->shader.SetVector4f("color", particle.color);
 			glActiveTexture(GL_TEXTURE0);

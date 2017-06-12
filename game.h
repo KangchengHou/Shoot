@@ -22,6 +22,17 @@ enum GameState {
     GAME_WIN
 };
 
+struct explosionParticle {
+    ParticleGenerator* particleSystem;
+    GLfloat life;
+    glm::vec3 position;
+
+    explosionParticle(Shader shader, Texture2D texture, GLuint amount, GLfloat life, glm::vec3 pos) 
+        :particleSystem(new ParticleGenerator(shader, texture, amount)), life(life),position(pos)
+    {
+
+    }
+};
 // Game holds all game-related state and functionality.
 // Combines all game-related data into a single class for
 // easy access to each of the components and manageability.
@@ -52,7 +63,7 @@ public:
     GLuint cubeVAO; // 同上
     GLuint cubeVBO; // 同上
     glm::vec3 Gravity = glm::vec3(0.f, -9.8f, 0.f);
-
+    std::list<explosionParticle*> explosionParticles;
     GameBodyBase* room = NULL;
     GameBodyBase* boss = NULL;
     GameBodyBase* player = NULL;
