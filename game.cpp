@@ -6,6 +6,9 @@
 #include <SOIL/SOIL.h>
 #include "physics/q3.h"
 
+GLfloat time_gun;
+GLfloat shootTime;
+
 Game::Game(GLuint width, GLuint height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
@@ -61,22 +64,26 @@ void Game::Init()
     ResourceManager::loadModel("player");
     ResourceManager::loadModel("sphere");
     ResourceManager::loadModel("gun");
-
+    ResourceManager::loadModel("building");
     player = addObject(PLAYER, glm::vec3(0.0f, 15.0f, 100.0f), 90.0f, 0.0f, 0.0f, 10.0f, false);
     boss = player;
+    time_gun = 0.0f;
+    shootTime = 0.0f;
     // players.push_back(player);
 
-    this->groundSize = 1000.0f;
+    this->groundSize = 10000.0f;
     addObject(OTHER, glm::vec3(0.0f, -groundSize / 2, 0.0f), 90.0f, 0.0f, 0.0f, this->groundSize, false, true);
     // puts("fuck");
     // addObject(CANNON, glm::vec3(5.0f, 50.0f, -5.0f), 90.0f, 0.0f, 0.0f, 0.1f);
 
     for (int i = 0; i < 5; i++)
     {
-        cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 10 - 3, 10, -5), 90, 0, 0, 0.1));
+        cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 40 - 80, 10, -20), 90, 0, 0, 0.1));
         cannongroup.frequency.push_back(((rand() % 200) + 1) / 5.f);
         cannongroup.timer.push_back(0);
     }
+
+    addObject(BUILDING, glm::vec3(0, 500, -1600), 90, 90, 0, 0.004, true, true);
     // puts("");
 }
 #define sqr(x) ((x) * (x))
@@ -203,6 +210,9 @@ void Game::Update(GLfloat dt)
         if (es->life > 0)
             es->particleSystem->update(dt, es->position,glm::vec3(0.0f), 2, glm::vec3(((rand() % 100) - 50) / 50.0f,((rand() % 100) - 50) / 50.0f,((rand() % 100) - 50) / 50.0f) );
     }
+    time_gun += dt * 200.0f;
+    if (time_gun > 360.0f) time_gun = 0.0f;
+    if (shootTime > 0) shootTime -= 1.0f;
 }
 GLuint Game::loadTexture(GLchar const *path)
 {
@@ -324,8 +334,8 @@ void Game::ProcessInput(GLfloat dt)
             leftMouse = false;
             GameBodyBase *bullet = addObject(LASER, player->position + 5.0f * player->camera.front, player->pitch, player->yaw, player->roll, 0.1f, false, false, 0);
             bullet->life = bullet->rest_life = 10;
-            bullet->setSpeed(glm::vec3(10.0f * player->camera.front));
-
+            bullet->setSpeed(glm::vec3(20.0f * player->camera.front));
+            shootTime = 6.0f;
         }
     }
 }
@@ -384,7 +394,7 @@ void Game::Render()
 
     depthRender(); // 将所有物体都渲染一遍
     // 渲染普通的场景
-    glViewport(0, 0, this->Width , this->Height );
+    glViewport(0, 0, this->Width * 2 , this->Height * 2);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderEnvironment(); // 将墙壁和地面都渲染一遍 这些是带有阴影和法线的
 
@@ -405,7 +415,7 @@ void Game::Render()
 
     // render gun
     glm::vec3 gun_pos = this->player->camera.position +
-                        this->player->camera.front * 1.5f + this->player->camera.right * 1.5f + this->player->camera.up * (-1.5f);
+                        this->player->camera.front * (1.5f + 0.2f * sin(glm::radians(30.0f * shootTime))) + this->player->camera.right * 1.5f + this->player->camera.up * (-1.5f + 0.05f * sin(glm::radians(time_gun)));
     glm::mat4 model;
     model = glm::translate(model, gun_pos);
     
@@ -501,8 +511,11 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase *objec
 
     sh.SetMatrix4("model", model);
 
-    if (name == "cannon" || name == "player" || name == "sphere")
+    if (name == "cannon" || name == "player" || name == "sphere" || name == "building")
     {
+        if(name == "building") {
+            puts("drawing building");
+        }
         ResourceManager::LoadedModels[name]->Draw(sh);
     }
     else

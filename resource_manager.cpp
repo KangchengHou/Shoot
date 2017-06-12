@@ -359,6 +359,7 @@ void ResourceManager::loadModel(std::string name)
     if(name == "cannon") str = "models/Naval\ cannon.obj";
     if(name == "sphere") str = "models/sphere.obj";
     if(name == "gun") str = "models/portal/portalgun1.obj";
+    if(name == "building") str = "models/HarryPotter/Hogwarts.3ds";
     GLchar *path = new char[str.length()];
     memcpy(path, str.c_str(), str.length()+1);
     puts("adding");

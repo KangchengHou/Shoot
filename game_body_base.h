@@ -29,6 +29,7 @@ enum OBJECTTYPE
     CANNON,
     CANNONBULLET,
     LASER,
+    BUILDING,
 };
 
 // Default player values
@@ -208,6 +209,7 @@ public:
         if(type == CANNON)  renderType = "cannon";
         if(type == CANNONBULLET) renderType = "sphere";
         if(type == LASER) renderType = "sphere";
+        if(type == BUILDING) renderType = "building";
         this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         this->updateBaseVectorsAccordingToSelfAngles();
         this->camera = Camera(position, front, yaw, pitch);
