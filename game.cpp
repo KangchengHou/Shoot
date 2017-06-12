@@ -83,7 +83,7 @@ void Game::Init()
         cannongroup.timer.push_back(0);
     }
 
-    addObject(BUILDING, glm::vec3(0, 500, -1600), 90, 90, 0, 0.004, true, true);
+    addObject(BUILDING, glm::vec3(0, 0, -500), -90, 0, 0, 1, true, true);
     // puts("");
 }
 #define sqr(x) ((x) * (x))
@@ -513,9 +513,9 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase *objec
 
     if (name == "cannon" || name == "player" || name == "sphere" || name == "building")
     {
-        if(name == "building") {
-            puts("drawing building");
-        }
+        // if(name == "building") {
+        //     puts("drawing building");
+        // }
         ResourceManager::LoadedModels[name]->Draw(sh);
     }
     else
