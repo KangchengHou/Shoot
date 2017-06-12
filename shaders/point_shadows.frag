@@ -87,10 +87,7 @@ float ShadowCalculation(vec3 fragPos)
 void main()
 {           
     vec3 color;
-    if(LoadedModel == false)
-        color = texture(diffuseTexture, fs_in.TexCoords).rgb;
-    else 
-        color = texture(texture_diffuse1,fs_in.TexCoords).rgb;
+    color = texture(diffuseTexture, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightColor = vec3(0.3);
     // Ambient

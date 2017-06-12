@@ -12,12 +12,12 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 // The Width of the screen
-const GLuint SCREEN_WIDTH = 1200;
+const GLuint SCREEN_WIDTH = 600;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 900;
+const GLuint SCREEN_HEIGHT = 400;
 
-GLfloat lastX = SCREEN_WIDTH / 2.0;
-GLfloat lastY = SCREEN_HEIGHT / 2.0;
+GLfloat lastX = SCREEN_WIDTH ;
+GLfloat lastY = SCREEN_HEIGHT ;
 
 Game Shoot(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // OpenGL configuration
-    glViewport(0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2);
+    glViewport(0, 0, SCREEN_WIDTH , SCREEN_HEIGHT );
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);

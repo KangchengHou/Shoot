@@ -30,7 +30,8 @@ void Game::Init()
     this->cubeVAO = 0;
     this->cubeVBO = 0;
     ResourceManager::LoadTexture("./wood.png", false, "woodTexture");
-    ResourceManager::LoadTexture("./particle.png", GL_TRUE, "particle");
+    ResourceManager::LoadTexture("./flame.png", GL_TRUE, "flame");
+    ResourceManager::LoadTexture("./particle.png", GL_TRUE, "laser");
     ResourceManager::LoadTexture("./fire.png", GL_TRUE, "fire");
     ResourceManager::LoadTexture("./booster.png", GL_TRUE, "rocket");
     ResourceManager::LoadTexture("./brickwall.jpg", GL_FALSE, "ground");
@@ -43,6 +44,7 @@ void Game::Init()
     // FIXME: add appropriate position
 
     ResourceManager::LoadShader("shaders/point_shadows.vs", "shaders/point_shadows.frag", nullptr, "point_shadows");
+    ResourceManager::LoadShader("shaders/point_shadows_depth.vs", "shaders/point_shadows_depth.frag", "shaders/point_shadows_depth.gs", "point_shadows_depth");
     ResourceManager::LoadShader("shaders/normal_mapping.vs", "shaders/normal_mapping.frag", nullptr, "normal_mapping");
     ResourceManager::LoadShader("shaders/particle.vs", "shaders/particle.frag", nullptr, "particle");
 
@@ -58,8 +60,9 @@ void Game::Init()
     ResourceManager::loadModel("cannon");
     ResourceManager::loadModel("player");
     ResourceManager::loadModel("sphere");
+    ResourceManager::loadModel("gun");
 
-    player = addObject(PLAYER, glm::vec3(0.0f, 10.0f, 0.0f), 90.0f, 0.0f, 0.0f, 1.0f);
+    player = addObject(PLAYER, glm::vec3(0.0f, 15.0f, 100.0f), 90.0f, 0.0f, 0.0f, 10.0f, false);
     boss = player;
     // players.push_back(player);
 
@@ -71,7 +74,7 @@ void Game::Init()
     for (int i = 0; i < 5; i++)
     {
         cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 10 - 3, 10, -5), 90, 0, 0, 0.1));
-        cannongroup.frequency.push_back(((rand() % 200) + 1) / 100.f);
+        cannongroup.frequency.push_back(((rand() % 200) + 1) / 5.f);
         cannongroup.timer.push_back(0);
     }
     // puts("");
@@ -98,7 +101,7 @@ void Game::Update(GLfloat dt)
             float t = sqrt(2 / 9.8 * (sqrt(3) / 3 * s + y));
             float v = s / t;
             p->setSpeed(glm::vec3(v * dis.x / s, sqrt(3) / 3 * v, v * dis.z / s));
-            p->life = 10;
+            p->life = p->rest_life = 10;
         }
     }
 
@@ -115,11 +118,11 @@ void Game::Update(GLfloat dt)
     for (auto &object : objects)
     {
         if (object->particleGenerator)
-            object->particleGenerator->update(dt, object->position, object->speed, 2, glm::vec3(0.0f));
+            object->particleGenerator->update(dt, object->position, object->speed, 2, -object->scale * object->offset);
     }
 
     glm::mat4 model;
-    lights[0].position = this->boss->camera.position;
+    lights[0].position = glm::vec3(this->player->position.x, 10.0f, this->player->position.z);
     bool flag = false;
 
     // std::cout << "107m" << std::endl;
@@ -128,12 +131,15 @@ void Game::Update(GLfloat dt)
     auto iter = objects.cbegin();
     while (iter != objects.cend())
     {
-        // std::cout << (*iter)->type << std::endl;
-        (*iter)->life -= dt;
+        // printf("before: %.5f\n", (*iter)->rest_life);
+        (*iter)->rest_life -= dt;
+        // cout << "dt: " << dt << endl;
+        // printf("after: %.5f\n", (*iter)->rest_life);
         auto next = ++iter;
         iter--;
-        if ((*iter)->life <= 0)
+        if ((*iter)->rest_life <= 0)
         {
+            this->scene.RemoveBody((*iter)->body);
             delete (*iter);
             objects.erase(iter);
             iter = next;
@@ -168,7 +174,27 @@ void Game::Update(GLfloat dt)
         // std::cout << "115" << std::endl;
         glm::vec3 off = (*iter)->offset * (*iter)->scale;
         (*iter)->setPos(pos.x - off.x, pos.y - off.y, pos.z - off.z);
+        
+        
+        // cout << (*iter)->renderType << endl;
+        // cout << (*iter)->rest_life << endl;
+        // cout << (*iter)->body->GetFlag() << endl;
         // std::cout << (*iter)->position.x << " " << (*iter)->position.y << " " << (*iter)->position.z << " " << std::endl;
+        // std::cout << (*iter)->body->GetTransform().position.x << " " << (*iter)->body->GetTransform().position.y << " " << (*iter)->body->GetTransform().position.z << " " << std::endl;
+        // puts("before");
+        if((*iter)->type == CANNONBULLET || (*iter)->type == LASER){
+            // puts("fuck");
+            if( (*iter)->body->IsColliding() && (*iter)->life - (*iter)->rest_life > 1) {
+                puts("bang!");
+                cout << (*iter)->rest_life << endl;
+                (*iter)->rest_life = 0;
+            }
+            else {
+                // puts("no");
+            }
+        }
+        // puts("after");
+
         iter++;
     }
 }
@@ -256,7 +282,7 @@ void Game::ProcessInput(GLfloat dt)
             // std::cout << "204" << std::endl;
 
             glm::vec3 rocketPos = player->position + WORLDUP * 2.0f;
-            rocket = addObject(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, 1.0f);
+            rocket = addObject(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, 1.0f, true, false, 0);
             rocket->setSpeed(glm::vec3(0.0f, 1.0f, 0.0f));
 
             // std::cout << "198" << std::endl;
@@ -290,8 +316,10 @@ void Game::ProcessInput(GLfloat dt)
         if (leftMouse)
         {
             leftMouse = false;
-            GameBodyBase *bullet = addObject(OTHER, player->position + player->front, player->pitch, player->yaw, player->roll, 0.5f);
-            bullet->setSpeed(glm::vec3(5.0f * player->front));
+            GameBodyBase *bullet = addObject(LASER, player->position + 5.0f * player->camera.front, player->pitch, player->yaw, player->roll, 0.1f, true, false, 0);
+            bullet->life = bullet->rest_life = 10;
+            bullet->setSpeed(glm::vec3(10.0f * player->camera.front));
+
         }
     }
 }
@@ -324,22 +352,24 @@ void Game::depthRender()
     depthShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     // 然后用这个shader渲染所有东西
 
-    for (auto iter = objects.begin(); iter != objects.end(); iter++)
+    for (auto iter = objects.begin(); iter != objects.end(); iter++){
         if ((*iter)->visible)
         {
             renderObject((*iter)->renderType, depthShader, (*iter));
         }
-
-    // for (auto iter = players.begin(); iter != players.end(); iter++)
-    // {
-    //     renderObject("player", depthShader, (*iter));
-    // }
-
-    if (rocket != NULL)
-    {
-        // renderObject("rocket", depthShader, rocket);
-        // particles->draw();
     }
+    
+    
+    // 渲染地面
+    glm::mat4 model;
+    model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(10.0f));
+    depthShader.SetMatrix4("model", model);
+
+    glBindVertexArray(ResourceManager::VAOmap["plane"]);
+    glDrawArrays(GL_TRIANGLES, 0, ResourceManager::VAOSizeMap["plane"]);
+    glBindVertexArray(0);
+
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -348,7 +378,7 @@ void Game::Render()
 
     depthRender(); // 将所有物体都渲染一遍
     // 渲染普通的场景
-    glViewport(0, 0, this->Width, this->Height);
+    glViewport(0, 0, this->Width , this->Height );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderEnvironment(); // 将墙壁和地面都渲染一遍 这些是带有阴影和法线的
 
@@ -367,6 +397,18 @@ void Game::Render()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
 
+    // render gun
+    glm::vec3 gun_pos = this->player->camera.position +
+                        this->player->camera.front * 2.0f + this->player->camera.right * 1.2f;
+    glm::mat4 model;
+    model = glm::translate(model, gun_pos);
+    
+    model = glm::rotate(model, glm::radians(-player->camera.camerapospitch ), player->camera.right);
+    model = glm::rotate(model, glm::radians(player->camera.cameraposyaw + 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.SetMatrix4("model", model);
+    ResourceManager::LoadedModels["gun"]->Draw(shader);
+
     for (auto iter = objects.begin(); iter != objects.end(); iter++)
         if ((*iter)->visible)
         {
@@ -374,11 +416,16 @@ void Game::Render()
         }
 
     glActiveTexture(GL_TEXTURE0);
-    ResourceManager::GetTexture("particle").Bind();
+
+    
     for (auto &object : objects)
     {
         if (object->particleGenerator)
         {
+            if(object->type == CANNONBULLET)
+                ResourceManager::GetTexture("flame").Bind(); //待会人发出的子弹要和cannon bullet 区别
+            if(object->type == LASER)
+                ResourceManager::GetTexture("laser").Bind(); //待会人发出的子弹要和cannon bullet 区别
             object->particleGenerator->draw(projection, view, this->boss->camera.front);
         }
     }
@@ -392,7 +439,8 @@ void Game::renderEnvironment()
     normalShader.Use();
     normalShader.SetInteger("diffuseMap", 0);
     normalShader.SetInteger("normalMap", 1);
-
+    normalShader.SetInteger("depthMap", 2);
+    normalShader.SetFloat("far_plane",this->renderfar);
     glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
     glm::mat4 view = boss->camera.GetViewMatrix();
     normalShader.SetMatrix4("projection", projection);
@@ -400,12 +448,15 @@ void Game::renderEnvironment()
     normalShader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
     normalShader.SetVector3f("viewPos", this->boss->camera.position.x, this->boss->camera.position.y, this->boss->camera.position.z);
 
-    // normalShader.Use();
+    normalShader.Use();
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture("ground").Bind();
     // glBindTexture(GL_TEXTURE_2D, diffuseMap);
     glActiveTexture(GL_TEXTURE1);
     ResourceManager::GetTexture("ground_normal").Bind();
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubemap);
+
 
     glm::mat4 model;
     model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -432,11 +483,7 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase *objec
 
     if (name == "cannon" || name == "player" || name == "sphere")
     {
-        // 这是外面加载的模型
-        // 设置
-        sh.SetInteger("LoadedModel", 1);
         ResourceManager::LoadedModels[name]->Draw(sh);
-        sh.SetInteger("LoadedModel", 0);
     }
     else
     {

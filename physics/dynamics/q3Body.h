@@ -93,7 +93,7 @@ public:
 	i32 GetLayers( ) const;
 	const q3Quaternion GetQuaternion( ) const;
 	void* GetUserData( ) const;	
-  
+	
 	void SetLinearDamping( r32 damping );
 	r32 GetLinearDamping( r32 damping ) const;
 	void SetAngularDamping( r32 damping );
@@ -114,6 +114,12 @@ public:
 	void Dump( FILE* file, i32 index ) const;
 	r32 GetMass( ) const;
 	r32 GetInvMass( ) const;
+
+	const bool IsColliding() const {
+		return m_contactList != NULL;
+		// return m_flags & eIsland;
+	}
+
 private:
 	// m_flags
 	enum

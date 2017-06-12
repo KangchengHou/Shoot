@@ -354,10 +354,11 @@ void ResourceManager::loadModel(std::string name)
 {
     std::string str =  "models/" + name + ".obj";
     if(name == "cube") str = "models/stone.3ds";
-    if(name == "player") str = "models/portal/raygun.obj";
+    if(name == "player") str = "models/rectangle.obj";
     if(name == "rocket") str = "models/rocket3.obj";
     if(name == "cannon") str = "models/Naval\ cannon.obj";
     if(name == "sphere") str = "models/sphere.obj";
+    if(name == "gun") str = "models/portal/raygun.obj";
     GLchar *path = new char[str.length()];
     memcpy(path, str.c_str(), str.length()+1);
     puts("adding");

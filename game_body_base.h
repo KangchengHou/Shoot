@@ -27,7 +27,8 @@ enum OBJECTTYPE
     ROCKET,
     OTHER,
     CANNON,
-    CANNONBULLET
+    CANNONBULLET,
+    LASER,
 };
 
 // Default player values
@@ -42,6 +43,7 @@ const GLfloat ZOOM = 45.0f;
 const GLfloat CAMERARADIUS = 10.0f;
 const glm::vec3 WORLDUP = glm::vec3(0.0f, 1.0f, 0.0f);
 
+const double INITIAL_LIFE = 10000000.0;
 
 class Camera
 {
@@ -124,7 +126,8 @@ public:
     GLfloat scale;
     glm::vec3 color;
     glm::vec3 offset = glm::vec3(0, 0, 0);
-    GLfloat life = 1e9;
+    double life = INITIAL_LIFE;
+    double rest_life = INITIAL_LIFE;
 
     glm::vec3 acceleration;
     glm::vec3 speed;
@@ -204,11 +207,18 @@ public:
         if(type == OTHER)   renderType = "cube";
         if(type == CANNON)  renderType = "cannon";
         if(type == CANNONBULLET) renderType = "sphere";
+        if(type == LASER) renderType = "sphere";
         this->rotationMatrix = euler2matrix(pitch, yaw, roll);
         this->updateBaseVectorsAccordingToSelfAngles();
         this->camera = Camera(position, front, yaw, pitch);
+        if (type == LASER) {
+            particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("laser"), 50 );
+        }
         if (type == CANNONBULLET || type == ROCKET) {
-            particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 50 );
+            particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50 );
+        }
+        if(type == PLAYER) {
+            this->camera.cameraposradius = 0.5f;
         }
     }
     ~GameBodyBase();
@@ -309,7 +319,7 @@ public:
         this->pitch += yoffset;
 
         if (constrainPitch) {
-            if (pitch >0 ) pitch = 0;
+            if (pitch > 89.0f ) pitch = 89.0f;
             if (pitch < -89.0f) pitch = -89.0f;
         }
 
@@ -317,7 +327,8 @@ public:
         this->updateBaseVectorsAccordingToSelfAngles();
         this->camera.updateSelfAnglesAccordingToTargetAngles(this->yaw, this->pitch);
         this->camera.updateBaseVectorsAccordingToSelfAngles();
-        this->camera.updateCameraPosition();
+        // this->camera.updateCameraPosition();
+        this->camera.updateTargetPosition(this->camera.position + this->camera.front);
     }
 
 // private:

@@ -98,9 +98,10 @@ public:
                  GLfloat roll,
                  GLfloat scale,
                  bool visible = true,
-                 bool rest = false) {
+                 bool rest = false,
+                 GLfloat gravityScale = 1.0) {
         GameBodyBase *p =  new GameBodyBase(type, position, yaw, pitch, roll, scale, visible);
-        if(p->renderType == "cannon") {
+        if(ResourceManager::LoadedModels.count(p->renderType)) {
             float* b = ResourceManager::LoadedModels[p->renderType]->boundary;
             for(int i = 0; i < 3; i++) {
                 p->offset[i] = (b[i*2+1] + b[i*2]) / 2;
@@ -108,7 +109,7 @@ public:
         }
         
         objects.push_back(p);
-        registerCollisionBody(p, rest);
+        registerCollisionBody(p, rest, gravityScale);
         return p;
     }
 private:

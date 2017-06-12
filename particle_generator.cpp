@@ -18,7 +18,7 @@ void ParticleGenerator::update(GLfloat dt, glm::vec3 pos, glm::vec3 velocity, GL
 	for (GLuint i = 0; i < newParticles; ++i)
 	{
 		int unusedParticle = this->firstUnusedParticle();
-			std::cout << "unusedparticle: " << unusedParticle << std::endl;
+			// std::cout << "unusedparticle: " << unusedParticle << std::endl;
 
 		this->respawnParticle(this->particles[unusedParticle], pos, velocity, offset);
 	}
@@ -50,8 +50,8 @@ void ParticleGenerator::draw(const glm::mat4 & projection, const glm::mat4 & vie
 	glm::vec3 normal_vec = glm::cross(v1, v2);
 	GLfloat angle = glm::acos(glm::dot(v1, v2));
 	
-	std::cout << "particle position: "  << particles[0].position.x << " " << particles[0].position.y << " " << particles[0].position.z << " " <<std::endl;
-	std::cout << "particle speed: "  << particles[0].velocity.x << " " << particles[0].velocity.y << " " << particles[0].velocity.z << " " << std::endl;
+	// std::cout << "particle position: "  << particles[0].position.x << " " << particles[0].position.y << " " << particles[0].position.z << " " <<std::endl;
+	// std::cout << "particle speed: "  << particles[0].velocity.x << " " << particles[0].velocity.y << " " << particles[0].velocity.z << " " << std::endl;
 
 
 	for (Particle particle : this->particles)
@@ -145,6 +145,6 @@ void ParticleGenerator::respawnParticle(Particle &particle, glm::vec3 pos, glm::
 	particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
 	particle.life = 0.3f;
 	particle.velocity = velocity * 0.1f;
-		std::cout << "set life to 1" << std::endl;
+		// std::cout << "set life to 1" << std::endl;
 
 }
