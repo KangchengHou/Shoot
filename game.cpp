@@ -29,13 +29,18 @@ Game::~Game()
 
 void Game::Init()
 {
-
+    SoundEngine = createIrrKlangDevice();
+    if(!SoundEngine){
+        std::cout << "fuck!!" << std::endl;
+    }
+    
     this->cubeVAO = 0;
     this->cubeVBO = 0;
     ResourceManager::LoadTexture("./wood.png", false, "woodTexture");
     ResourceManager::LoadTexture("./flame.png", GL_TRUE, "flame");
     ResourceManager::LoadTexture("./particle.png", GL_TRUE, "laser");
-    ResourceManager::LoadTexture("./texture2.jpg", GL_TRUE, "rust");
+    ResourceManager::LoadTexture("./texture.jpg", GL_TRUE, "rust");
+    ResourceManager::LoadTexture("./texture2.jpg", GL_TRUE, "metal");
     ResourceManager::LoadTexture("./fire.png", GL_TRUE, "fire");
     ResourceManager::LoadTexture("./booster.png", GL_TRUE, "rocket");
     ResourceManager::LoadTexture("./brickwall.jpg", GL_FALSE, "ground");
@@ -51,9 +56,11 @@ void Game::Init()
     ResourceManager::LoadShader("shaders/point_shadows_depth.vs", "shaders/point_shadows_depth.frag", "shaders/point_shadows_depth.gs", "point_shadows_depth");
     ResourceManager::LoadShader("shaders/normal_mapping.vs", "shaders/normal_mapping.frag", nullptr, "normal_mapping");
     ResourceManager::LoadShader("shaders/particle.vs", "shaders/particle.frag", nullptr, "particle");
-
+    ResourceManager::LoadShader("shaders/skybox.vs", "shaders/skybox.frag", nullptr, "skybox");
     shader = ResourceManager::GetShader("point_shadows");
     depthShader = ResourceManager::GetShader("point_shadows_depth");
+    skyboxShader = ResourceManager::GetShader("skybox");
+
     this->initDepthMap();
     this->lights.push_back(Light(glm::vec3(0.0f)));
 
@@ -66,6 +73,75 @@ void Game::Init()
     ResourceManager::loadModel("sphere");
     ResourceManager::loadModel("gun");
     ResourceManager::loadModel("building");
+
+    //---------------load Skybox-------------------
+    GLfloat skyboxVertices[] = {
+        // Positions
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+
+        -1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f};
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+    glBindVertexArray(0);
+
+    std::vector<std::string> faces;
+    faces.push_back("./skybox/1/right.jpg");
+    faces.push_back("./skybox/1/left.jpg");
+    faces.push_back("./skybox/1/top.jpg");
+    faces.push_back("./skybox/1/bottom.jpg");
+    faces.push_back("./skybox/1/back.jpg");
+    faces.push_back("./skybox/1/front.jpg");
+    // faces.push_back("./skybox/3/right.jpg");
+    // faces.push_back("./skybox/3/left.jpg");
+    // faces.push_back("./skybox/3/top.jpg");
+    // faces.push_back("./skybox/3/bottom.jpg");
+    // faces.push_back("./skybox/3/back.jpg");
+    // faces.push_back("./skybox/3/front.jpg");
+    skyboxTexture = loadCubemap(faces);
+    //-------------loadSkybox---------------
     player = addObject(PLAYER, glm::vec3(0.0f, 15.0f, 100.0f), 90.0f, 0.0f, 0.0f, 15.0f, false);
     // player->MovementSpeed = 3.0f;
     boss = player;
@@ -81,6 +157,11 @@ void Game::Init()
     for (int i = 0; i < 5; i++)
     {
         cannongroup.cannons.push_back(addObject(CANNON, glm::vec3(i * 100 - 200, 20, 0), 90, 0, 0, 0.3));
+        // if(i == 2){
+        //     cannongroup.frequency.push_back(300 / 40.f);
+        // }else{
+        //     cannongroup.frequency.push_back(2000 / 40.f);
+        // }
         cannongroup.frequency.push_back(((rand() % 200) + 1) / 40.f);
         cannongroup.timer.push_back(0);
     }
@@ -100,8 +181,9 @@ void Game::Update(GLfloat dt)
         {
             cannongroup.timer[i] -= cannongroup.frequency[i];
             // puts("bong");
-            glm::vec3 shootposition = cannongroup.cannons[i]->position + cannongroup.cannons[i]->front * 5.0f + cannongroup.cannons[i]->up * 2.0f;
+            glm::vec3 shootposition = cannongroup.cannons[i]->position + cannongroup.cannons[i]->front * 15.0f + cannongroup.cannons[i]->up * 10.0f;
             auto *p = addObject(CANNONBULLET, shootposition, 90, 0, 0, 1.0);
+            SoundEngine->play2D("./sound/cannon.wav", GL_FALSE);
             auto dis = player->position - shootposition;
             float speed = 10;
             // float t = sqrt(sqr(dis.x) + sqr(dis.z)) / speed;
@@ -131,7 +213,11 @@ void Game::Update(GLfloat dt)
     }
 
     glm::mat4 model;
-    lights[0].position = this->player->position + glm::vec3(0.0f, 12.0f, 0.0f) + this->player->camera.front * (-6.0f);
+    lights[0].position = this->player->position + glm::vec3(0.0f, 18.0f, 0.0f) + this->player->camera.front * (-6.0f);
+    if (rocket != NULL)
+    {
+        lights[0].position = this->rocket->position + glm::vec3(0.0f, 20.0f, -10.0f);
+    }
     bool flag = false;
 
     // std::cout << "107m" << std::endl;
@@ -194,8 +280,8 @@ void Game::Update(GLfloat dt)
         {
             // puts("fuck");
             if ((*iter)->body->IsColliding() && (*iter)->life - (*iter)->rest_life > 1)
-            {   
-                explosionParticle* newep = new explosionParticle(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50, 0.5f, (*iter)->position);
+            {
+                explosionParticle *newep = new explosionParticle(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("flame"), 50, 0.5f, (*iter)->position);
 
                 explosionParticles.push_back(newep);
 
@@ -307,8 +393,8 @@ void Game::ProcessInput(GLfloat dt)
 
             glm::vec3 rocketPos = player->position + WORLDUP * 2.0f;
             rocket = addObject(ROCKET, rocketPos, 90.0f, 90.0f, 0.0f, 1.0f, true, false, 0);
-            rocket->setSpeed(glm::vec3(0.0f, 1.0f, 0.0f));
-
+            rocket->setSpeed(glm::vec3(0.0f, 50.0f, 0.0f));
+            rocket->MovementSpeed = 50.0f;
             // std::cout << "198" << std::endl;
 
             // particles = new ParticleGenerator(shader, ResourceManager::GetTexture("fire"), GLuint(5));
@@ -341,6 +427,7 @@ void Game::ProcessInput(GLfloat dt)
         if (leftMouse)
         {
             leftMouse = false;
+            SoundEngine->play2D("./sound/laser3.wav", GL_FALSE);
             GameBodyBase *bullet = addObject(LASER, player->position + 15.0f * player->camera.front + player->camera.right, player->pitch, player->yaw, player->roll, 1.0f, false, false, 0);
             bullet->life = bullet->rest_life = 10;
             bullet->setSpeed(glm::vec3(500.0f * player->camera.front - player->camera.right));
@@ -389,7 +476,7 @@ void Game::depthRender()
         }
     }
 
-        // 渲染枪
+    // 渲染枪
     glm::mat4 model;
     glm::vec3 gun_pos = this->player->camera.position +
                         this->player->camera.front * (1.5f + 0.2f * sin(glm::radians(30.0f * shootTime))) + this->player->camera.right * 1.5f + this->player->camera.up * (-1.5f + 0.05f * sin(glm::radians(time_gun)));
@@ -411,24 +498,40 @@ void Game::depthRender()
     glDrawArrays(GL_TRIANGLES, 0, ResourceManager::VAOSizeMap["plane"]);
     glBindVertexArray(0);
 
-
-
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 void Game::Render()
 {
 
-    depthRender(); // 将所有物体都渲染一遍
     // 渲染普通的场景
-    glViewport(0, 0, this->Width, this->Height);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    depthRender(); // 将所有物体都渲染一遍
+    glViewport(0, 0, this->Width, this->Height);
+    // Draw skybox first
+    {
+        glDepthMask(GL_FALSE); // Remember to turn depth writing off
+        skyboxShader.Use();
+        glm::mat4 view = glm::mat4(glm::mat3(this->boss->camera.GetViewMatrix())); // Remove any translation component of the view matrix
+        glm::mat4 projection = glm::perspective(this->boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
+        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        // skybox cube
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(glGetUniformLocation(shader.ID, "skybox"), 0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthMask(GL_TRUE);
+    }
+    // draw skybox
     renderEnvironment(); // 将墙壁和地面都渲染一遍 这些是带有阴影和法线的
 
     // renderGameObjects(); // 将其他所有物体都渲染一遍， 带有阴影的
-    shader.Use();
     glm::mat4 projection = glm::perspective(boss->camera.zoom, (float)this->Width / (float)this->Height, rendernear, renderfar);
     glm::mat4 view = boss->camera.GetViewMatrix();
+    shader.Use();
     shader.SetMatrix4("projection", projection);
     shader.SetMatrix4("view", view);
     shader.SetVector3f("lightPos", this->lights[0].position.x, this->lights[0].position.y, this->lights[0].position.z);
@@ -464,7 +567,7 @@ void Game::Render()
     {
         if (object->particleGenerator)
         {
-            if (object->type == CANNONBULLET)
+            if (object->type == CANNONBULLET || object->type == ROCKET)
                 ResourceManager::GetTexture("flame").Bind(); //待会人发出的子弹要和cannon bullet 区别
             if (object->type == LASER)
                 ResourceManager::GetTexture("laser").Bind(); //待会人发出的子弹要和cannon bullet 区别
@@ -472,7 +575,7 @@ void Game::Render()
             {
                 object->particleGenerator->draw(projection, view, this->boss->camera.front, glm::vec3(5.0f));
             }
-            if (object->type == CANNONBULLET)
+            if (object->type == CANNONBULLET || object->type == ROCKET)
             {
                 object->particleGenerator->draw(projection, view, this->boss->camera.front, glm::vec3(15.0f));
             }
@@ -486,6 +589,19 @@ void Game::Render()
             es->particleSystem->draw(projection, view, this->boss->camera.front, glm::vec3(150.0f));
         }
     }
+    //-------------render skybox-------------
+    // glDepthFunc(GL_LEQUAL); // Change depth function so depth test passes when values are equal to depth buffer's content
+    // skyboxShader.Use();
+    // view = glm::mat4(glm::mat3(this->boss->camera.GetViewMatrix())); // Remove any translation component of the view matrix
+    // skyboxShader.SetMatrix4("view", view);
+    // skyboxShader.SetMatrix4("projection", projection);
+    // // skybox cube
+    // glBindVertexArray(skyboxVAO);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    // glBindVertexArray(0);
+    // glDepthFunc(GL_LESS); // Set depth function back to default
+    //--------------render skybox-----------
 }
 
 void Game::renderEnvironment()
@@ -542,15 +658,18 @@ void Game::renderObject(const std::string &name, Shader &sh, GameBodyBase *objec
         // if(name == "building") {
         //     puts("drawing building");
         // }
-        if (name == "cannon" || name == "sphere")
+        if (name == "cannon" || name == "sphere" || name == "rocket")
         {
             glActiveTexture(GL_TEXTURE0);
             ResourceManager::GetTexture("rust").Bind();
         }
+
         ResourceManager::LoadedModels[name]->Draw(sh);
     }
     else
     {
+        glActiveTexture(GL_TEXTURE0);
+        ResourceManager::GetTexture("metal").Bind();
         GLuint VAO = ResourceManager::VAOmap[name];
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, ResourceManager::VAOSizeMap[name]);
@@ -587,4 +706,28 @@ void Game::registerCollisionBody(GameBodyBase *obj, bool rest, float gravityScal
     boxDef.Set(trans, q3Vec3(size[0], size[1], size[2]));
     body->AddBox(boxDef);
     obj->body = body;
+}
+GLuint Game::loadCubemap(std::vector<std::string> faces)
+{
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glActiveTexture(GL_TEXTURE0);
+
+    int width, height;
+    unsigned char *image;
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    for (GLuint i = 0; i < faces.size(); i++)
+    {
+        image = SOIL_load_image(faces[i].c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    return textureID;
 }

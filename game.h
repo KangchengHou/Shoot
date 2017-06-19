@@ -8,6 +8,8 @@
 // #include "box.h"
 #include "shader.h"
 #include <map>
+#include <string>
+#include <vector>
 #include "light.h"
 #include "objloader.h"
 #include "particle_generator.h"
@@ -15,6 +17,14 @@
 #include "model.h"
 #include "cannon.h"
 #include "resource_manager.h"
+
+#include <irrKlang/irrKlang.h>
+using namespace irrklang;
+#pragma comment(lib, "irrKalng.lib")
+
+  
+
+
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -47,6 +57,7 @@ public:
     GLuint                 Width, Height;
     GLuint shadowWidth;
     GLuint shadowHeight;
+    ISoundEngine *SoundEngine;
     GLFWwindow* window;
     GLfloat rendernear;
     GLuint diffuseMap;
@@ -78,7 +89,12 @@ public:
     std::vector<Light> lights;
     glm::vec3 lightColor = glm::vec3(0.f, 0.5f, 0.5f);
     glm::mat4 lightSpaceMatrix;
+    //------------skybox-------------
     Shader lightShader;
+    Shader skyboxShader;
+    GLuint skyboxVAO, skyboxVBO;
+    GLuint skyboxTexture;
+    //------------skybox-----------
     // 新加的两个shader
     Shader depthShader;
     Shader shader;
@@ -102,6 +118,7 @@ public:
     void renderObject(const std::string& name, Shader& sh, GameBodyBase* object);
     void ProcessMouseMovement(double xoffset, double yoffset);
     void registerCollisionBody(GameBodyBase *obj, bool rest = false, float gravityScale = 1.0);
+    GLuint loadCubemap(std::vector<std::string> faces);
     GameBodyBase* addObject(OBJECTTYPE type,
                  glm::vec3 position,
                  GLfloat yaw,

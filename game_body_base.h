@@ -41,7 +41,7 @@ const GLfloat ROLL = 0.0f;
 const GLfloat SPEED = 1.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
-const GLfloat CAMERARADIUS = 10.0f;
+const GLfloat CAMERARADIUS = 15.0f;
 const glm::vec3 WORLDUP = glm::vec3(0.0f, 1.0f, 0.0f);
 
 const double INITIAL_LIFE = 10000000.0;
@@ -61,7 +61,7 @@ public:
     // 照相机在以被拍摄物体为中心的球上
     GLfloat cameraposyaw;
     GLfloat camerapospitch;
-    GLfloat cameraposradius = 5.0f;
+    GLfloat cameraposradius = 4.0f;
 
     Camera(glm::vec3 targetpos, glm::vec3 targetfront, GLfloat targetyaw, GLfloat targetpitch) {
 
@@ -157,7 +157,7 @@ public:
     const GLfloat yawacc = YAWACC;
     const GLfloat pitchacc = PITCHACC;
 
-    const GLfloat MovementSpeed;
+    GLfloat MovementSpeed;
 
     GLfloat MouseSensitivity;
 
@@ -296,16 +296,18 @@ public:
         else if (type == ROCKET)
         {
             if (direction == FORWARD) {
-                this->pitchspeed -= this->pitchacc;
+                this->pitchspeed = -50 * this->pitchacc;
             }
             if (direction == BACKWARD) {
-                this->pitchspeed += this->pitchacc;
+                this->pitchspeed = 50 * this->pitchacc;
             }
             if (direction == RIGHT) {
-                this->yawspeed += this->yawacc;
+                this->pitchspeed = 0;
+                // this->yawspeed += this->yawacc;
             }
             if (direction == LEFT) {
-                this->yawspeed -= this->yawacc;
+                this->pitchspeed = 0;
+                // this->yawspeed -= this->yawacc;
             }
 
         }

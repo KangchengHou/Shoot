@@ -23,8 +23,9 @@ include_directories (
 	${Shoot_SOURCE_DIR}
 )
 
+
 if (UNIX AND NOT APPLE)
-target_link_libraries(Shoot -lGLEW qu3e -lSOIL -lglfw3 -lassimp -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl)
+target_link_libraries(Shoot -I"usr/include" -L"/usr/lib" -lIrrKlang -pthread -lGLEW qu3e -lSOIL -lglfw3 -lassimp -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl)
 endif()
 
 if(APPLE)
